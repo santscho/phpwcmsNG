@@ -304,104 +304,88 @@ if(isset($_POST['form_aktion']) && $_POST['form_aktion'] === 'login' && $json_ch
 }
 
 $reason_types = [
-    'default' => 'alert-default',
-    'info' => 'alert-info',
-    'error' => 'alert-error',
-    'warning' => 'alert-warning',
-    'success' => 'alert-success',
-    'danger' => 'alert-danger'
+    'default' => 'secondary',
+    'info'    => 'info',
+    'error'   => 'danger',
+    'warning' => 'warning',
+    'success' => 'success',
+    'danger'  => 'danger'
 ];
 
+$layout_rtl = (isset($_SESSION['wcs_user_lang']) && ($_SESSION['wcs_user_lang'] === 'ar' || $_SESSION['wcs_user_lang'] === 'he')) || ($phpwcms['default_lang'] === 'ar' || $phpwcms['default_lang'] === 'he');
+
 ?><!DOCTYPE html>
-<html lang="<?php echo $_SESSION['wcs_user_lang']; ?>">
+<html lang="<?php echo $_SESSION['wcs_user_lang']; ?>"<?php if($layout_rtl): ?> dir="rtl"<?php endif; ?>>
 <head>
     <meta charset="<?php echo PHPWCMS_CHARSET ?>">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo $BL['be_page_title'] . ' - ' . PHPWCMS_HOST ?></title>
     <meta name="robots" content="noindex, nofollow">
-    <!-- Bootstrap 5 (backend UI framework), loaded first so legacy backend styles keep precedence -->
     <link href="include/inc_ext/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css">
-    <link href="include/inc_css/login.min.css" rel="stylesheet" type="text/css">
-<?php
-$layout_rtl = (isset($_SESSION['wcs_user_lang']) && ($_SESSION['wcs_user_lang'] === 'ar' || $_SESSION['wcs_user_lang'] === 'he')) || ($phpwcms['default_lang'] === 'ar' || $phpwcms['default_lang'] === 'he');
-if($layout_rtl):
-?>
-    <style>* {direction: rtl;}</style>
-<?php endif; ?>
-    <style>
-        .alert-img {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            float: <?php echo $layout_rtl ? 'right' : 'left'; ?>;
-            position: relative;
-        }
-        .alert-offset {
-            margin-<?php echo $layout_rtl ? 'right' : 'left'; ?>: 40px;
-            margin-top: 8px;
-            margin-bottom: 5px;
-        }
-        .alert a {
-            color: #fff;
-            text-decoration: underline;
-        }
-        .alert a:hover {
-            text-decoration: none;
-        }
-    </style>
     <script src="include/inc_js/jquery/jquery.min.js"></script>
     <script type="module" src="include/inc_ext/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="include/inc_js/phpwcms.min.js"></script>
     <script src="include/inc_js/md5.js"></script>
 </head>
-<body>
-<div style="margin:0 auto;width:500px;padding-top:50px;">
+<body class="bg-1">
 
-    <h2>
-        <a href="index.php" target="_top" class="d-inline-block" style="padding:0 18px 12px 15px;">
-            <img src="img/backend/phpwcms-logo.png" srcset="img/backend/phpwcms-logo.svg" alt="phpwcms" width="202" height="56" />
+<nav class="navbar bg-primary" data-bs-theme="dark">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-3" href="index.php" target="_top">
+            <img src="img/backend/phpwcms-logo.svg" alt="phpwcms" width="140" height="39">
+            <span class="badge theme-inverse"><?php echo $BL['login_button'] ?></span>
         </a>
-    </h2>
+    </div>
+</nav>
 
-    <div style="border-radius:15px;background:#fff;padding:15px;box-shadow:2px 2px 10px rgba(0,0,0,.25);">
+<main class="container py-7 md:py-12">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 md:col-7 lg:col-5">
+            <div class="card shadow-sm">
+                <div class="card-body p-7 md:p-12">
 
-        <h1><?php echo $BL['login_text']; ?></h1>
+                    <h1 class="h3 mb-5"><?php echo $BL['login_text'] ?></h1>
 
 <?php if(isset($_GET['reason'])): ?>
-        <div class="alert <?php echo $reason_types[ (isset($_GET['type']) && isset($reason_types[$_GET['type']])) ? $_GET['type'] : 'default' ]; ?>">
-            <?php if(str_starts_with($_GET['reason'], 'csrf-')): ?>
-                <svg focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="alert-img"><path fill="currentColor" d="M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zm-248 50c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z" class=""></path></svg>
-                <div class="alert-offset">
-            <?php endif; ?>
-            <?php
-                if($_GET['reason'] === 'csrf-post-failed') {
-                    echo $BL['CSRF_POST_FAILED'];
-                } elseif($_GET['reason'] === 'csrf-post-invalid') {
-                    echo $BL['CSRF_POST_INVALID'];
-                } elseif($_GET['reason'] === 'csrf-get-failed') {
-                    echo $BL['CSRF_GET_FAILED'];
-                } elseif($_GET['reason'] === 'csrf-get-invalid') {
-                    echo $BL['CSRF_GET_INVALID'];
-                }
-            ?>
-            <?php if(str_starts_with($_GET['reason'], 'csrf-')): ?>
-                </div>
-            <?php endif; ?>
-        </div>
+<?php $reason_theme = $reason_types[(isset($_GET['type']) && isset($reason_types[$_GET['type']])) ? $_GET['type'] : 'default']; ?>
+                    <div class="alert theme-<?php echo $reason_theme ?>" role="alert">
+                        <div>
+                            <?php
+                                if($_GET['reason'] === 'csrf-post-failed') {
+                                    echo $BL['CSRF_POST_FAILED'];
+                                } elseif($_GET['reason'] === 'csrf-post-invalid') {
+                                    echo $BL['CSRF_POST_INVALID'];
+                                } elseif($_GET['reason'] === 'csrf-get-failed') {
+                                    echo $BL['CSRF_GET_FAILED'];
+                                } elseif($_GET['reason'] === 'csrf-get-invalid') {
+                                    echo $BL['CSRF_GET_INVALID'];
+                                }
+                            ?>
+                        </div>
+                    </div>
 <?php endif; ?>
 
-        <div id="loginFormArea">
-            <div class="alert alert-danger" style="font-weight:bold;padding:0 0 15px 0;font-size:12px;text-align:center"><?php echo $BL['be_login_jsinfo']; ?></div>
+                    <div id="loginFormArea">
+                        <div class="alert theme-warning" role="alert">
+                            <div><?php echo $BL['be_login_jsinfo']; ?></div>
+                        </div>
+                    </div>
+
+                    <p class="small fg-secondary mt-7 mb-0">
+                        <strong><a href="https://www.phpwcms.org" target="_blank" rel="noopener">phpwcms</a></strong>
+                        Copyright &copy; 2002&#8212;<?php echo date('Y'); ?>
+                        Oliver Georgi. Extensions are copyright of their respective owners.
+                        Visit <a href="https://www.phpwcms.org" target="_blank" rel="noopener">phpwcms.org</a> for
+                        details. phpwcms is free software released under
+                        <a href="https://www.fsf.org/licensing/licenses/gpl.html" target="_blank" rel="noopener">GPL</a>
+                        and comes WITHOUT ANY WARRANTY. Obstructing the appearance of this notice is prohibited by law.
+                    </p>
+
+                </div>
+            </div>
         </div>
-        <p style="padding: 0 3px 5px 3px;">
-            <strong><a href="https://www.phpwcms.org" target="_blank" style="text-decoration:none;">phpwcms</a></strong>
-            Copyright &copy; 2002&#8212;<?php echo date('Y'); ?>
-            Oliver Georgi. Extensions are copyright of their respective owners.
-            Visit <a href="https://www.phpwcms.org" target="_blank">phpwcms.org</a> for
-            details. phpwcms is free software released under <a href="https://www.fsf.org/licensing/licenses/gpl.html" target="_blank">GPL</a>
-            and comes WITHOUT ANY WARRANTY. Obstructing the appearance of this notice is prohibited  by law.
-        </p>
     </div>
-</div>
+</main>
 <?php
 
 // get whole login form and keep in buffer
@@ -418,10 +402,7 @@ ob_start();
 <?php
 
     if(file_exists(PHPWCMS_ROOT.'/setup')) {
-        echo '<div class="alert alert-danger">';
-        echo '<svg focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="alert-img"><path fill="currentColor" d="M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zm-248 50c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z" class=""></path></svg>';
-        echo '<div class="alert-offset">' . $BL['setup_dir_exists'];
-        echo '</div></div>';
+        echo '<div class="alert theme-danger mb-5" role="alert"><div>' . $BL['setup_dir_exists'] . '</div></div>';
     }
 
     if(isset($_POST['json']) && $_POST['json'] == 2) {
@@ -429,35 +410,31 @@ ob_start();
     }
 
     if(file_exists(PHPWCMS_ROOT.'/phpwcms_code_snippets')) {
-        echo '<div class="alert alert-danger">'.$BL['phpwcms_code_snippets_dir_exists'].'</div>';
+        echo '<div class="alert theme-danger mb-5" role="alert"><div>' . $BL['phpwcms_code_snippets_dir_exists'] . '</div></div>';
     }
 
     if(($phpwcms['image_library'] === 'gd' || $phpwcms['image_library'] === 'gd2') && (!extension_loaded('gd') || !function_exists('gd_info'))) {
-        echo '<div class="alert alert-danger" style="font-weight:normal;">'.$BL['gd_not_loaded'].'</div>';
+        echo '<div class="alert theme-danger mb-5" role="alert"><div>' . $BL['gd_not_loaded'] . '</div></div>';
     }
 
-    echo '<div class="alert alert-danger"';
+    echo '<div class="alert theme-danger mb-5"';
     if(!$err) {
-        echo ' style="display:none;"';
+        echo ' style="display:none"';
     }
-    echo ' id="jserr">';
-    echo $BL['login_error'];
-    echo '</div>';
+    echo ' id="jserr"><div>' . $BL['login_error'] . '</div></div>';
 
 ?>
-    <table border="0" cellpadding="0" cellspacing="0" summary="Login Form" style="margin:15px 0 20px 10px">
-        <tr>
-            <td align="right" nowrap="nowrap" class="v10 nowrap"><?php echo $BL['login_username'] ?>:&nbsp;</td>
-            <td class="v10"><input name="form_loginname" type="text" id="form_loginname" class="width250" size="30" maxlength="30" value="<?php echo html_specialchars($wcs_user); ?>" required="required" /></td>
-        </tr>
-        <tr>
-            <td align="right" nowrap="nowrap" class="v10 nowrap"><?php echo $BL['login_userpass'] ?>:&nbsp;</td>
-            <td class="v10"><input name="form_password" type="password" id="form_password" class="width250" size="30" maxlength="40" required="required"<?php if(empty($phpwcms['login_autocomplete'])): ?> autocomplete="new-password"<?php endif; ?> /></td>
-        </tr>
-        <tr>
-            <td align="right" nowrap="nowrap" class="v10 nowrap"><?php echo $BL['login_lang'] ?>:&nbsp;</td>
-            <td class="v10">
-                <select name="form_lang" id="form_lang" onchange="getObjectById('json').value='2';login(this.form);">
+<div class="mb-5">
+    <label class="form-label" for="form_loginname"><?php echo $BL['login_username'] ?></label>
+    <input name="form_loginname" type="text" class="form-control" id="form_loginname" maxlength="30" value="<?php echo html_specialchars($wcs_user); ?>" required />
+</div>
+<div class="mb-5">
+    <label class="form-label" for="form_password"><?php echo $BL['login_userpass'] ?></label>
+    <input name="form_password" type="password" class="form-control" id="form_password" maxlength="40" required<?php if(empty($phpwcms['login_autocomplete'])): ?> autocomplete="new-password"<?php endif; ?> />
+</div>
+<div class="mb-5">
+    <label class="form-label" for="form_lang"><?php echo $BL['login_lang'] ?></label>
+    <select name="form_lang" id="form_lang" class="form-control" onchange="getObjectById('json').value='2';login(this.form);">
 <?php
 
 // check available languages installed and build language selector menu
@@ -479,15 +456,10 @@ ksort($lang_options);
 echo implode('', $lang_options);
 
 ?>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>&nbsp;</td>
-            <td><input name="submit_form" type="submit" value="<?php echo $BL['login_button'] ?>" class="button" /></td>
-        </tr>
-    </table>
-    </form>
+    </select>
+</div>
+<button type="submit" class="btn theme-primary btn-solid btn-styled btn-sm w-100"><?php echo $BL['login_button'] ?></button>
+</form>
 <?php
 
 $formAll = str_replace( ["'", "\r", "\n", '<'], ["\'", '', ' ', "<'+'"], ob_get_clean() );
