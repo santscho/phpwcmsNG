@@ -169,8 +169,10 @@ if($result): ?>
 if(is_file($this_root.'/.htaccess')):
 ?>
                     <div class="alert theme-warning" role="alert">
-                        A <strong>.htaccess</strong> file exists. Compare against the <a href="../_.htaccess" target="_blank" rel="noopener">default</a>.
-                        If you want to use segmented URLs it is necessary to configure the Rewrite process.
+                        <div>
+                            A <strong>.htaccess</strong> file exists. Compare against the <a href="../_.htaccess" target="_blank" rel="noopener">default</a>.
+                            If you want to use segmented URLs it is necessary to configure the Rewrite process.
+                        </div>
                     </div>
 <?php else:
     $result = false;
@@ -186,21 +188,25 @@ if(is_file($this_root.'/.htaccess')):
     }
     if($result): ?>
                     <div class="alert theme-success" role="alert">
-                        A default <strong>.htaccess</strong> file was placed in the document root of your installation.
-                        This file usually is hidden because of the leading <strong>.</strong> in the file name.
-                        <?php
-                        if($phpwcms["root"] && $htaccess = @read_textfile($this_root.'/.htaccess')) {
-                            $htaccess = str_replace('RewriteBase /', '#RewriteBase /', $htaccess);
-                            $htaccess = str_replace('#RewriteBase /subfolder/', 'RewriteBase /' . trim($phpwcms["root"], '/') . '/', $htaccess);
-                            write_textfile($this_root.'/.htaccess', $htaccess);
-                        }
-                        ?>
+                        <div>
+                            A default <strong>.htaccess</strong> file was placed in the document root of your installation.
+                            This file usually is hidden because of the leading <strong>.</strong> in the file name.
+                            <?php
+                            if($phpwcms["root"] && $htaccess = @read_textfile($this_root.'/.htaccess')) {
+                                $htaccess = str_replace('RewriteBase /', '#RewriteBase /', $htaccess);
+                                $htaccess = str_replace('#RewriteBase /subfolder/', 'RewriteBase /' . trim($phpwcms["root"], '/') . '/', $htaccess);
+                                write_textfile($this_root.'/.htaccess', $htaccess);
+                            }
+                            ?>
+                        </div>
                     </div>
     <?php else: ?>
                     <div class="alert theme-danger" role="alert">
-                        Writing the <strong>.htaccess</strong> file to the document root of your installation failed.
-                        If you want to use Rewrite please configure it manually. See the file
-                        <a href="../_.htaccess" target="_blank" rel="noopener">_.htaccess</a>.
+                        <div>
+                            Writing the <strong>.htaccess</strong> file to the document root of your installation failed.
+                            If you want to use Rewrite please configure it manually. See the file
+                            <a href="../_.htaccess" target="_blank" rel="noopener">_.htaccess</a>.
+                        </div>
                     </div>
     <?php endif; ?>
 <?php endif; ?>
@@ -217,8 +223,10 @@ if(is_file($this_root.'/.htaccess')):
                     </p>
 
                     <div class="alert theme-danger" role="alert">
-                        <strong>ATTENTION!!!<br>Delete the &quot;setup&quot; folder</strong>
-                        otherwise everybody might see your username, passwords and settings.
+                        <div>
+                            <strong>ATTENTION!!!<br>Delete the &quot;setup&quot; folder</strong>
+                            otherwise everybody might see your username, passwords and settings.
+                        </div>
                     </div>
 
                     <p>

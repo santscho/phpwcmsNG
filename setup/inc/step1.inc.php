@@ -152,8 +152,8 @@ if(!empty($db_init)) {
     }
     if(isset($db_create_err) && count($db_create_err)) {
         echo '<div class="alert theme-danger" role="alert">';
-        echo '<p><strong>Errors while creating initial phpwcms tables. Solve it manually:</strong></p>';
-        echo '<pre class="mb-0 small">' . html_specialchars(implode(";\n\n", $db_create_err) . ';') . '</pre>';
+        echo '<div><p><strong>Errors while creating initial phpwcms tables. Solve it manually:</strong></p>';
+        echo '<pre class="mb-0 small">' . html_specialchars(implode(";\n\n", $db_create_err) . ';') . '</pre></div>';
         echo '</div>';
 
         $_SESSION['admin_set']  = false;
@@ -174,8 +174,10 @@ if(!empty($db_init)) {
 
 ?>
                         <div class="alert theme-success" role="alert">
-                            <strong>Fine!</strong> All initial phpwcms tables were created or still exists.
-                            <input type="hidden" name="db_sql_hidden" value="1">
+                            <div>
+                                <strong>Fine!</strong> All initial phpwcms tables were created or still exists.
+                                <input type="hidden" name="db_sql_hidden" value="1">
+                            </div>
                         </div>
 <?php
 
@@ -186,8 +188,8 @@ if(!empty($db_init)) {
             $sql_data               = false;
             $db_sql                 = false;
 
-            echo '<div class="alert theme-warning" role="alert"><strong>No phpwcms database table exists. Check before you continue!</strong>';
-            echo '<input type="hidden" name="db_sql_hidden" value="1"></div>';
+            echo '<div class="alert theme-warning" role="alert"><div><strong>No phpwcms database table exists. Check before you continue!</strong>';
+            echo '<input type="hidden" name="db_sql_hidden" value="1"></div></div>';
 
         }
 
@@ -360,24 +362,24 @@ if(!empty($_SESSION['admin_set'])) {
         if(!empty($create_user)) {
 
             // update
-            echo '<div class="alert theme-success" role="alert"><strong>Done!</strong> Account for user <b>'.html_specialchars($phpwcms['admin_user']).'</b> was created.';
-            echo '<input type="hidden" name="user_account" value="1"></div>';
+            echo '<div class="alert theme-success" role="alert"><div><strong>Done!</strong> Account for user <b>'.html_specialchars($phpwcms['admin_user']).'</b> was created.';
+            echo '<input type="hidden" name="user_account" value="1"></div></div>';
 
         }
 
         if(!empty($update_user)) {
 
             // update
-            echo '<div class="alert theme-success" role="alert"><strong>Done!</strong> Account of user <b>'.html_specialchars($phpwcms['admin_user']).'</b> was updated.';
-            echo '<input type="hidden" name="user_account" value="1"></div>';
+            echo '<div class="alert theme-success" role="alert"><div><strong>Done!</strong> Account of user <b>'.html_specialchars($phpwcms['admin_user']).'</b> was updated.';
+            echo '<input type="hidden" name="user_account" value="1"></div></div>';
 
         }
 
         if($user_check === false) {
 
             // db error
-            echo '<div class="alert theme-danger" role="alert"><strong>There is a database problem!</strong>';
-            echo '<p class="mb-0">Account for user <b>'.html_specialchars($phpwcms['admin_user']).'</b> was not created or updated.<br>Click <b>continue</b> to try again.</p></div>';
+            echo '<div class="alert theme-danger" role="alert"><div><strong>There is a database problem!</strong>';
+            echo '<p class="mb-0">Account for user <b>'.html_specialchars($phpwcms['admin_user']).'</b> was not created or updated.<br>Click <b>continue</b> to try again.</p></div></div>';
             $_SESSION['admin_save'] = false;
 
         }

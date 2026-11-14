@@ -77,10 +77,12 @@ if($do) require_once($DOCROOT.'/setup/inc/setup.check.inc.php');
 		} else {
 			?>
                     <div class="alert theme-danger" role="alert">
-                        <h1 class="h4 alert-heading">Setup stopped</h1>
-                        <p>Access on setup process is restricted if the setup config file is downloaded once. To re-enable setup remove the line</p>
-                        <p><code>$NO_ACCESS = true;</code></p>
-                        <p class="mb-0">in <code>setup.conf.inc.php</code>.</p>
+                        <div>
+                            <h1 class="h4 alert-heading">Setup stopped</h1>
+                            <p>Access on setup process is restricted if the setup config file is downloaded once. To re-enable setup remove the line</p>
+                            <p><code>$NO_ACCESS = true;</code></p>
+                            <p class="mb-0">in <code>setup.conf.inc.php</code>.</p>
+                        </div>
                     </div>
 			<?php
 		}
