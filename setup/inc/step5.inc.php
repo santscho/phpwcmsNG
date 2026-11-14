@@ -152,9 +152,6 @@ if(!is_file($this_root.'/include/config/conf.inc.php')) {
 	}
 }
 
-// Try to secure setup folder
-@write_textfile($this_root.'/setup/.htaccess', 'Deny from all');
-
 if($result): ?>
                     <div class="alert theme-success" role="alert">
                         The conf.inc.php was created successfully and placed at the right position by the setup script.

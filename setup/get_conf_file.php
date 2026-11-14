@@ -29,7 +29,10 @@ if(is_file($base_path.'/setup.conf.inc.php')) {
 		if($filesize) {
 			header('Content-length: '.$filesize);
 			$temp = read_textfile($base_path.'/setup.conf.inc.php');
-			write_textfile($base_path.'/setup.conf.inc.php', str_replace('?>', "\$NO_ACCESS = true;\n\n?>", $temp));
+			$locked = str_contains($temp, '?>')
+				? str_replace('?>', "\$NO_ACCESS = true;\n\n?>", $temp)
+				: rtrim($temp) . "\n\n\$NO_ACCESS = true;\n";
+			write_textfile($base_path.'/setup.conf.inc.php', $locked);
 		} else {
 			$temp = 'Sorry there was a problem downloading "conf.inc.php". Check manually!';
 		}
