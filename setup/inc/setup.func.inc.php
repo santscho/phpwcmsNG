@@ -341,10 +341,7 @@ function parsePHPModules() {
 }
 
 function errorWarning($warning = '') {
-    $t = '<p class="error"><img src="../img/famfamfam/icon_alert.gif" alt="Alert" border="0" class="icon1" /><b>';
-    $t .= $warning;
-    $t .= '</b></p>';
-    return $t;
+    return '<div class="alert theme-danger" role="alert"><div><strong>' . $warning . '</strong></div></div>';
 }
 
 // based on definitions of phpMyAdmin

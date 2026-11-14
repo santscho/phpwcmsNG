@@ -54,6 +54,20 @@
 - Secondary/outline actions use `class="btn btn-outline theme-secondary btn-sm"`.
 - `btn-sm` is the standard size; do not use `btn-lg`.
 
+## Graphics and icons
+
+- No raster (pixel) graphics for interface chrome. Status marks, arrows,
+  separators, buttons and badges are built from Bootstrap components (`badge`,
+  `alert`, `btn`) or inline SVG icons; the phpwcms logo is vector SVG and stays.
+- Status is never communicated by an image: use
+  `<span class="badge theme-success">OK</span>` / `theme-danger` with a text
+  label, and `alert theme-*` for messages.
+- When a screen is modernized, its pixel assets are deleted from the repository
+  as soon as nothing references them. Search the whole repo for the file name
+  first — some paths are assembled from variables (`'img/famfamfam/lang/'.$lang`).
+- Do not add an icon font or icon package without agreement; Bootstrap
+  components are the first choice, inline SVG the second.
+
 ## Bootstrap skills
 
 All official Bootstrap agent skills are installed in `skills/` (source
