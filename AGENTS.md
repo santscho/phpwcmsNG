@@ -15,8 +15,8 @@
   `data-bs-theme="dark"` on a `bg-primary` bar so the white phpwcms logo stays
   legible), then `container` → `row` / `col` → `card` / `card-body`, with the
   standard button classes below.
-- The backend frame (`phpwcms.php`) is a primary `navbar` carrying the main
-  sections plus host and logout, then a fluid container row: sidebar column
+- The backend frame (`phpwcms.php`) is a primary `navbar sticky-top` carrying
+  the main sections plus host and logout, then a fluid container row: sidebar column
   (`col-12 md:col-3 xl:col-2`, holding the section sub navigation, the search
   and the online users) next to the content column
   (`col-12 md:col-9 xl:col-10`, keeping the `#be_main_content` id). Navigation

@@ -263,7 +263,7 @@ if($BE['LANG'] == 'ar') {
 <!-- phpwcms HEADER -->
 </head>
 <body<?php echo $body_onload ?>><!-- phpwcms BODY_OPEN -->
-<nav class="navbar bg-primary" data-bs-theme="dark">
+<nav class="navbar sticky-top bg-primary" data-bs-theme="dark">
     <div class="container-fluid gap-3">
         <a href="phpwcms.php?do=home" target="_top" class="navbar-brand d-flex align-items-center">
             <img src="img/backend/phpwcms-logo.svg" alt="phpwcms v<?php echo html_specialchars(PHPWCMS_VERSION); ?>" width="112" height="31">
