@@ -314,11 +314,11 @@ if(!empty($step)) {
         $phpwcms["img_prev_height"]  = intval($_POST["img_prev_height"]);
         $phpwcms["max_time"]         = intval($_POST["max_time"]);
         $phpwcms["file_maxsize"]     = $phpwcms["file_maxsize"] ?: 2097152;
-        $phpwcms["content_width"]    = $phpwcms["content_width"] ?: 538;
-        $phpwcms["img_list_width"]   = $phpwcms["img_list_width"] ?: 100;
-        $phpwcms["img_list_height"]  = $phpwcms["img_list_height"] ?: 75;
-        $phpwcms["img_prev_width"]   = $phpwcms["img_prev_width"] ?: 538;
-        $phpwcms["img_prev_height"]  = $phpwcms["img_prev_height"] ?: 400;
+        $phpwcms["content_width"]    = $phpwcms["content_width"] ?: 1200;
+        $phpwcms["img_list_width"]   = $phpwcms["img_list_width"] ?: 200;
+        $phpwcms["img_list_height"]  = $phpwcms["img_list_height"] ?: 150;
+        $phpwcms["img_prev_width"]   = $phpwcms["img_prev_width"] ?: 1200;
+        $phpwcms["img_prev_height"]  = $phpwcms["img_prev_height"] ?: 900;
         $phpwcms["max_time"]         = $phpwcms["max_time"] ?: 1800;
 
         write_conf_file($phpwcms);

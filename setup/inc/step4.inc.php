@@ -30,7 +30,7 @@ if (!defined('PHP8')) {
                             <label for="content_width" class="md:col-3 col-form-label">content width</label>
                             <div class="md:col-9">
                                 <input name="content_width" type="text" class="form-control" id="content_width" value="<?php echo $phpwcms["content_width"] ?>" maxlength="100">
-                                <div class="form-text">default: 538 &#8212; the width of the frontend main content block, base value of creating image lists</div>
+                                <div class="form-text">default: 1200 &#8212; px width of the frontend article content block, base value for image lists and multi column images. Match it to your template's main column (Bootstrap 6 container is 1200 at xl, 1440 at xxl)</div>
                             </div>
                         </div>
 
@@ -48,7 +48,7 @@ if (!defined('PHP8')) {
                                         <input name="img_list_height" type="text" class="form-control" id="img_list_height" value="<?php echo $phpwcms["img_list_height"] ?>" maxlength="100">
                                     </div>
                                 </div>
-                                <div class="form-text">default: width 100 x height 75 &#8212; width and height of list image thumbnails</div>
+                                <div class="form-text">default: width 200 x height 150 &#8212; width and height of list image thumbnails (4:3, renders sharp on HiDPI at 100 x 75 display size)</div>
                             </div>
                         </div>
 
@@ -66,7 +66,7 @@ if (!defined('PHP8')) {
                                         <input name="img_prev_height" type="text" class="form-control" id="img_prev_height" value="<?php echo $phpwcms["img_prev_height"] ?>" maxlength="100">
                                     </div>
                                 </div>
-                                <div class="form-text">default: width 538 x height 400 &#8212; width and height of preview images, recommend is to use the same width as main content block. For better quality use larger values; if the source image is smaller it will not be sized to these larger values</div>
+                                <div class="form-text">default: width 1200 x height 900 &#8212; width and height of preview images, recommend is to use the same width as main content block. For better quality use larger values; if the source image is smaller it will not be sized to these larger values</div>
                             </div>
                         </div>
 
