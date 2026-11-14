@@ -77,10 +77,12 @@ The project now runs the same major version these skills target
 - The Git repository root is the fork of phpwcms (`santscho/phpwcmsNG`,
   upstream `slackero/phpwcms`).
 - `public/` is the local playground / web root served at
-  <http://phpwcmsng.test>. It is gitignored and not part of the repository:
-  finished changes are promoted to the repository root before committing.
-- `public/setup/setup.conf.inc.php` is **never** promoted. The running installer
-  rewrites it with the live database, admin and mail values (including the DB
-  password), so it is local state, not source. Change installer defaults in the
-  core `setup/` files only, and check `git diff` for credential-looking lines
-  before every commit.
+  <http://phpwcmsng.test>. It is gitignored and holds local runtime state
+  (config, install values, uploads).
+- **Nothing is ever copied from `public/` into the repository.** The core tree is
+  the source of truth: make every edit there, and copy core → `public/` only when
+  the playground needs the current code to render. `public/` is a throwaway
+  mirror plus local state, never an input to a commit.
+- Before every commit check `git status --short` and `git diff --cached` for
+  credential-looking lines (`db_pass`, `admin_pass`, `SMTP_CLIENT_SECRET`, …) and
+  for paths under `public/`.
