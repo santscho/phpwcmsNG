@@ -14,85 +14,89 @@ if (!defined('PHP8')) {
 }
 
 ?>
-<h1><span class="number">3.</span> MySQL database settings </h1>
+                    <h1 class="h3 d-flex align-items-center gap-2">
+                        <span class="badge text-bg-primary">3</span>
+                        MySQL database settings
+                    </h1>
 <?php
 if(isset($_POST["dbsavesubmit"]) && $err) {
-    echo errorWarning('Please proof your database settings!');
+    echo '<div class="alert alert-danger" role="alert"><strong>Please proof your database settings!</strong></div>';
     $_SESSION['admin_set'] = false;
 }
 ?>
-<form action="setup.php?step=1" method="post" autocomplete="off">
-        <table border="0" cellpadding="0" cellspacing="0" summary="">
-          <tr>
-            <td align="right" class="v10" width="120">MySQL host and port:&nbsp;</td>
-            <td width="270">
-                <input name="db_host" type="text" class="v12" id="db_host" value="<?php echo html_specialchars($phpwcms["db_host"]) ?>" placeholder="localhost" size="30" style="width:250px" />
-                <input name="db_port" type="text" class="v12" id="db_port" value="<?php echo $phpwcms["db_port"] ?>" placeholder="localhost" size="4" style="width:45px" />
-            </td>
-            <td class="chatlist"><em>default: localhost / 3306</em></td>
-          </tr>
-           <tr><td colspan="3"><img src="../img/leer.gif" alt="" width="1" height="4" /></td>
-           </tr>
-          <tr>
-            <td align="right" class="v10">DB user:&nbsp;</td>
-            <td><input name="db_user" type="text" class="v12" id="db_user" style="width:300px" value="<?php echo html_specialchars($phpwcms["db_user"]) ?>" placeholder="database user" size="30" /></td>
-            <td class="chatlist">&nbsp;</td>
-          </tr>
-           <tr><td colspan="3"><img src="../img/leer.gif" alt="" width="1" height="4" /></td>
-           </tr>
-          <tr>
-            <td align="right" class="v10">DB password:&nbsp;</td>
-            <td><input name="db_pass" type="text" class="v12" id="db_pass" style="width:300px" value="<?php echo html_specialchars($phpwcms["db_pass"]) ?>" placeholder="database password" size="30" /></td>
-            <td class="chatlist">&nbsp;</td>
-          </tr>
-           <tr><td colspan="3"><img src="../img/leer.gif" alt="" width="1" height="4" /></td>
-           </tr>
-          <tr>
-            <td align="right" class="v10">DB database:&nbsp;</td>
-            <td><input name="db_table" type="text" class="v12" id="db_table" style="width:300px" value="<?php echo html_specialchars($phpwcms["db_table"]) ?>" placeholder="database name" size="30" maxlength="255" /></td>
-            <td class="chatlist"><em>you have to create it <strong>before</strong> setup!!!</em></td>
-          </tr>
-          <tr><td colspan="3"><img src="../img/leer.gif" alt="" width="1" height="4" /></td>
-          </tr>
-          <tr>
-            <td align="right" class="v10">DB table prefix:&nbsp;</td>
-            <td><input name="db_prepend" type="text" class="v12" id="db_prepend" style="width:300px" value="<?php echo html_specialchars($prepend) ?>" size="30" maxlength="10" /></td>
-            <td class="chatlist"><em>default: none (&quot;&quot;), if filled
-                in it will be <strong>prefix</strong>+<strong>_</strong></em></td>
-          </tr>
-          <tr><td colspan="3"><img src="../img/leer.gif" alt="" width="1" height="6" /></td>
-          </tr>
-          <tr>
-            <td align="right" class="v10">&nbsp;</td>
-            <td><table border="0" cellpadding="0" cellspacing="0" summary="">
-                <tr>
-                <td><input name="db_pers" type="checkbox" id="db_pers" value="1" <?php echo ($phpwcms["db_pers"]) ? "checked" : ""; ?> /></td>
-                <td><label for="db_pers" class="v12">&nbsp;use&nbsp;persistent&nbsp;database&nbsp;connection&nbsp;</label></td>
-                </tr>
-            </table></td>
-            <td class="chatlist"><em>it should be safe to enable it</em></td>
-          </tr>
+                    <form action="setup.php?step=1" method="post" autocomplete="off">
+
+                        <div class="row mb-3">
+                            <label for="db_host" class="col-md-3 col-form-label">MySQL host and port</label>
+                            <div class="col-md-9">
+                                <div class="row g-2">
+                                    <div class="col-sm-8">
+                                        <input name="db_host" type="text" class="form-control" id="db_host" value="<?php echo html_specialchars($phpwcms["db_host"]) ?>" placeholder="localhost">
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input name="db_port" type="text" class="form-control" id="db_port" value="<?php echo $phpwcms["db_port"] ?>" placeholder="3306">
+                                    </div>
+                                </div>
+                                <div class="form-text">default: localhost / 3306</div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="db_user" class="col-md-3 col-form-label">DB user</label>
+                            <div class="col-md-9">
+                                <input name="db_user" type="text" class="form-control" id="db_user" value="<?php echo html_specialchars($phpwcms["db_user"]) ?>" placeholder="database user">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="db_pass" class="col-md-3 col-form-label">DB password</label>
+                            <div class="col-md-9">
+                                <input name="db_pass" type="text" class="form-control" id="db_pass" value="<?php echo html_specialchars($phpwcms["db_pass"]) ?>" placeholder="database password">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="db_table" class="col-md-3 col-form-label">DB database</label>
+                            <div class="col-md-9">
+                                <input name="db_table" type="text" class="form-control" id="db_table" value="<?php echo html_specialchars($phpwcms["db_table"]) ?>" placeholder="database name" maxlength="255">
+                                <div class="form-text">you have to create it <strong>before</strong> setup!!!</div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="db_prepend" class="col-md-3 col-form-label">DB table prefix</label>
+                            <div class="col-md-9">
+                                <input name="db_prepend" type="text" class="form-control" id="db_prepend" value="<?php echo html_specialchars($prepend) ?>" maxlength="10">
+                                <div class="form-text">default: none (&quot;&quot;), if filled in it will be <strong>prefix</strong>+<strong>_</strong></div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-9 offset-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" name="db_pers" type="checkbox" id="db_pers" value="1" <?php echo ($phpwcms["db_pers"]) ? "checked" : ""; ?>>
+                                    <label class="form-check-label" for="db_pers">use persistent database connection</label>
+                                </div>
+                                <div class="form-text">it should be safe to enable it</div>
+                            </div>
+                        </div>
 
 <?php
 if(!empty($db_additional)) {
 
 ?>
-    <tr>
-        <td colspan="3" style="padding: 10px 0 10px 0;">
-            <h1>
-                <span class="number">4.</span>
-                Charset &amp; MySQL <span class="v11">(v<?php echo html_specialchars($row[0]) ?>)</span> settings
-                <a href="https://dev.mysql.com/doc/refman/5.7/en/charset.html" target="_blank" title="MySQL information"><img src="../img/famfamfam/icon_info.gif" alt="Info" border="0" class="icon" /></a>
-            </h1>
-        </td>
-    </tr>
-    <tr>
-            <td align="right" class="v10">
-                <a href="https://www.w3.org/International/articles/http-charset/index" target="_blank" title="HTTP charset">
-                    <img src="../img/famfamfam/icon_info.gif" alt="Info" border="0" class="icon1" />
-                </a>Charset:&nbsp;</td>
-            <td><select name="charset">
-            <?php
+                        <hr class="my-4">
+
+                        <h2 class="h3 d-flex align-items-center gap-2">
+                            <span class="badge text-bg-primary">4</span>
+                            Charset &amp; MySQL <span class="fs-5 text-body-secondary">(v<?php echo html_specialchars($row[0]) ?>)</span>
+                        </h2>
+
+                        <div class="row mb-3">
+                            <label for="charset" class="col-md-3 col-form-label">Charset</label>
+                            <div class="col-md-9">
+                                <select name="charset" id="charset" class="form-select">
+<?php
 
             foreach($available_languages as $key => $value) {
 
@@ -116,10 +120,15 @@ if(!empty($db_additional)) {
                 echo "</option>";
             }
 
-            ?>
-            </select><input type="hidden" name="collation" value="utf8mb4_general_ci" /></td>
-            <td class="chatlist"></td>
-          </tr>
+?>
+                                </select>
+                                <div class="form-text">
+                                    <a href="https://dev.mysql.com/doc/refman/5.7/en/charset.html" target="_blank" rel="noopener">MySQL charset information</a>,
+                                    <a href="https://www.w3.org/International/articles/http-charset/index" target="_blank" rel="noopener">HTTP charset information</a>
+                                </div>
+                                <input type="hidden" name="collation" value="utf8mb4_general_ci">
+                            </div>
+                        </div>
 
 <?php
 
@@ -129,19 +138,23 @@ if(!empty($db_additional)) {
 if(!empty($db_init)) {
 
 ?>
-    <tr><td colspan="3" style="padding: 10px 0 10px 0;"><h1><span class="number">5.</span> Default phpwcms database schema</h1></td></tr>
+                        <hr class="my-4">
+
+                        <h2 class="h3 d-flex align-items-center gap-2">
+                            <span class="badge text-bg-primary">5</span>
+                            Default phpwcms database schema
+                        </h2>
 <?php
 
     if(empty($db_no_create) && !empty($_db_prepend_error) && isset($_POST['db_sql_hidden'])) {
-        echo '<tr><td>&nbsp;</td><td colspan="2">';
-        echo errorWarning('phpwcms tables still exists in choosen database. Rename table prefix might help!');
-        echo "</td></tr>\n";
+        echo '<div class="alert alert-warning" role="alert"><strong>phpwcms tables still exists in choosen database. Rename table prefix might help!</strong></div>';
         $_SESSION['admin_set'] = false;
     }
     if(isset($db_create_err) && count($db_create_err)) {
-        echo '<tr><td>&nbsp;</td><td colspan="2">';
-        echo errorWarning('Errors while creating initial phpwcms tables. Solve it manually:</b></p><pre class="errorBox">'.html_specialchars(implode(";\n\n", $db_create_err).';').'</pre><p><b> ');
-        echo "</td></tr>\n";
+        echo '<div class="alert alert-danger" role="alert">';
+        echo '<p><strong>Errors while creating initial phpwcms tables. Solve it manually:</strong></p>';
+        echo '<pre class="mb-0 small">' . html_specialchars(implode(";\n\n", $db_create_err) . ';') . '</pre>';
+        echo '</div>';
 
         $_SESSION['admin_set']  = false;
         $sql_data               = false;
@@ -160,10 +173,10 @@ if(!empty($db_init)) {
             $db_fine    = true;
 
 ?>
-      <tr>
-        <td align="right" class="v10">&nbsp;</td>
-        <td colspan="2"><img src="../img/famfamfam/icon_accept.gif" alt="Juchu" class="icon1" /><strong>Fine!</strong> All initial phpwcms tables were created or still exists.<input type="hidden" name="db_sql_hidden" value="1" /></td>
-      </tr>
+                        <div class="alert alert-success" role="alert">
+                            <strong>Fine!</strong> All initial phpwcms tables were created or still exists.
+                            <input type="hidden" name="db_sql_hidden" value="1">
+                        </div>
 <?php
 
         } else {
@@ -173,10 +186,8 @@ if(!empty($db_init)) {
             $sql_data               = false;
             $db_sql                 = false;
 
-            echo '<tr><td>&nbsp;</td><td colspan="2">';
-            echo errorWarning('No phpwcms database table exists. Check before you continue!');
-            echo '<input type="hidden" name="db_sql_hidden" value="1" />';
-            echo "</td></tr>\n";
+            echo '<div class="alert alert-warning" role="alert"><strong>No phpwcms database table exists. Check before you continue!</strong>';
+            echo '<input type="hidden" name="db_sql_hidden" value="1"></div>';
 
         }
 
@@ -187,17 +198,11 @@ if(!empty($db_init)) {
         // show info
 
 ?>
-      <tr>
-        <td align="right" class="v10">&nbsp;</td>
-        <td><table border="0" cellpadding="0" cellspacing="0" summary="">
-            <tr>
-            <td><input name="db_sql" type="checkbox" id="db_sql" value="1"<?php if(!empty($db_sql)) echo ' checked="checked"' ?> /></td>
-            <td><label for="db_sql" class="v12">&nbsp;create phpwcms db tables&nbsp;</label><input type="hidden" name="db_sql_hidden" value="1" /></td>
-            </tr>
-        </table></td>
-        <td class="chatlist">&nbsp;</td>
-      </tr>
-
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" name="db_sql" type="checkbox" id="db_sql" value="1"<?php if(!empty($db_sql)) echo ' checked="checked"' ?>>
+                            <label class="form-check-label" for="db_sql">create phpwcms db tables</label>
+                            <input type="hidden" name="db_sql_hidden" value="1">
+                        </div>
 <?php
 
     }
@@ -205,46 +210,31 @@ if(!empty($db_init)) {
     if(!empty($sql_data)) {
 
         $sql_data = explode(';', $sql_data);
-        $c = 0;
-        foreach($sql_data as $key => $value) {
+        $statements = array();
+        foreach($sql_data as $value) {
 
             $value = trim(preg_replace('/--\s/', '', trim($value)));
 
             if(empty($value)) {
-                unset($sql_data[$key]);
                 continue;
             }
 
             $value = html_specialchars($value);
-            $value = str_replace(' ', '&nbsp;', $value);
-            $value = nl2br($value);
-
-            $sql_data[$key]  = '<div style="margin:0;padding:0 5px 0 5px;';
-            if($c % 2) {
-                $sql_data[$key] .= ';background-color:#F6F8FA;';
-            }
-            $sql_data[$key] .= '"><p>'.$value;
 
             if(!str_starts_with(strtoupper(trim($value)), 'INSERT')) {
-                $sql_data[$key] .= ' DEFAULT';
-                $sql_data[$key] .= ' CHARACTER SET '.$phpwcms['db_charset'];
-                $sql_data[$key] .= ' COLLATE '.$phpwcms['db_collation'];
+                $value .= ' DEFAULT';
+                $value .= ' CHARACTER SET '.$phpwcms['db_charset'];
+                $value .= ' COLLATE '.$phpwcms['db_collation'];
             }
 
-            $sql_data[$key] .= ';</p></div>';
-            $c++;
+            $statements[] = $value . ';';
         }
 
-        $sql_data = implode("\n", $sql_data);
-
-        echo '<tr><td>&nbsp;';
         if(empty($_db_prepend_error) && isset($_POST['db_sql_hidden'])) {
-            echo '<input type="hidden" name="db_create" value="1" />';
+            echo '<input type="hidden" name="db_create" value="1">';
         }
-        echo '</td><td colspan="2">';
-        echo '<div id="license" style="width:550px">';
-        echo $sql_data;
-        echo "</div></td></tr>\n";
+
+        echo '<pre class="border rounded bg-body-tertiary p-3 small">' . implode("\n", $statements) . '</pre>';
 
     }
 }
@@ -254,61 +244,62 @@ if(!empty($db_init)) {
 if(!empty($_SESSION['admin_set'])) {
 
 ?>
-    <tr><td colspan="3" style="padding: 10px 0 10px 0;"><h1><span class="number">6.</span> Superuser settings</h1></td></tr>
+                        <hr class="my-4">
+
+                        <h2 class="h3 d-flex align-items-center gap-2">
+                            <span class="badge text-bg-primary">6</span>
+                            Superuser settings
+                        </h2>
 <?php
 
     // as long as admin info wasn't written
     if(empty($_SESSION['admin_save'])) {
 
 ?>
-    <tr>
-        <td align="right" class="v10">Name:&nbsp;</td>
-        <td><input name="admin_name" type="text" id="admin_name" class="v12" style="width:300px" value="<?php echo empty($phpwcms["admin_name"]) ? "Webmaster" : html_specialchars($phpwcms["admin_name"]) ?>" size="30" /></td>
-        <td class="chatlist"><em>&nbsp;default: Webmaster</em></td>
-    </tr>
+                        <div class="row mb-3">
+                            <label for="admin_name" class="col-md-3 col-form-label">Name</label>
+                            <div class="col-md-9">
+                                <input name="admin_name" type="text" class="form-control" id="admin_name" value="<?php echo empty($phpwcms["admin_name"]) ? "Webmaster" : html_specialchars($phpwcms["admin_name"]) ?>">
+                                <div class="form-text">default: Webmaster</div>
+                            </div>
+                        </div>
 
-    <tr><td colspan="3"><img src="../img/leer.gif" alt="" width="1" height="4" /></td>
-    </tr>
-
-    <tr>
-        <td align="right" class="v10">Admin login:&nbsp;</td>
-        <td><input name="admin_user" type="text" id="admin_user" class="v12" style="width:300px" value="<?php echo empty($phpwcms["admin_user"]) ? "webmaster" : html_specialchars($phpwcms["admin_user"]) ?>" size="30" /></td>
-        <td class="chatlist"><em>&nbsp;default: admin </em></td>
-    </tr>
-
-    <tr><td colspan="3"><img src="../img/leer.gif" alt="" width="1" height="4" /></td></tr>
+                        <div class="row mb-3">
+                            <label for="admin_user" class="col-md-3 col-form-label">Admin login</label>
+                            <div class="col-md-9">
+                                <input name="admin_user" type="text" class="form-control" id="admin_user" value="<?php echo empty($phpwcms["admin_user"]) ? "webmaster" : html_specialchars($phpwcms["admin_user"]) ?>">
+                                <div class="form-text">default: admin</div>
+                            </div>
+                        </div>
 
 <?php
     if(!empty($admin_err_pass)) {
-        echo '<tr><td>&nbsp;</td><td colspan="2">';
-        echo errorWarning('Invalid password! Password is case senitive, empty password not allowed.');
-        echo "</td></tr>\n";
+        echo '<div class="alert alert-danger" role="alert"><strong>Invalid password! Password is case senitive, empty password not allowed.</strong></div>';
     }
 ?>
 
-    <tr>
-        <td align="right" class="v10">Admin password:&nbsp;</td>
-        <td><input name="admin_pass" type="password" id="admin_pass" class="v12" style="width:300px" size="30" autocomplete="new-password" /></td>
-        <td class="chatlist"><em>&nbsp;default: phpwcms </em></td>
-    </tr>
+                        <div class="row mb-3">
+                            <label for="admin_pass" class="col-md-3 col-form-label">Admin password</label>
+                            <div class="col-md-9">
+                                <input name="admin_pass" type="password" class="form-control" id="admin_pass" autocomplete="new-password">
+                                <div class="form-text">default: phpwcms</div>
+                            </div>
+                        </div>
 
-    <tr><td colspan="3"><img src="../img/leer.gif" alt="" width="1" height="4" /></td>
-    </tr>
+                        <div class="row mb-3">
+                            <label for="admin_passrepeat" class="col-md-3 col-form-label">Repeat password</label>
+                            <div class="col-md-9">
+                                <input name="admin_passrepeat" type="password" class="form-control" id="admin_passrepeat" autocomplete="new-password">
+                            </div>
+                        </div>
 
-    <tr>
-        <td align="right" class="v10">Repeat password:&nbsp;</td>
-        <td><input name="admin_passrepeat" type="password" id="admin_passrepeat" class="v12" style="width:300px" size="30" autocomplete="new-password" /></td>
-        <td class="chatlist"><em>&nbsp;</em></td>
-    </tr>
-
-    <tr><td colspan="3"><img src="../img/leer.gif" alt="" width="1" height="4" /></td>
-    </tr>
-
-    <tr>
-        <td align="right" class="v10">Admin email:&nbsp;</td>
-        <td><input name="admin_email" type="text" id="admin_email" class="v12" style="width:300px" value="<?php echo html_specialchars($phpwcms["admin_email"]) ?>" size="30" /></td>
-        <td class="chatlist"><em>&nbsp;is used site wide</em></td>
-    </tr>
+                        <div class="row mb-3">
+                            <label for="admin_email" class="col-md-3 col-form-label">Admin email</label>
+                            <div class="col-md-9">
+                                <input name="admin_email" type="text" class="form-control" id="admin_email" value="<?php echo html_specialchars($phpwcms["admin_email"]) ?>">
+                                <div class="form-text">is used site wide</div>
+                            </div>
+                        </div>
 <?php
 
     } else {
@@ -366,45 +357,38 @@ if(!empty($_SESSION['admin_set'])) {
 
         }
 
-        echo '<tr><td>&nbsp;</td><td colspan="2">';
-
         if(!empty($create_user)) {
 
             // update
-            echo '<img src="../img/famfamfam/icon_accept.gif" alt="Juchu" class="icon1" />';
-            echo '<strong>Done!</strong> Account for user <b>'.html_specialchars($phpwcms['admin_user']).'</b> was created.';
-            echo '<input type="hidden" name="user_account" value="1" />';
+            echo '<div class="alert alert-success" role="alert"><strong>Done!</strong> Account for user <b>'.html_specialchars($phpwcms['admin_user']).'</b> was created.';
+            echo '<input type="hidden" name="user_account" value="1"></div>';
 
         }
 
         if(!empty($update_user)) {
 
             // update
-            echo '<img src="../img/famfamfam/icon_accept.gif" alt="Juchu" class="icon1" />';
-            echo '<strong>Done!</strong> Account of user <b>'.html_specialchars($phpwcms['admin_user']).'</b> was updated.';
-            echo '<input type="hidden" name="user_account" value="1" />';
+            echo '<div class="alert alert-success" role="alert"><strong>Done!</strong> Account of user <b>'.html_specialchars($phpwcms['admin_user']).'</b> was updated.';
+            echo '<input type="hidden" name="user_account" value="1"></div>';
 
         }
 
         if($user_check === false) {
 
             // db error
-            echo errorWarning('There is a database problem!');
-            echo '<p>Account for user <b>'.html_specialchars($phpwcms['admin_user']).'</b> was not created or updated.<br />Click <b>continue</b> to try again.</p>';
+            echo '<div class="alert alert-danger" role="alert"><strong>There is a database problem!</strong>';
+            echo '<p class="mb-0">Account for user <b>'.html_specialchars($phpwcms['admin_user']).'</b> was not created or updated.<br>Click <b>continue</b> to try again.</p></div>';
             $_SESSION['admin_save'] = false;
 
         }
-
-        echo '</td></tr>';
 
     }
 
 }
 
 ?>
-          <tr><td colspan="3"><img src="../img/leer.gif" alt="" width="1" height="15" /></td></tr>
-          <tr>
-            <td align="right" class="v10">&nbsp;</td>
-            <td colspan="2"><input name="dbsavesubmit" type="submit" value="Continue" /></td>
-          </tr>
-</table><input name="do" type="hidden" value="1" /></form>
+                        <div class="mt-4">
+                            <button type="submit" name="dbsavesubmit" value="Continue" class="btn btn-primary">Continue</button>
+                        </div>
+                        <input name="do" type="hidden" value="1">
+                    </form>

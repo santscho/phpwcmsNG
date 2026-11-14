@@ -214,7 +214,7 @@ if (!is_writable($DOCROOT . '/setup/setup.conf.inc.php')) {
 
     if (!@chmod($DOCROOT . '/setup/setup.conf.inc.php', 0666)) {
 
-        echo '<div class="alert alert-danger" role="alert">' . errorWarning('The file <i>setup.conf.inc.php</i> in which all values are stored is NOT writable.') . '</div>';
+        echo '<div class="alert alert-danger" role="alert"><strong>The file <i>setup.conf.inc.php</i> in which all values are stored is NOT writable.</strong></div>';
 
         ?><p>Please correct this problem before you can continue (connect to your account by FTP and permissions to
             chmod 777).</p>

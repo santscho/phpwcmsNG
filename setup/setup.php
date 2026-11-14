@@ -38,10 +38,6 @@ if($do) require_once($DOCROOT.'/setup/inc/setup.check.inc.php');
     <title>phpwcms Setup</title>
     <meta name="robots" content="noindex, nofollow">
     <link href="../include/inc_ext/bootstrap/bootstrap.min.css" rel="stylesheet">
-<?php if ($step > 0): ?>
-    <!-- legacy stylesheet, still needed by the setup steps that are not modernised yet -->
-    <link href="inc/install.css" rel="stylesheet">
-<?php endif; ?>
 </head>
 <body class="bg-body-tertiary">
 
