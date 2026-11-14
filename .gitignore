@@ -68,3 +68,6 @@ node_modules/
 /doc/
 /bin/*
 /.superpowers/
+
+# Local workspace folder, not part of the fork
+/public/

@@ -15,54 +15,49 @@ $phpwcms = array();
 
 require_once __DIR__ . '/inc/setup.func.inc.php';
 
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+?><!DOCTYPE html>
+<html lang="en">
 <head>
-<title>phpwcms Setup</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<link href="inc/install.css" rel="stylesheet" type="text/css" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>phpwcms Setup &ndash; Licence</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link href="../include/inc_ext/bootstrap/bootstrap.min.css" rel="stylesheet">
 </head>
+<body class="bg-body-tertiary">
 
-<body>
-<table width="770" border="0" align="center" cellpadding="0" cellspacing="0" summary="">
-  <tr>
-    <td colspan="3"><img src="../img/leer.gif" alt="" width="1" height="7" /></td>
-  </tr>
-  <tr>
-    <td colspan="3"><img src="../img/leer.gif" alt="" width="15" height="1" /><a href="http://www.phpwcms.org" target="_blank"><img src="../img/backend/backend_r1_c3.jpg" alt="phpwcms" width="95" height="24" border="0" /></a></td>
-  </tr>
-  <tr>
-    <td colspan="3"><img src="../img/leer.gif" alt="" width="1" height="7" /></td>
-  </tr>
-  <tr bgcolor="#FFFFFF">
-    <td valign="top" style="background: url(../img/backend/backend_r3_c4.gif) repeat-x;"><img src="../img/backend/backend_r3_c1.jpg" alt="" width="15" height="40" /></td>
-    <td valign="top" style="background: url(../img/backend/backend_r3_c4.gif) repeat-x;"><table width="740" border="0" cellpadding="0" cellspacing="0" summary="">
-        <tr>
-          <td colspan="2"><img src="../img/leer.gif" alt="" width="1" height="9" /></td>
-        </tr>
-        <tr>
-          <td valign="top" class="navtext">PHPWCMS SETUP VERSION&nbsp;<?php echo $phpwcms_version.', RELEASE '.$phpwcms_release_date ?></td>
-          <td align="right" valign="top" class="navtext"><a href="../index.php" target="_top">HOME</a> | <a href="index.php" target="_top">LICENCE</a></td>
-        </tr>
-    </table></td>
-    <td valign="top" style="background: url(../img/backend/backend_r3_c4.gif) repeat-x;"><img src="../img/backend/backend_r3_c7.jpg" alt="" width="15" height="40" /></td>
-  </tr>
-  <tr bgcolor="#FFFFFF">
-    <td width="15" bgcolor="#FFFFFF" style="background: url(../img/backend/preinfo2_r7_c2.gif) repeat-y;"><img src="../img/leer.gif" alt="" width="15" height="1" /></td>
-    <td valign="top" bgcolor="#FFFFFF"><h1>Welcome to the setup of phpwcms </h1>
-	<p>This is the semi automatic setup script to install a new release of
-      the web cms <strong>phpwcms</strong>.</p>
-	<p><strong>phpwcms</strong> is open source software released under the <a href="../include/GPL.html" target="_blank"><strong>GNU
-	  General Public License</strong></a> (GPL). Before you continue setting
-	  up phpwcms  read the license very careful.</p>
-	<div id="license">
-      <p align="center"><strong style="font-size:17px;">The GNU General Public License (GPL)</strong><br />Version 2, June 1991</p>
-      <p align="center">Copyright (C) 1989, 1991 Free Software Foundation, Inc.<br />
+<nav class="navbar navbar-expand-md bg-primary" data-bs-theme="dark">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="http://www.phpwcms.org" target="_blank" rel="noopener">
+            <img src="../img/backend/phpwcms-logo.svg" alt="phpwcms" width="140" height="39">
+            <span class="badge text-bg-light">Setup</span>
+        </a>
+        <span class="navbar-text ms-md-3 d-none d-md-inline">v<?php echo htmlspecialchars($phpwcms_version) ?>, release <?php echo htmlspecialchars($phpwcms_release_date) ?></span>
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="../index.php" target="_top">Home</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="index.php" target="_top">Licence</a></li>
+        </ul>
+    </div>
+</nav>
+
+<main class="container py-4 py-md-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10 col-xl-9">
+            <div class="card shadow-sm">
+                <div class="card-body p-4 p-md-5">
+
+                    <h1>Welcome to the setup of phpwcms</h1>
+                    <p class="lead">This is the semi automatic setup script to install a new release of the web cms <strong>phpwcms</strong>.</p>
+                    <p><strong>phpwcms</strong> is open source software released under the <a href="../include/GPL.html" target="_blank" rel="noopener"><strong>GNU General Public License</strong></a> (GPL). Before you continue setting up phpwcms read the license very careful.</p>
+
+                    <div id="license" class="border rounded p-3 bg-body-tertiary" role="region" aria-label="GNU General Public License, version 2" tabindex="0">
+      <p class="text-center"><strong>The GNU General Public License (GPL)</strong><br />Version 2, June 1991</p>
+      <p class="text-center">Copyright (C) 1989, 1991 Free Software Foundation, Inc.<br />
   59 Temple Place, Suite 330, Boston, MA 02111-1307 USA</p>
-      <p align="center">Everyone is permitted to copy and distribute verbatim copies<br />
+      <p class="text-center">Everyone is permitted to copy and distribute verbatim copies<br />
   of this license document, but changing it is not allowed.</p>
 
-      <p align="center"><strong>Preamble</strong></p>
+      <p class="text-center"><strong>Preamble</strong></p>
       <p>The licenses for most software are designed to take away your freedom
         to share and change it. By contrast, the GNU General Public License is
         intended to guarantee your freedom to share and change free software--to
@@ -291,25 +286,25 @@ require_once __DIR__ . '/inc/setup.func.inc.php';
         TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY
         HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.</p>
       <p>END OF TERMS AND CONDITIONS</p>
-	  </div>
-      <form action="setup.php" method="post" name="agree" target="_top" id="agree">
-	  	<input name="Submit" type="submit" value="I agree the GPL, continue&hellip;" />
-      </form></td>
-    <td width="15" bgcolor="#FFFFFF" style="background: url(../img/backend/preinfo2_r7_c7.gif) repeat-y right;"><img src="../img/leer.gif" alt="" width="15" height="1" /></td>
-  </tr>
-  <tr>
-    <td><img src="../img/backend/backend_a_r1_c1.gif" alt="" width="15" height="15" border="0" /></td>
-    <td valign="bottom" bgcolor="#FFFFFF" class="navtext"><img src="../img/backend/backend_r6_c2.jpg" alt="" width="740" height="15" border="0" /></td>
-    <td valign="bottom" class="navtext"><img src="../img/backend/backend_a_r1_c7.gif" alt="" width="15" height="15" border="0" /></td>
-  </tr>
-  <tr>
-    <td width="15"><img src="../img/leer.gif" alt="" width="14" height="20" /></td>
-    <td colspan="2" valign="bottom" class="navtext"><a href="http://www.phpwcms.org" target="_blank">phpwcms</a> &copy; 2003&#8212;<?php echo date('Y') ?> <a title="oliver at phpwcms dot de" onclick="location.href='mailto:oliver'+'@'+'phpwcms'+'.'+'de';return false;" href="#">Oliver Georgi</a>. Licensed under <a href="http://www.gnu.org/licenses/gpl.html" target="_blank">GPL</a>.
-        Extensions are copyright of their respective owners.</td>
-  </tr>
-  <tr>
-    <td colspan="3"><img src="../img/leer.gif" alt="" width="1" height="8" /></td>
-  </tr>
-</table>
+                    </div>
+
+                    <form action="setup.php" method="post" name="agree" target="_top" id="agree" class="mt-4">
+                        <button type="submit" name="Submit" value="I agree the GPL, continue" class="btn btn-primary btn-lg">I agree the GPL, continue&hellip;</button>
+                    </form>
+
+                </div>
+            </div>
+
+            <p class="text-center text-body-secondary mt-4">
+                <a href="http://www.phpwcms.org" target="_blank" rel="noopener">phpwcms</a> &copy; 2003&#8212;<?php echo date('Y') ?>
+                <a title="oliver at phpwcms dot de" onclick="location.href='mailto:oliver'+'@'+'phpwcms'+'.'+'de';return false;" href="#">Oliver Georgi</a>.
+                Licensed under <a href="http://www.gnu.org/licenses/gpl.html" target="_blank" rel="noopener">GPL</a>.
+                Extensions are copyright of their respective owners.
+            </p>
+
+        </div>
+    </div>
+</main>
+
 </body>
 </html>

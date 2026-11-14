@@ -318,6 +318,8 @@ $reason_types = [
     <meta charset="<?php echo PHPWCMS_CHARSET ?>">
     <title><?php echo $BL['be_page_title'] . ' - ' . PHPWCMS_HOST ?></title>
     <meta name="robots" content="noindex, nofollow">
+    <!-- Bootstrap 5 (backend UI framework), loaded first so legacy backend styles keep precedence -->
+    <link href="include/inc_ext/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link href="include/inc_css/login.min.css" rel="stylesheet" type="text/css">
 <?php
 $layout_rtl = (isset($_SESSION['wcs_user_lang']) && ($_SESSION['wcs_user_lang'] === 'ar' || $_SESSION['wcs_user_lang'] === 'he')) || ($phpwcms['default_lang'] === 'ar' || $phpwcms['default_lang'] === 'he');
@@ -347,6 +349,7 @@ if($layout_rtl):
         }
     </style>
     <script src="include/inc_js/jquery/jquery.min.js"></script>
+    <script src="include/inc_ext/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="include/inc_js/phpwcms.min.js"></script>
     <script src="include/inc_js/md5.js"></script>
 </head>
