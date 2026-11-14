@@ -79,3 +79,8 @@ The project now runs the same major version these skills target
 - `public/` is the local playground / web root served at
   <http://phpwcmsng.test>. It is gitignored and not part of the repository:
   finished changes are promoted to the repository root before committing.
+- `public/setup/setup.conf.inc.php` is **never** promoted. The running installer
+  rewrites it with the live database, admin and mail values (including the DB
+  password), so it is local state, not source. Change installer defaults in the
+  core `setup/` files only, and check `git diff` for credential-looking lines
+  before every commit.
