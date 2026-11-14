@@ -34,6 +34,25 @@
 - Secondary/outline actions use `btn btn-outline-secondary btn-sm`.
 - `btn-sm` is the standard size; do not use `btn-lg`.
 
+## Bootstrap skills
+
+All official Bootstrap agent skills are installed in `skills/` (source
+`twbs/bootstrap`, installed with `npx skills add twbs/bootstrap`, versions
+pinned in `skills-lock.json`). Read the relevant `skills/<name>/SKILL.md`
+before starting a task it covers:
+
+- `bootstrap-v6-install` — adding Bootstrap to a project (CDN or package manager)
+- `bootstrap-npm`, `bootstrap-vite`, `bootstrap-webpack`, `bootstrap-parcel` — build setups
+- `bootstrap-component`, `bootstrap-component-js` — authoring component CSS/markup and JS
+- `bootstrap-color-system` — colour tokens, colour modes
+- `bootstrap-utility-api` — extending or trimming utilities
+- `bootstrap-v5-v6-migration`, `bootstrap-v4-v6-migration` — upgrades
+
+These skills target Bootstrap 6 (6.0.0-alpha.1 at time of writing), while this
+project vendors Bootstrap 5.3.9. Use them for upgrade work and forward-looking
+patterns; for 5.3 specifics use <https://getbootstrap.com/docs/5.3/> or the
+machine-readable docs at <https://getbootstrap.com/llms.txt>.
+
 ## Repository layout
 
 - The Git repository root is the fork of phpwcms (`santscho/phpwcmsNG`,
