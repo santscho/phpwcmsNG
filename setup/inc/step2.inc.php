@@ -126,7 +126,7 @@ if ($err) {
                         </div>
 
                         <div class="mt-4">
-                            <button type="submit" name="Submit" value="send site data" class="btn btn-primary">send site data</button>
+                            <button type="submit" name="Submit" value="send site data" class="btn theme-primary btn-solid btn-styled btn-sm">send site data</button>
                         </div>
                         <input name="do" type="hidden" value="1">
                     </form>

@@ -18,6 +18,18 @@
 - Exceptions are possible, but only when deliberately agreed and kept minimal;
   note the reason in the commit message.
 
+## Buttons
+
+- Normal/standard buttons use
+  `class="btn theme-primary btn-solid btn-styled btn-sm"`.
+- Bootstrap's `btn` stays in the list as the base layer: it provides geometry,
+  focus ring, disabled states and sizing today, while `theme-primary`,
+  `btn-solid` and `btn-styled` are the project's theme hooks for colour and
+  treatment. The theme stylesheet must load after `bootstrap.min.css` so its
+  rules win.
+- Secondary/outline actions use `btn btn-outline-secondary btn-sm`.
+- `btn-sm` is the standard size; do not use `btn-lg`.
+
 ## Repository layout
 
 - The Git repository root is the fork of phpwcms (`santscho/phpwcmsNG`,

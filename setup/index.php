@@ -289,7 +289,7 @@ require_once __DIR__ . '/inc/setup.func.inc.php';
                     </div>
 
                     <form action="setup.php" method="post" name="agree" target="_top" id="agree" class="mt-4">
-                        <button type="submit" name="Submit" value="I agree the GPL, continue" class="btn btn-primary btn-lg">I agree the GPL, continue&hellip;</button>
+                        <button type="submit" name="Submit" value="I agree the GPL, continue" class="btn theme-primary btn-solid btn-styled btn-sm">I agree the GPL, continue&hellip;</button>
                     </form>
 
                 </div>

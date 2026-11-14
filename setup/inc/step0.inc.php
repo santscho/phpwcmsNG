@@ -232,8 +232,8 @@ if (!is_writable($DOCROOT . '/setup/setup.conf.inc.php')) {
 
     ?>
                     <form action="setup.php?step=1" method="post" class="d-flex flex-wrap gap-2 mt-4">
-                        <button type="submit" name="Submit" value="Start setup of phpwcms" class="btn btn-primary btn-lg">Start setup of phpwcms</button>
-                        <button type="submit" name="Submit" value="Upgrade existing installation" class="btn btn-outline-secondary btn-lg"
+                        <button type="submit" name="Submit" value="Start setup of phpwcms" class="btn theme-primary btn-solid btn-styled btn-sm">Start setup of phpwcms</button>
+                        <button type="submit" name="Submit" value="Upgrade existing installation" class="btn btn-outline-secondary btn-sm"
                                 onclick="window.location.href='upgrade.php';return false;">Upgrade existing installation</button>
                     </form>
     <?php

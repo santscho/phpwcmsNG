@@ -388,7 +388,7 @@ if(!empty($_SESSION['admin_set'])) {
 
 ?>
                         <div class="mt-4">
-                            <button type="submit" name="dbsavesubmit" value="Continue" class="btn btn-primary">Continue</button>
+                            <button type="submit" name="dbsavesubmit" value="Continue" class="btn theme-primary btn-solid btn-styled btn-sm">Continue</button>
                         </div>
                         <input name="do" type="hidden" value="1">
                     </form>

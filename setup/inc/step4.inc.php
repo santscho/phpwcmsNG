@@ -79,7 +79,7 @@ if (!defined('PHP8')) {
                         </div>
 
                         <div class="mt-4">
-                            <button type="submit" name="Submit" value="send content values" class="btn btn-primary">send content values</button>
+                            <button type="submit" name="Submit" value="send content values" class="btn theme-primary btn-solid btn-styled btn-sm">send content values</button>
                         </div>
                         <input name="do" type="hidden" value="1">
                     </form>
