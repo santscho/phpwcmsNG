@@ -21,10 +21,10 @@ $status_row = function ($label, $path, $status, $text_status = null) {
     $text_status = $text_status === null ? $status : $text_status;
     $text        = gib_status_text($text_status);
     $is_problem  = str_contains($text, 'FALSE');
-    echo '<li class="list-group-item d-flex flex-wrap justify-content-between align-items-center gap-2">';
+    echo '<li class="list-group-item d-flex flex-wrap justify-content-between align-items-center gap-3">';
     echo '<div><div class="fw-semibold">' . html_specialchars($label) . '</div><code>' . html_specialchars($path) . '</code></div>';
-    echo '<div class="text-end"><span class="badge text-bg-' . ($is_problem ? 'danger' : 'success') . '">' . ($is_problem ? 'PROBLEM' : 'OK') . '</span>';
-    echo '<div class="small text-body-secondary">' . $text . '</div></div>';
+    echo '<div class="text-end"><span class="badge theme-' . ($is_problem ? 'danger' : 'success') . '">' . ($is_problem ? 'PROBLEM' : 'OK') . '</span>';
+    echo '<div class="small fg-secondary">' . $text . '</div></div>';
     echo '</li>';
 };
 
@@ -32,7 +32,7 @@ $status_row = function ($label, $path, $status, $text_status = null) {
                     <h1 class="h3">Ready to start phpwcms?</h1>
                     <p>Some &quot;problems&quot; maybe OK &#8212; you can check by testing phpwcms installation.</p>
 
-                    <ul class="list-group mb-4">
+                    <ul class="list-group mb-7">
 <?php
 
   $status = check_path_status($phpwcms["root"]."/".$phpwcms["file_path"]);
@@ -114,9 +114,9 @@ $status_row = function ($label, $path, $status, $text_status = null) {
 ?>
                     </ul>
 
-                    <div class="d-flex flex-wrap gap-3 mb-4 text-body-secondary">
-                        <span><span class="badge text-bg-success">OK</span> OK</span>
-                        <span><span class="badge text-bg-danger">PROBLEM</span> PROBLEM</span>
+                    <div class="d-flex flex-wrap gap-3 mb-7 fg-secondary">
+                        <span><span class="badge theme-success">OK</span> OK</span>
+                        <span><span class="badge theme-danger">PROBLEM</span> PROBLEM</span>
                     </div>
 <?php
 
@@ -156,11 +156,11 @@ if(!is_file($this_root.'/include/config/conf.inc.php')) {
 @write_textfile($this_root.'/setup/.htaccess', 'Deny from all');
 
 if($result): ?>
-                    <div class="alert alert-success" role="alert">
+                    <div class="alert theme-success" role="alert">
                         The conf.inc.php was created successfully and placed at the right position by the setup script.
                     </div>
 <?php else: ?>
-                    <div class="alert alert-danger" role="alert">
+                    <div class="alert theme-danger" role="alert">
                         The conf.inc.php could not placed at the right position by the setup script.
                     </div>
 <?php endif; ?>
@@ -168,7 +168,7 @@ if($result): ?>
 // Create default .htaccess
 if(is_file($this_root.'/.htaccess')):
 ?>
-                    <div class="alert alert-warning" role="alert">
+                    <div class="alert theme-warning" role="alert">
                         A <strong>.htaccess</strong> file exists. Compare against the <a href="../_.htaccess" target="_blank" rel="noopener">default</a>.
                         If you want to use segmented URLs it is necessary to configure the Rewrite process.
                     </div>
@@ -185,7 +185,7 @@ if(is_file($this_root.'/.htaccess')):
         $result = true;
     }
     if($result): ?>
-                    <div class="alert alert-success" role="alert">
+                    <div class="alert theme-success" role="alert">
                         A default <strong>.htaccess</strong> file was placed in the document root of your installation.
                         This file usually is hidden because of the leading <strong>.</strong> in the file name.
                         <?php
@@ -197,7 +197,7 @@ if(is_file($this_root.'/.htaccess')):
                         ?>
                     </div>
     <?php else: ?>
-                    <div class="alert alert-danger" role="alert">
+                    <div class="alert theme-danger" role="alert">
                         Writing the <strong>.htaccess</strong> file to the document root of your installation failed.
                         If you want to use Rewrite please configure it manually. See the file
                         <a href="../_.htaccess" target="_blank" rel="noopener">_.htaccess</a>.
@@ -205,7 +205,7 @@ if(is_file($this_root.'/.htaccess')):
     <?php endif; ?>
 <?php endif; ?>
 
-                    <h2 class="h4 mt-4">The manual way to finish setup</h2>
+                    <h2 class="h4 mt-7">The manual way to finish setup</h2>
                     <p>
                         Download the config file <a href="get_conf_file.php"><strong>here</strong></a> and copy it to ./include/config/<strong>conf.inc.php</strong>
                         &#8212; you can also edit values manually. Maybe you have to rename the file if you download
@@ -216,7 +216,7 @@ if(is_file($this_root.'/.htaccess')):
                         the created config file once.
                     </p>
 
-                    <div class="alert alert-danger" role="alert">
+                    <div class="alert theme-danger" role="alert">
                         <strong>ATTENTION!!!<br>Delete the &quot;setup&quot; folder</strong>
                         otherwise everybody might see your username, passwords and settings.
                     </div>

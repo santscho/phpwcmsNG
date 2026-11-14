@@ -584,7 +584,7 @@ if($body_onload) {
     $BE['HTML'] = str_replace('<body>', '<body '.$body_onload.'>', $BE['HTML']);
 }
 
-$BE['HEADER']['bootstrap.bundle.js'] = getJavaScriptSourceLink('include/inc_ext/bootstrap/bootstrap.bundle.min.js');
+$BE['HEADER']['bootstrap.bundle.js'] = '<script type="module" src="include/inc_ext/bootstrap/bootstrap.bundle.min.js"></script>';
 $BE['HEADER']['textarea.autosize.js'] = getJavaScriptSourceLink('include/inc_js/autosize.min.js');
 $BE['HEADER']['phpwcms.js'] = getJavaScriptSourceLink('include/inc_js/phpwcms.min.js');
 

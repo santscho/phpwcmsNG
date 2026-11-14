@@ -349,7 +349,7 @@ if($layout_rtl):
         }
     </style>
     <script src="include/inc_js/jquery/jquery.min.js"></script>
-    <script src="include/inc_ext/bootstrap/bootstrap.bundle.min.js"></script>
+    <script type="module" src="include/inc_ext/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="include/inc_js/phpwcms.min.js"></script>
     <script src="include/inc_js/md5.js"></script>
 </head>

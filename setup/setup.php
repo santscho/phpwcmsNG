@@ -38,17 +38,16 @@ if($do) require_once($DOCROOT.'/setup/inc/setup.check.inc.php');
     <title>phpwcms Setup</title>
     <meta name="robots" content="noindex, nofollow">
     <link href="../include/inc_ext/bootstrap/bootstrap.min.css" rel="stylesheet">
-    <link href="../include/inc_css/theme.css" rel="stylesheet">
 </head>
-<body class="bg-body-tertiary">
+<body class="bg-1">
 
-<nav class="navbar navbar-expand-md bg-primary" data-bs-theme="dark">
+<nav class="navbar md:navbar-expand bg-primary" data-bs-theme="dark">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="http://www.phpwcms.org" target="_blank" rel="noopener">
+        <a class="navbar-brand d-flex align-items-center gap-3" href="http://www.phpwcms.org" target="_blank" rel="noopener">
             <img src="../img/backend/phpwcms-logo.svg" alt="phpwcms" width="140" height="39">
-            <span class="badge text-bg-light">Setup</span>
+            <span class="badge theme-inverse">Setup</span>
         </a>
-        <span class="navbar-text ms-md-3 d-none d-md-inline">v<?php echo htmlspecialchars($phpwcms_version) ?>, release <?php echo htmlspecialchars($phpwcms_release_date) ?></span>
+        <span class="navbar-text md:ms-5 d-none md:d-inline">v<?php echo htmlspecialchars($phpwcms_version) ?>, release <?php echo htmlspecialchars($phpwcms_release_date) ?></span>
         <ul class="navbar-nav ms-auto">
             <li class="nav-item"><a class="nav-link" href="../index.php" target="_top">Home</a></li>
             <li class="nav-item"><a class="nav-link" href="index.php" target="_top">Licence</a></li>
@@ -57,11 +56,11 @@ if($do) require_once($DOCROOT.'/setup/inc/setup.check.inc.php');
     </div>
 </nav>
 
-<main class="container py-4 py-md-5">
+<main class="container py-7 md:py-12">
     <div class="row justify-content-center">
-        <div class="col-12 col-lg-10 col-xl-9">
+        <div class="col-12 lg:col-10 xl:col-9">
             <div class="card shadow-sm">
-                <div class="card-body p-4 p-md-5">
+                <div class="card-body p-7 md:p-12">
 <?php
 
 		if(empty($NO_ACCESS)) {
@@ -77,7 +76,7 @@ if($do) require_once($DOCROOT.'/setup/inc/setup.check.inc.php');
 
 		} else {
 			?>
-                    <div class="alert alert-danger" role="alert">
+                    <div class="alert theme-danger" role="alert">
                         <h1 class="h4 alert-heading">Setup stopped</h1>
                         <p>Access on setup process is restricted if the setup config file is downloaded once. To re-enable setup remove the line</p>
                         <p><code>$NO_ACCESS = true;</code></p>
@@ -89,7 +88,7 @@ if($do) require_once($DOCROOT.'/setup/inc/setup.check.inc.php');
                 </div>
             </div>
 
-            <p class="text-center text-body-secondary mt-4">
+            <p class="text-center fg-secondary mt-7">
                 <a href="http://www.phpwcms.org" target="_blank" rel="noopener">phpwcms</a>
                 &copy; 2003&#8212;<?php echo date('Y') ?>
                 <a title="oliver at phpwcms dot de" onclick="location.href='mailto:oliver'+'@'+'phpwcms'+'.'+'de';return false;" href="#">Oliver Georgi</a>.
@@ -100,6 +99,6 @@ if($do) require_once($DOCROOT.'/setup/inc/setup.check.inc.php');
     </div>
 </main>
 
-<script src="../include/inc_ext/bootstrap/bootstrap.bundle.min.js"></script>
+<script type="module" src="../include/inc_ext/bootstrap/bootstrap.bundle.min.js"></script>
 </body>
 </html>

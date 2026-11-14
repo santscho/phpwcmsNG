@@ -23,17 +23,16 @@ require_once __DIR__ . '/inc/setup.func.inc.php';
     <title>phpwcms Setup &ndash; Licence</title>
     <meta name="robots" content="noindex, nofollow">
     <link href="../include/inc_ext/bootstrap/bootstrap.min.css" rel="stylesheet">
-    <link href="../include/inc_css/theme.css" rel="stylesheet">
 </head>
-<body class="bg-body-tertiary">
+<body class="bg-1">
 
-<nav class="navbar navbar-expand-md bg-primary" data-bs-theme="dark">
+<nav class="navbar md:navbar-expand bg-primary" data-bs-theme="dark">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="http://www.phpwcms.org" target="_blank" rel="noopener">
+        <a class="navbar-brand d-flex align-items-center gap-3" href="http://www.phpwcms.org" target="_blank" rel="noopener">
             <img src="../img/backend/phpwcms-logo.svg" alt="phpwcms" width="140" height="39">
-            <span class="badge text-bg-light">Setup</span>
+            <span class="badge theme-inverse">Setup</span>
         </a>
-        <span class="navbar-text ms-md-3 d-none d-md-inline">v<?php echo htmlspecialchars($phpwcms_version) ?>, release <?php echo htmlspecialchars($phpwcms_release_date) ?></span>
+        <span class="navbar-text md:ms-5 d-none md:d-inline">v<?php echo htmlspecialchars($phpwcms_version) ?>, release <?php echo htmlspecialchars($phpwcms_release_date) ?></span>
         <ul class="navbar-nav ms-auto">
             <li class="nav-item"><a class="nav-link" href="../index.php" target="_top">Home</a></li>
             <li class="nav-item"><a class="nav-link active" aria-current="page" href="index.php" target="_top">Licence</a></li>
@@ -41,17 +40,17 @@ require_once __DIR__ . '/inc/setup.func.inc.php';
     </div>
 </nav>
 
-<main class="container py-4 py-md-5">
+<main class="container py-7 md:py-12">
     <div class="row justify-content-center">
-        <div class="col-12 col-lg-10 col-xl-9">
+        <div class="col-12 lg:col-10 xl:col-9">
             <div class="card shadow-sm">
-                <div class="card-body p-4 p-md-5">
+                <div class="card-body p-7 md:p-12">
 
                     <h1>Welcome to the setup of phpwcms</h1>
-                    <p class="lead">This is the semi automatic setup script to install a new release of the web cms <strong>phpwcms</strong>.</p>
+                    <p class="fs-lg fw-light">This is the semi automatic setup script to install a new release of the web cms <strong>phpwcms</strong>.</p>
                     <p><strong>phpwcms</strong> is open source software released under the <a href="../include/GPL.html" target="_blank" rel="noopener"><strong>GNU General Public License</strong></a> (GPL). Before you continue setting up phpwcms read the license very careful.</p>
 
-                    <div id="license" class="border rounded p-3 bg-body-tertiary" role="region" aria-label="GNU General Public License, version 2" tabindex="0">
+                    <div id="license" class="border rounded p-5 bg-1" role="region" aria-label="GNU General Public License, version 2" tabindex="0">
       <p class="text-center"><strong>The GNU General Public License (GPL)</strong><br />Version 2, June 1991</p>
       <p class="text-center">Copyright (C) 1989, 1991 Free Software Foundation, Inc.<br />
   59 Temple Place, Suite 330, Boston, MA 02111-1307 USA</p>
@@ -289,14 +288,14 @@ require_once __DIR__ . '/inc/setup.func.inc.php';
       <p>END OF TERMS AND CONDITIONS</p>
                     </div>
 
-                    <form action="setup.php" method="post" name="agree" target="_top" id="agree" class="mt-4">
+                    <form action="setup.php" method="post" name="agree" target="_top" id="agree" class="mt-7">
                         <button type="submit" name="Submit" value="I agree the GPL, continue" class="btn theme-primary btn-solid btn-styled btn-sm">I agree the GPL, continue&hellip;</button>
                     </form>
 
                 </div>
             </div>
 
-            <p class="text-center text-body-secondary mt-4">
+            <p class="text-center fg-secondary mt-7">
                 <a href="http://www.phpwcms.org" target="_blank" rel="noopener">phpwcms</a> &copy; 2003&#8212;<?php echo date('Y') ?>
                 <a title="oliver at phpwcms dot de" onclick="location.href='mailto:oliver'+'@'+'phpwcms'+'.'+'de';return false;" href="#">Oliver Georgi</a>.
                 Licensed under <a href="http://www.gnu.org/licenses/gpl.html" target="_blank" rel="noopener">GPL</a>.

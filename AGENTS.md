@@ -2,9 +2,9 @@
 
 ## Design: Bootstrap first
 
-- All backend and setup UI is built on **Bootstrap 5**, vendored at
-  `include/inc_ext/bootstrap/` (currently 5.3.9: `bootstrap.min.css`,
-  `bootstrap.bundle.min.js`, source map, licence).
+- All backend and setup UI is built on **Bootstrap 6**, vendored at
+  `include/inc_ext/bootstrap/` (currently 6.0.0-alpha.1: `bootstrap.min.css`,
+  `bootstrap.bundle.min.js`, both source maps, MIT licence, `VERSION.txt`).
 - Use **stock Bootstrap classes and defaults**: no custom stylesheet, no CSS
   variables or component overrides, no custom colours, fonts, font sizes or
   gradients.
@@ -13,25 +13,45 @@
   is modernized. Replace them, don't layer on top.
 - Reference layout for backend screens: `navbar` brand bar (with
   `data-bs-theme="dark"` on a `bg-primary` bar so the white phpwcms logo stays
-  legible), then `container` → `row` / `col` → `card` / `card-body`, with
-  `btn btn-primary` for actions.
+  legible), then `container` → `row` / `col` → `card` / `card-body`, with the
+  standard button classes below.
 - Exceptions are possible, but only when deliberately agreed and kept minimal;
   note the reason in the commit message.
+
+## Bootstrap 6 conventions
+
+- **Responsive/state prefixes** are `bp:` prefixed, not infixed:
+  `md:col-9`, `md:offset-3`, `md:d-inline`, `md:navbar-expand`,
+  `md:p-12`. `xxl` is now `2xl`.
+- **Colour variants** are compose-only: `theme-primary`, `theme-secondary`,
+  `theme-success`, `theme-danger`, `theme-warning`, `theme-info`,
+  `theme-inverse`. There is no `text-bg-*`, no `alert-danger`, no
+  `btn-primary`/`btn-outline-primary`.
+- **Surfaces/text**: `bg-1`…`bg-10`, `bg-body`, `fg-secondary`, `fg-1`…`fg-10`,
+  `fg-contrast-*`. `bg-body-tertiary` and `text-body-secondary` no longer exist.
+- **Spacing scale changed**: `p-2`=0.375rem, `p-3`=0.5rem, `p-5`=1rem,
+  `p-7`=1.5rem, `p-12`=3rem. Check every padding/margin against the old v5 value
+  instead of renaming blindly.
+- **Forms**: `.form-control` also styles `<select>`; checkboxes/radios are
+  `.check` / `.radio` on the input inside a `.form-field` grid wrapper;
+  validation is `data-bs-validate` (no `was-validated`).
+- **JavaScript is ESM-only**: load the bundle with
+  `<script type="module" src=".../bootstrap.bundle.min.js">`; there is no
+  `window.bootstrap` global.
+- Component renames: modal → **dialog** (native `<dialog>`), offcanvas →
+  **drawer**, dropdown → **menu**, collapse/accordion → native `<details>`.
+- Bootstrap 6 wraps its CSS in `@layer`. Unlayered author CSS (e.g.
+  `phpwcms.min.css`) always wins over it — keep that in mind before wondering
+  why a v6 rule is not applied.
 
 ## Buttons
 
 - Normal/standard buttons use
   `class="btn theme-primary btn-solid btn-styled btn-sm"`.
-- Bootstrap's `btn` stays in the list as the base layer: it provides geometry,
-  focus ring, disabled states and sizing, while `theme-primary`, `btn-solid`
-  and `btn-styled` are the project's theme hooks for colour and treatment.
-- Those hooks live in `include/inc_css/theme.css`, which must be loaded after
-  `bootstrap.min.css` (and before any legacy stylesheet that should override
-  it). It maps the tokens `--theme-color`, `--theme-color-hover`,
-  `--theme-color-active`, `--theme-color-rgb` and `--theme-on-color` onto
-  Bootstrap's button variables; colours default to Bootstrap's primary palette,
-  so re-colouring means overriding those tokens, not editing button rules.
-- Secondary/outline actions use `btn btn-outline-secondary btn-sm`.
+- These are native Bootstrap 6 APIs: `theme-*` sets the colour tokens,
+  `btn-solid` fills, `btn-styled` adds the gradient/shadow treatment, `btn`
+  supplies base geometry, `btn-sm` the size. No project stylesheet is involved.
+- Secondary/outline actions use `class="btn btn-outline theme-secondary btn-sm"`.
 - `btn-sm` is the standard size; do not use `btn-lg`.
 
 ## Bootstrap skills
@@ -48,10 +68,9 @@ before starting a task it covers:
 - `bootstrap-utility-api` — extending or trimming utilities
 - `bootstrap-v5-v6-migration`, `bootstrap-v4-v6-migration` — upgrades
 
-These skills target Bootstrap 6 (6.0.0-alpha.1 at time of writing), while this
-project vendors Bootstrap 5.3.9. Use them for upgrade work and forward-looking
-patterns; for 5.3 specifics use <https://getbootstrap.com/docs/5.3/> or the
-machine-readable docs at <https://getbootstrap.com/llms.txt>.
+The project now runs the same major version these skills target
+(6.0.0-alpha.1). Reference docs: <https://getbootstrap.com/docs/6.0/> and
+<https://getbootstrap.com/llms.txt>.
 
 ## Repository layout
 

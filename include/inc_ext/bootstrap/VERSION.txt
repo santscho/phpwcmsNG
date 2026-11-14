@@ -1,0 +1,2 @@
+Bootstrap 6.0.0-alpha.1 (css, css map, bundle js, js map, MIT licence)
+source: npm bootstrap@6.0.0-alpha.1

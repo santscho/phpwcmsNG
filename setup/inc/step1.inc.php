@@ -14,26 +14,26 @@ if (!defined('PHP8')) {
 }
 
 ?>
-                    <h1 class="h3 d-flex align-items-center gap-2">
-                        <span class="badge text-bg-primary">3</span>
+                    <h1 class="h3 d-flex align-items-center gap-3">
+                        <span class="badge theme-primary">3</span>
                         MySQL database settings
                     </h1>
 <?php
 if(isset($_POST["dbsavesubmit"]) && $err) {
-    echo '<div class="alert alert-danger" role="alert"><strong>Please proof your database settings!</strong></div>';
+    echo '<div class="alert theme-danger" role="alert"><strong>Please proof your database settings!</strong></div>';
     $_SESSION['admin_set'] = false;
 }
 ?>
                     <form action="setup.php?step=1" method="post" autocomplete="off">
 
-                        <div class="row mb-3">
-                            <label for="db_host" class="col-md-3 col-form-label">MySQL host and port</label>
-                            <div class="col-md-9">
-                                <div class="row g-2">
-                                    <div class="col-sm-8">
+                        <div class="row mb-5">
+                            <label for="db_host" class="md:col-3 col-form-label">MySQL host and port</label>
+                            <div class="md:col-9">
+                                <div class="row g-3">
+                                    <div class="sm:col-8">
                                         <input name="db_host" type="text" class="form-control" id="db_host" value="<?php echo html_specialchars($phpwcms["db_host"]) ?>" placeholder="localhost">
                                     </div>
-                                    <div class="col-sm-4">
+                                    <div class="sm:col-4">
                                         <input name="db_port" type="text" class="form-control" id="db_port" value="<?php echo $phpwcms["db_port"] ?>" placeholder="3306">
                                     </div>
                                 </div>
@@ -41,41 +41,41 @@ if(isset($_POST["dbsavesubmit"]) && $err) {
                             </div>
                         </div>
 
-                        <div class="row mb-3">
-                            <label for="db_user" class="col-md-3 col-form-label">DB user</label>
-                            <div class="col-md-9">
+                        <div class="row mb-5">
+                            <label for="db_user" class="md:col-3 col-form-label">DB user</label>
+                            <div class="md:col-9">
                                 <input name="db_user" type="text" class="form-control" id="db_user" value="<?php echo html_specialchars($phpwcms["db_user"]) ?>" placeholder="database user">
                             </div>
                         </div>
 
-                        <div class="row mb-3">
-                            <label for="db_pass" class="col-md-3 col-form-label">DB password</label>
-                            <div class="col-md-9">
+                        <div class="row mb-5">
+                            <label for="db_pass" class="md:col-3 col-form-label">DB password</label>
+                            <div class="md:col-9">
                                 <input name="db_pass" type="text" class="form-control" id="db_pass" value="<?php echo html_specialchars($phpwcms["db_pass"]) ?>" placeholder="database password">
                             </div>
                         </div>
 
-                        <div class="row mb-3">
-                            <label for="db_table" class="col-md-3 col-form-label">DB database</label>
-                            <div class="col-md-9">
+                        <div class="row mb-5">
+                            <label for="db_table" class="md:col-3 col-form-label">DB database</label>
+                            <div class="md:col-9">
                                 <input name="db_table" type="text" class="form-control" id="db_table" value="<?php echo html_specialchars($phpwcms["db_table"]) ?>" placeholder="database name" maxlength="255">
                                 <div class="form-text">you have to create it <strong>before</strong> setup!!!</div>
                             </div>
                         </div>
 
-                        <div class="row mb-3">
-                            <label for="db_prepend" class="col-md-3 col-form-label">DB table prefix</label>
-                            <div class="col-md-9">
+                        <div class="row mb-5">
+                            <label for="db_prepend" class="md:col-3 col-form-label">DB table prefix</label>
+                            <div class="md:col-9">
                                 <input name="db_prepend" type="text" class="form-control" id="db_prepend" value="<?php echo html_specialchars($prepend) ?>" maxlength="10">
                                 <div class="form-text">default: none (&quot;&quot;), if filled in it will be <strong>prefix</strong>+<strong>_</strong></div>
                             </div>
                         </div>
 
-                        <div class="row mb-3">
-                            <div class="col-md-9 offset-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" name="db_pers" type="checkbox" id="db_pers" value="1" <?php echo ($phpwcms["db_pers"]) ? "checked" : ""; ?>>
-                                    <label class="form-check-label" for="db_pers">use persistent database connection</label>
+                        <div class="row mb-5">
+                            <div class="md:col-9 md:offset-3">
+                                <div class="form-field">
+                                    <input class="check" name="db_pers" type="checkbox" id="db_pers" value="1" <?php echo ($phpwcms["db_pers"]) ? "checked" : ""; ?>>
+                                    <label class="form-field-label" for="db_pers">use persistent database connection</label>
                                 </div>
                                 <div class="form-text">it should be safe to enable it</div>
                             </div>
@@ -85,17 +85,17 @@ if(isset($_POST["dbsavesubmit"]) && $err) {
 if(!empty($db_additional)) {
 
 ?>
-                        <hr class="my-4">
+                        <hr class="my-7">
 
-                        <h2 class="h3 d-flex align-items-center gap-2">
-                            <span class="badge text-bg-primary">4</span>
-                            Charset &amp; MySQL <span class="fs-5 text-body-secondary">(v<?php echo html_specialchars($row[0]) ?>)</span>
+                        <h2 class="h3 d-flex align-items-center gap-3">
+                            <span class="badge theme-primary">4</span>
+                            Charset &amp; MySQL <span class="fs-lg fg-secondary">(v<?php echo html_specialchars($row[0]) ?>)</span>
                         </h2>
 
-                        <div class="row mb-3">
-                            <label for="charset" class="col-md-3 col-form-label">Charset</label>
-                            <div class="col-md-9">
-                                <select name="charset" id="charset" class="form-select">
+                        <div class="row mb-5">
+                            <label for="charset" class="md:col-3 col-form-label">Charset</label>
+                            <div class="md:col-9">
+                                <select name="charset" id="charset" class="form-control">
 <?php
 
             foreach($available_languages as $key => $value) {
@@ -138,20 +138,20 @@ if(!empty($db_additional)) {
 if(!empty($db_init)) {
 
 ?>
-                        <hr class="my-4">
+                        <hr class="my-7">
 
-                        <h2 class="h3 d-flex align-items-center gap-2">
-                            <span class="badge text-bg-primary">5</span>
+                        <h2 class="h3 d-flex align-items-center gap-3">
+                            <span class="badge theme-primary">5</span>
                             Default phpwcms database schema
                         </h2>
 <?php
 
     if(empty($db_no_create) && !empty($_db_prepend_error) && isset($_POST['db_sql_hidden'])) {
-        echo '<div class="alert alert-warning" role="alert"><strong>phpwcms tables still exists in choosen database. Rename table prefix might help!</strong></div>';
+        echo '<div class="alert theme-warning" role="alert"><strong>phpwcms tables still exists in choosen database. Rename table prefix might help!</strong></div>';
         $_SESSION['admin_set'] = false;
     }
     if(isset($db_create_err) && count($db_create_err)) {
-        echo '<div class="alert alert-danger" role="alert">';
+        echo '<div class="alert theme-danger" role="alert">';
         echo '<p><strong>Errors while creating initial phpwcms tables. Solve it manually:</strong></p>';
         echo '<pre class="mb-0 small">' . html_specialchars(implode(";\n\n", $db_create_err) . ';') . '</pre>';
         echo '</div>';
@@ -173,7 +173,7 @@ if(!empty($db_init)) {
             $db_fine    = true;
 
 ?>
-                        <div class="alert alert-success" role="alert">
+                        <div class="alert theme-success" role="alert">
                             <strong>Fine!</strong> All initial phpwcms tables were created or still exists.
                             <input type="hidden" name="db_sql_hidden" value="1">
                         </div>
@@ -186,7 +186,7 @@ if(!empty($db_init)) {
             $sql_data               = false;
             $db_sql                 = false;
 
-            echo '<div class="alert alert-warning" role="alert"><strong>No phpwcms database table exists. Check before you continue!</strong>';
+            echo '<div class="alert theme-warning" role="alert"><strong>No phpwcms database table exists. Check before you continue!</strong>';
             echo '<input type="hidden" name="db_sql_hidden" value="1"></div>';
 
         }
@@ -198,9 +198,9 @@ if(!empty($db_init)) {
         // show info
 
 ?>
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" name="db_sql" type="checkbox" id="db_sql" value="1"<?php if(!empty($db_sql)) echo ' checked="checked"' ?>>
-                            <label class="form-check-label" for="db_sql">create phpwcms db tables</label>
+                        <div class="form-field mb-5">
+                            <input class="check" name="db_sql" type="checkbox" id="db_sql" value="1"<?php if(!empty($db_sql)) echo ' checked="checked"' ?>>
+                            <label class="form-field-label" for="db_sql">create phpwcms db tables</label>
                             <input type="hidden" name="db_sql_hidden" value="1">
                         </div>
 <?php
@@ -234,7 +234,7 @@ if(!empty($db_init)) {
             echo '<input type="hidden" name="db_create" value="1">';
         }
 
-        echo '<pre class="border rounded bg-body-tertiary p-3 small">' . implode("\n", $statements) . '</pre>';
+        echo '<pre class="border rounded bg-1 p-5 small">' . implode("\n", $statements) . '</pre>';
 
     }
 }
@@ -244,10 +244,10 @@ if(!empty($db_init)) {
 if(!empty($_SESSION['admin_set'])) {
 
 ?>
-                        <hr class="my-4">
+                        <hr class="my-7">
 
-                        <h2 class="h3 d-flex align-items-center gap-2">
-                            <span class="badge text-bg-primary">6</span>
+                        <h2 class="h3 d-flex align-items-center gap-3">
+                            <span class="badge theme-primary">6</span>
                             Superuser settings
                         </h2>
 <?php
@@ -256,17 +256,17 @@ if(!empty($_SESSION['admin_set'])) {
     if(empty($_SESSION['admin_save'])) {
 
 ?>
-                        <div class="row mb-3">
-                            <label for="admin_name" class="col-md-3 col-form-label">Name</label>
-                            <div class="col-md-9">
+                        <div class="row mb-5">
+                            <label for="admin_name" class="md:col-3 col-form-label">Name</label>
+                            <div class="md:col-9">
                                 <input name="admin_name" type="text" class="form-control" id="admin_name" value="<?php echo empty($phpwcms["admin_name"]) ? "Webmaster" : html_specialchars($phpwcms["admin_name"]) ?>">
                                 <div class="form-text">default: Webmaster</div>
                             </div>
                         </div>
 
-                        <div class="row mb-3">
-                            <label for="admin_user" class="col-md-3 col-form-label">Admin login</label>
-                            <div class="col-md-9">
+                        <div class="row mb-5">
+                            <label for="admin_user" class="md:col-3 col-form-label">Admin login</label>
+                            <div class="md:col-9">
                                 <input name="admin_user" type="text" class="form-control" id="admin_user" value="<?php echo empty($phpwcms["admin_user"]) ? "webmaster" : html_specialchars($phpwcms["admin_user"]) ?>">
                                 <div class="form-text">default: admin</div>
                             </div>
@@ -274,28 +274,28 @@ if(!empty($_SESSION['admin_set'])) {
 
 <?php
     if(!empty($admin_err_pass)) {
-        echo '<div class="alert alert-danger" role="alert"><strong>Invalid password! Password is case senitive, empty password not allowed.</strong></div>';
+        echo '<div class="alert theme-danger" role="alert"><strong>Invalid password! Password is case senitive, empty password not allowed.</strong></div>';
     }
 ?>
 
-                        <div class="row mb-3">
-                            <label for="admin_pass" class="col-md-3 col-form-label">Admin password</label>
-                            <div class="col-md-9">
+                        <div class="row mb-5">
+                            <label for="admin_pass" class="md:col-3 col-form-label">Admin password</label>
+                            <div class="md:col-9">
                                 <input name="admin_pass" type="password" class="form-control" id="admin_pass" autocomplete="new-password">
                                 <div class="form-text">default: phpwcms</div>
                             </div>
                         </div>
 
-                        <div class="row mb-3">
-                            <label for="admin_passrepeat" class="col-md-3 col-form-label">Repeat password</label>
-                            <div class="col-md-9">
+                        <div class="row mb-5">
+                            <label for="admin_passrepeat" class="md:col-3 col-form-label">Repeat password</label>
+                            <div class="md:col-9">
                                 <input name="admin_passrepeat" type="password" class="form-control" id="admin_passrepeat" autocomplete="new-password">
                             </div>
                         </div>
 
-                        <div class="row mb-3">
-                            <label for="admin_email" class="col-md-3 col-form-label">Admin email</label>
-                            <div class="col-md-9">
+                        <div class="row mb-5">
+                            <label for="admin_email" class="md:col-3 col-form-label">Admin email</label>
+                            <div class="md:col-9">
                                 <input name="admin_email" type="text" class="form-control" id="admin_email" value="<?php echo html_specialchars($phpwcms["admin_email"]) ?>">
                                 <div class="form-text">is used site wide</div>
                             </div>
@@ -360,7 +360,7 @@ if(!empty($_SESSION['admin_set'])) {
         if(!empty($create_user)) {
 
             // update
-            echo '<div class="alert alert-success" role="alert"><strong>Done!</strong> Account for user <b>'.html_specialchars($phpwcms['admin_user']).'</b> was created.';
+            echo '<div class="alert theme-success" role="alert"><strong>Done!</strong> Account for user <b>'.html_specialchars($phpwcms['admin_user']).'</b> was created.';
             echo '<input type="hidden" name="user_account" value="1"></div>';
 
         }
@@ -368,7 +368,7 @@ if(!empty($_SESSION['admin_set'])) {
         if(!empty($update_user)) {
 
             // update
-            echo '<div class="alert alert-success" role="alert"><strong>Done!</strong> Account of user <b>'.html_specialchars($phpwcms['admin_user']).'</b> was updated.';
+            echo '<div class="alert theme-success" role="alert"><strong>Done!</strong> Account of user <b>'.html_specialchars($phpwcms['admin_user']).'</b> was updated.';
             echo '<input type="hidden" name="user_account" value="1"></div>';
 
         }
@@ -376,7 +376,7 @@ if(!empty($_SESSION['admin_set'])) {
         if($user_check === false) {
 
             // db error
-            echo '<div class="alert alert-danger" role="alert"><strong>There is a database problem!</strong>';
+            echo '<div class="alert theme-danger" role="alert"><strong>There is a database problem!</strong>';
             echo '<p class="mb-0">Account for user <b>'.html_specialchars($phpwcms['admin_user']).'</b> was not created or updated.<br>Click <b>continue</b> to try again.</p></div>';
             $_SESSION['admin_save'] = false;
 
@@ -387,7 +387,7 @@ if(!empty($_SESSION['admin_set'])) {
 }
 
 ?>
-                        <div class="mt-4">
+                        <div class="mt-7">
                             <button type="submit" name="dbsavesubmit" value="Continue" class="btn theme-primary btn-solid btn-styled btn-sm">Continue</button>
                         </div>
                         <input name="do" type="hidden" value="1">
