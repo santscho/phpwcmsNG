@@ -209,6 +209,7 @@ if(isset($_POST['form_aktion']) && $_POST['form_aktion'] === 'login' && $json_ch
             $_SESSION['wcs_user_logtime']   = time();
             $_SESSION['wcs_user_admin']     = (int)$result[0]['usr_admin'];
             $_SESSION['wcs_user_thumb']     = 1;
+            $_SESSION['wcs_user_theme']     = in_array($result[0]['usr_theme'] ?? 'auto', ['light', 'dark'], true) ? $result[0]['usr_theme'] : 'auto';
             if(empty($_POST['customlang']) && !empty($result[0]['usr_lang'])) {
                 $_SESSION['wcs_user_lang']  = $result[0]['usr_lang'];
                 set_language_cookie($result[0]['usr_lang']);

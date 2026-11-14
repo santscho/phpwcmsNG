@@ -39,6 +39,10 @@ checkLogin();
 validate_csrf_tokens();
 define('CSRF_GET_TOKEN', get_token_get_string());
 
+// backend screen mode selected by the current user (auto follows the OS setting)
+$backend_theme      = (isset($_SESSION['wcs_user_theme']) && in_array($_SESSION['wcs_user_theme'], ['light', 'dark'], true)) ? $_SESSION['wcs_user_theme'] : 'auto';
+$backend_theme_attr = $backend_theme === 'auto' ? '' : ' data-bs-theme="' . $backend_theme . '"';
+
 require_once PHPWCMS_ROOT.'/include/inc_lib/backend.functions.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/default.backend.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lang/backend/en/lang.inc.php'; //load default language EN
@@ -219,7 +223,7 @@ ob_start(); //without Compression
 header('Content-Type: text/html; charset=' . PHPWCMS_CHARSET);
 
 ?><!DOCTYPE html>
-<html lang="<?php echo $BE['LANG']; ?>"<?php echo $backend_dir; ?>>
+<html lang="<?php echo $BE['LANG']; ?>"<?php echo $backend_dir; ?><?php echo $backend_theme_attr; ?>>
 <head><?php printf(PHPWCMS_HEADER_COMMENT, ''); ?>
     <title><?php echo $BL['be_page_title'].' - '.PHPWCMS_HOST ?></title>
     <meta charset="<?php echo PHPWCMS_CHARSET ?>">
@@ -275,12 +279,44 @@ if($BE['LANG'] == 'ar') {
             echo implode('', $wcsnav);
 
         ?></div>
-        <div class="d-flex align-items-center gap-3">
-            <a href="<?php echo PHPWCMS_URL ?>" class="nav-link justify-content-start small" target="_blank"><?php echo PHPWCMS_HOST ?></a>
+        <div class="d-flex flex-nowrap align-items-center gap-3">
+            <div class="d-flex gap-1" role="group" aria-label="<?php echo $BL['be_theme_switch'] ?? 'Screen mode' ?>">
+<?php foreach (['auto' => 'Auto', 'light' => 'Light', 'dark' => 'Dark'] as $theme_value => $theme_fallback):
+    $theme_label = $BL['be_theme_' . $theme_value] ?? $theme_fallback;
+    $theme_active = $backend_theme === $theme_value;
+?>
+                <button type="button" class="btn btn-icon theme-inverse btn-sm<?php echo $theme_active ? ' btn-solid active' : ' btn-outline' ?>" data-backend-theme="<?php echo $theme_value ?>" aria-pressed="<?php echo $theme_active ? 'true' : 'false' ?>" title="<?php echo html_specialchars($theme_label) ?>" aria-label="<?php echo html_specialchars($theme_label) ?>"><?php echo backend_theme_icon($theme_value); ?></button>
+<?php endforeach; ?>
+            </div>
+            <a href="<?php echo PHPWCMS_URL ?>" class="nav-link justify-content-start small d-none lg:d-inline-block" target="_blank"><?php echo PHPWCMS_HOST ?></a>
             <a href="phpwcms.php?do=logout" target="_top" class="nav-link justify-content-start"><?php echo $BL['be_nav_logout'] ?></a>
         </div>
     </div>
 </nav>
+<script>
+    document.querySelectorAll('button[data-backend-theme]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            var theme = button.getAttribute('data-backend-theme');
+            if (theme === 'auto') {
+                document.documentElement.removeAttribute('data-bs-theme');
+            } else {
+                document.documentElement.setAttribute('data-bs-theme', theme);
+            }
+            document.querySelectorAll('button[data-backend-theme]').forEach(function (item) {
+                var selected = item === button;
+                item.classList.toggle('active', selected);
+                item.classList.toggle('btn-solid', selected);
+                item.classList.toggle('btn-outline', !selected);
+                item.setAttribute('aria-pressed', selected ? 'true' : 'false');
+            });
+            var request = new URLSearchParams();
+            request.set('action', 'backend_theme');
+            request.set('value', theme);
+            request.set('csrftoken', '<?php echo get_token_get_value() ?>');
+            fetch('include/inc_act/ajax_connector.php', {method: 'POST', body: request, credentials: 'same-origin'});
+        });
+    });
+</script>
 <div class="container-fluid py-5">
     <div class="row g-5">
         <aside class="col-12 md:col-3 xl:col-2">

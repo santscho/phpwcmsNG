@@ -790,6 +790,7 @@ CREATE TABLE `phpwcms_user` (
   `usr_lang` varchar(50) NOT NULL DEFAULT '',
   `usr_wysiwyg` int(2) NOT NULL DEFAULT '0',
   `usr_fe` int(1) NOT NULL DEFAULT '0',
+  `usr_theme` varchar(10) NOT NULL DEFAULT 'auto',
   `usr_vars` mediumtext NOT NULL,
   PRIMARY KEY (`usr_id`)
 );

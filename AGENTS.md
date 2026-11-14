@@ -60,6 +60,23 @@
 - Secondary/outline actions use `class="btn btn-outline theme-secondary btn-sm"`.
 - `btn-sm` is the standard size; do not use `btn-lg`.
 
+## Screen mode
+
+- The backend header carries a screen mode switcher on the right: three
+  `btn btn-icon` buttons (Auto, Light, Dark) with inline SVG icons from
+  `backend_theme_icon()`; the selected one is `btn-solid`, the others
+  `btn-outline`, plus `aria-pressed`.
+- Auto removes `data-bs-theme` from `<html>` so Bootstrap follows the operating
+  system, Light and Dark set `data-bs-theme="light"`/`"dark"` there.
+- The choice is stored per user in `phpwcms_user.usr_theme`
+  (`varchar(10)`, default `auto`, revision 556) and loaded into
+  `$_SESSION['wcs_user_theme']` at login; switching posts to
+  `include/inc_act/ajax_connector.php` with action `backend_theme` and the
+  `csrftoken`.
+- Keep the navigation bar dark and theme independent: it stays
+  `bg-primary` with `data-bs-theme="dark"` so the white logo works in both
+  modes.
+
 ## Graphics and icons
 
 - No raster (pixel) graphics for interface chrome. Status marks, arrows,

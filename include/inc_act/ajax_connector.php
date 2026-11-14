@@ -87,6 +87,25 @@ switch($action) {
         sort($data);
         break;
 
+    case 'backend_theme':
+        if (
+            $_SERVER['REQUEST_METHOD'] !== 'POST'
+            || !in_array($value, array('auto', 'light', 'dark'), true)
+            || empty($_POST['csrftoken'])
+            || empty($_SESSION['wcs_user_id'])
+            || $_POST['csrftoken'] !== get_token_get_value()
+        ) {
+            headerRedirect('', 403);
+            die();
+        }
+        $updated = _dbQuery(
+            'UPDATE ' . DB_PREPEND . 'phpwcms_user SET usr_theme=' . _dbEscape($value) . ' WHERE usr_id=' . (int) $_SESSION['wcs_user_id'],
+            'UPDATE'
+        );
+        $_SESSION['wcs_user_theme'] = $value;
+        $data = array('theme' => $value, 'status' => $updated === false ? 'failed' : 'ok');
+        break;
+
     case 'flush_image_cache':
         if (empty($_SESSION['wcs_user_admin'])) {
             headerRedirect('', 401);

@@ -1612,3 +1612,9 @@ $BL['be_about_website'] = 'Website';
 $BL['be_about_copyright'] = 'Copyright';
 $BL['be_about_contributors'] = 'and contributors';
 $BL['be_about_and_contributors'] = 'and other contributors (including Marcus Obst, Fernando Batista, KoMa, geckse, phalancs, q23, and others) &ndash; see <a href="https://github.com/slackero/phpwcms" title="Source code on GitHub" target="_blank">source code</a> for detailed copyright and license information.';
+
+// backend screen mode switcher
+$BL['be_theme_switch'] = 'Screen mode';
+$BL['be_theme_auto'] = 'Auto';
+$BL['be_theme_light'] = 'Light';
+$BL['be_theme_dark'] = 'Dark';

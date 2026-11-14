@@ -60,6 +60,24 @@ function forward_to($to, $link, $time=2500) { //Javascript forwarding
     }
 }
 
+/**
+ * Inline SVG icon for the backend screen mode switcher
+ */
+function backend_theme_icon($theme) {
+
+    $icons = [
+        'auto' => '<circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.75a6.25 6.25 0 0 1 0 12.5Z"/>',
+        'light' => '<circle cx="8" cy="8" r="3.5"/><path d="M8 .75v1.9M8 13.35v1.9M.75 8h1.9M13.35 8h1.9M2.75 2.75l1.35 1.35M11.9 11.9l1.35 1.35M13.25 2.75L11.9 4.1M4.1 11.9l-1.35 1.35" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>',
+        'dark' => '<path d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.787.787 0 0 1 .81 1.166A8.2 8.2 0 1 1 5.922.222.77.77 0 0 1 6 .278"/>',
+    ];
+
+    if (!isset($icons[$theme])) {
+        return '';
+    }
+
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">' . $icons[$theme] . '</svg>';
+}
+
 function subnavtext($text, $link, $is, $should, $getback=1, $js='') {
     //generate subnavigation based on text
     $nav_active = (string) ($is ?: '0') === (string) ($should ?: '0');
