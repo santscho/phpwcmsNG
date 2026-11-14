@@ -525,13 +525,22 @@ if($BE['LANG'] == 'ar') {
     <!--BE_MAIN_CONTENT_END//--></main>
     </div>
 </div>
-<footer class="container-fluid pb-5">
-    <div class="small fg-secondary d-flex flex-wrap gap-2">
-        <a href="http://www.phpwcms.org" title="phpwcms <?php echo PHPWCMS_VERSION; ?>" target="_blank">phpwcms</a>
-        <span>&copy; 2002&#8212;<?php echo date('Y'); ?></span>
-        <a href="mailto:og@phpwcms.org?subject=phpwcms+<?php echo rawurlencode(PHPWCMS_VERSION); ?>">Oliver Georgi</a>
-        <a href="phpwcms.php?do=about" title="<?php echo $BL['be_aboutlink_title'] ?>"><?php echo $BL['be_licensed_under_GPL']; ?></a>
-        <span><?php echo $BL['be_extensions_copyright']; ?></span>
+<footer class="container-fluid pb-7">
+    <div class="border-top pt-7">
+        <div class="d-flex flex-column md:flex-row md:justify-content-between align-items-start gap-5 small fg-secondary">
+
+            <p class="mb-0">
+                <a href="https://www.phpwcms.org" title="phpwcms <?php echo PHPWCMS_VERSION; ?>" target="_blank" rel="noopener">phpwcms</a>
+                &copy; 2002&#8212;<?php echo date('Y'); ?>
+                <a href="mailto:og@phpwcms.org?subject=phpwcms+<?php echo rawurlencode(PHPWCMS_VERSION); ?>">Oliver Georgi</a>.
+            </p>
+
+            <div class="d-flex flex-column md:flex-row gap-3 md:gap-5">
+                <a href="phpwcms.php?do=about" title="<?php echo $BL['be_aboutlink_title'] ?>"><?php echo $BL['be_licensed_under_GPL']; ?></a>
+                <span><?php echo $BL['be_extensions_copyright']; ?></span>
+            </div>
+
+        </div>
     </div>
 </footer>
 <?php
