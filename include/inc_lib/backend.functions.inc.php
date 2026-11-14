@@ -62,17 +62,9 @@ function forward_to($to, $link, $time=2500) { //Javascript forwarding
 
 function subnavtext($text, $link, $is, $should, $getback=1, $js='') {
     //generate subnavigation based on text
-    $id = "subnavid".generic_string(5);
-    $sn = '';
-    if($is == $should) {
-        $sn .= '<tr><td><img src="img/subnav/subnav_B.gif" width="15" height="13" border="0" alt="" /></td>';
-        $sn .= '<td class="subnavactive"><a href="'.$link.'">'.$text.'</a></td></tr>';
-    } else {
-        $sn .= "<tr><td><img name=\"".$id."\" src=\"img/subnav/subnav_A.gif\" width=\"15\" height=\"13\" border=\"0\" alt=\"\" /></td>";
-        $sn .= "<td class=\"subnavinactive\"><a href=\"".$link."\" ".$js;
-        $sn .= "onmouseover=\"".$id.".src='img/subnav/subnav_B.gif'\" onmouseout=\"".$id;
-        $sn .= ".src='img/subnav/subnav_A.gif'\">".$text."</a></td></tr>";
-    }
+    $nav_active = (string) ($is ?: '0') === (string) ($should ?: '0');
+    $sn = '<a href="' . $link . '" class="nav-link justify-content-start' . ($nav_active ? ' active' : '') . '"';
+    $sn .= ($nav_active ? ' aria-current="page"' : '') . ' ' . $js . '>' . $text . '</a>';
     $sn .= "\n";
     if(!$getback) {
         return $sn;
@@ -85,11 +77,7 @@ function subnavtext($text, $link, $is, $should, $getback=1, $js='') {
 
 function subnavtextext($text, $link, $target='_blank', $getback=1) {
     //generate subnavigation based on text and links to new page
-    $id  = 'subnavid'.generic_string(5);
-    $sn  = '<tr><td><img src="img/subnav/subnav_A.gif" width="15" height="13" border="0" name="'.$id.'" alt="" /></td>';
-    $sn .= '<td class="subnavinactive"><a href="'.$link.'" target="'.$target.'" ';
-    $sn .= "onmouseover=\"".$id.".src='img/subnav/subnav_B.gif'\" onmouseout=\"".$id.".src='img/subnav/subnav_A.gif'\"";
-    $sn .= '>'.$text.'</a></td></tr>';
+    $sn  = '<a href="' . $link . '" target="' . $target . '" class="nav-link justify-content-start">' . $text . '</a>';
     $sn .= "\n";
 
     if($getback) {
@@ -349,8 +337,10 @@ function phpwcmsversionCheck() {
         $version_info = @file_get_contents('https://www.phpwcms.org/versioncheck/'.$identify, false, $context);
         if ($version_info !== false) {
             $get_info = true;
-            if (isset($http_response_header[0])) {
-                if (preg_match('/^HTTP\/1\.[01]\s+(\d+)/i', $http_response_header[0], $status_match)) {
+            // $http_response_header is deprecated as of PHP 8.5
+            $last_response_headers = function_exists('http_get_last_response_headers') ? http_get_last_response_headers() : ($http_response_header ?? []);
+            if (!empty($last_response_headers[0])) {
+                if (preg_match('/^HTTP\/1\.[01]\s+(\d+)/i', $last_response_headers[0], $status_match)) {
                     $status_code = (int)$status_match[1];
                     if ($status_code !== 200) {
                         $errstr = 'HTTP Error ' . $status_code;

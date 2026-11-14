@@ -1520,18 +1520,6 @@ img.img-fluid {
     height: auto;
 }
 
-a {
-    background-color: transparent;
-    color: #325676;
-    text-decoration: none;
-}
-
-a:hover {
-    background-color: transparent;
-    color: #C30;
-    text-decoration: underline;
-}
-
 abbr {
     border-bottom: 1px dotted currentcolor;
     cursor: help;
@@ -1542,19 +1530,12 @@ abbr {
 
 
 body {
-    background: -webkit-gradient(linear, left top, left bottom, from(#347199), to(#c1d2e2));
-    background: -webkit-linear-gradient(top, #347199, #c1d2e2);
-    background: linear-gradient(to bottom, #347199, #c1d2e2);
-    background-attachment: fixed;
-    background-color: #c1d2e2;
     color: #282F42;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#347199', endColorstr='#c1d2e2', GradientType=0);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     font-size: 12px;
     line-height: 1.4166;
     margin: 0;
     min-height: 100%;
-    padding: 0 10px;
     position: relative;
 }
 
