@@ -23,10 +23,14 @@
 - Normal/standard buttons use
   `class="btn theme-primary btn-solid btn-styled btn-sm"`.
 - Bootstrap's `btn` stays in the list as the base layer: it provides geometry,
-  focus ring, disabled states and sizing today, while `theme-primary`,
-  `btn-solid` and `btn-styled` are the project's theme hooks for colour and
-  treatment. The theme stylesheet must load after `bootstrap.min.css` so its
-  rules win.
+  focus ring, disabled states and sizing, while `theme-primary`, `btn-solid`
+  and `btn-styled` are the project's theme hooks for colour and treatment.
+- Those hooks live in `include/inc_css/theme.css`, which must be loaded after
+  `bootstrap.min.css` (and before any legacy stylesheet that should override
+  it). It maps the tokens `--theme-color`, `--theme-color-hover`,
+  `--theme-color-active`, `--theme-color-rgb` and `--theme-on-color` onto
+  Bootstrap's button variables; colours default to Bootstrap's primary palette,
+  so re-colouring means overriding those tokens, not editing button rules.
 - Secondary/outline actions use `btn btn-outline-secondary btn-sm`.
 - `btn-sm` is the standard size; do not use `btn-lg`.
 

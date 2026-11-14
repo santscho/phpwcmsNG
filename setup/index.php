@@ -23,6 +23,7 @@ require_once __DIR__ . '/inc/setup.func.inc.php';
     <title>phpwcms Setup &ndash; Licence</title>
     <meta name="robots" content="noindex, nofollow">
     <link href="../include/inc_ext/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="../include/inc_css/theme.css" rel="stylesheet">
 </head>
 <body class="bg-body-tertiary">
 
