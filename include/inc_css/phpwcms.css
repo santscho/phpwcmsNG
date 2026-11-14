@@ -1543,46 +1543,6 @@ div.checkbox-list.checkbox-list-darker {
     border-color: #ccc;
 }
 
-div.status_message_error {
-    background: #FFC6C6 url(../../img/famfamfam/exclamation.png) no-repeat 4px 4px !important;
-    border: 1px solid #C30;
-    color: #C03;
-    font-size: 12px;
-    font-weight: 400;
-    margin: 0 0 15px;
-    padding: 5px 5px 5px 25px;
-}
-
-div.status_message_info {
-    background: #FEE16C url(../../img/famfamfam/information.png) no-repeat 4px 4px !important;
-    border: 1px solid #FC0;
-    color: #363C47;
-    font-size: 12px;
-    font-weight: 400;
-    margin: 0 0 15px;
-    padding: 5px 5px 5px 25px;
-}
-
-div.status_message_success {
-    background: #DEF9AC url(../../img/famfamfam/accept.png) no-repeat 4px 4px !important;
-    border: 1px solid #090;
-    color: #060;
-    font-size: 12px;
-    font-weight: 400;
-    margin: 0 0 15px;
-    padding: 5px 5px 5px 25px;
-}
-
-div.status_message_warning {
-    background: #FFC6C6 url(../../img/famfamfam/exclamation.png) no-repeat 4px 4px !important;
-    border: 1px solid #C30;
-    color: #C03;
-    font-size: 12px;
-    font-weight: 400;
-    margin: 0 0 15px;
-    padding: 5px 5px 5px 25px;
-}
-
 form {
     margin: 0;
     padding: 0;

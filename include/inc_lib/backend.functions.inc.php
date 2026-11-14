@@ -622,8 +622,16 @@ function show_status_message($return_status=false) {
     if(empty($_SESSION['system_status']['msg'])) {
         $status = '';
     } else {
-        $status  = '<div class="status_message_' . $_SESSION['system_status']['type'] .'">';
-        $status .= nl2br( trim( html($_SESSION['system_status']['msg']) ) ) . '</div>';
+        $status_types = [
+            'success' => 'success',
+            'info'    => 'info',
+            'help'    => 'info',
+            'warning' => 'warning',
+            'error'   => 'danger',
+        ];
+        $status_type = $status_types[ $_SESSION['system_status']['type'] ?? 'info' ] ?? 'info';
+        $status  = '<div class="alert theme-' . $status_type . ' mb-5" role="alert"><div>';
+        $status .= nl2br( trim( html($_SESSION['system_status']['msg']) ) ) . '</div></div>';
         $_SESSION['system_status']['msg'] = '';
     }
     if($return_status) {
