@@ -67,6 +67,8 @@ include/config.codekit3
 node_modules/
 /doc/
 /bin/*
+# ... but the language tooling is part of the release path
+!/bin/i18n.php
 /.superpowers/
 
 # Local workspace folder, not part of the fork
