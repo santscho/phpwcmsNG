@@ -231,7 +231,7 @@ existing entry already covers the action before adding a second glyph for it.
   `list-group-item` rows: `.check` checkbox, the file type icon from
   `backend_file_icon()`, the name as the row label, then icon-only `badge` state
   marks — `toggle-on` `theme-success`/`toggle-off` `theme-secondary` for active and
-  `globe` `theme-info`/`lock` `theme-secondary` for public. The select-all
+  `globe` `theme-success`/`lock` `theme-secondary` for public. The select-all
   checkbox sits in the `card-footer`.
 - The action panel is a `form-control` select on `file_action`; the folder, status
   and owner fields plus the submit button are cells that `showAction()` reveals by
