@@ -1620,5 +1620,6 @@ $BL['be_theme_light'] = 'Light';
 $BL['be_theme_dark'] = 'Dark';
 
 // backend drag and drop ordering
+$BL['be_article'] = 'article';
 $BL['be_sort_drag'] = 'drag to reorder';
 $BL['be_sort_drag_error'] = 'Reordering failed, please reload the page and try again.';

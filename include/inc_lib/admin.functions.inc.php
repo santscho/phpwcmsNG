@@ -34,13 +34,11 @@ function struct_list($id, $copy_article_content, $cut_article_content, $copy_id,
 /*
  * Indentation class for nested rows, mapped to Bootstrap spacing
  */
-function backend_indent($depth, $base=0) {
+function backend_indent($depth) {
 
-    $steps = array('', 'ms-3', 'ms-5', 'ms-7', 'ms-9');
+    $steps = array('', 'ms-5', 'ms-9', 'ms-12');
 
-    $depth = intval($depth) - intval($base);
-
-    return $steps[$depth] ?? 'ms-12';
+    return $steps[intval($depth)] ?? 'ms-12';
 
 }
 
@@ -60,7 +58,7 @@ function struct_levellist($struct, $key, $counter, $copy_article_content, $cut_a
     $an             = html($struct[$key]["acat_name"]);
     $is_open        = !empty($_SESSION["structure"][$acat_id]);
     $sortable       = !empty($_SESSION['wcs_user_admin']) && $count_row > 1;
-    $indent         = backend_indent($counter, 1);
+    $indent         = backend_indent($counter);
 
     $a  = '<div class="list-group-item d-flex align-items-center gap-2' . ($indent ? ' ' . $indent : '') . '"';
     if($sortable) {
@@ -71,6 +69,8 @@ function struct_levellist($struct, $key, $counter, $copy_article_content, $cut_a
     if($sortable) {
         $a .= backend_sort_handle();
     }
+
+    $a .= '<span class="fg-secondary flex-shrink-0" title="' . $BL['be_admin_struct_title'] . '">' . backend_icon('folder') . '</span>';
 
     if($child_count) {
         $a .= '<a href="phpwcms.php?' . $page_val . '&amp;open=' . rawurlencode($acat_id . ':' . ($is_open ? 0 : 1)) . '"';
@@ -226,7 +226,7 @@ function struct_articlelist($struct_id, $counter, $copy_article_content, $cut_ar
         $acontent_count = get_article_content_count($article_id);
         $is_open        = !empty($_SESSION["structure"]["article"][$article_id]);
         $sortable       = $show_sort && $max_article_count > 1 && $may_edit;
-        $indent         = backend_indent($counter + 1, 1);
+        $indent         = backend_indent($counter + 1);
         $marked         = $cut_article == $article_id || $copy_article == $article_id;
 
         $a  = '<div class="list-group-item d-flex align-items-center gap-2' . ($indent ? ' ' . $indent : '') . ($marked ? ' bg-2' : '') . '"';
@@ -238,6 +238,8 @@ function struct_articlelist($struct_id, $counter, $copy_article_content, $cut_ar
         if($sortable) {
             $a .= backend_sort_handle();
         }
+
+        $a .= '<span class="fg-secondary flex-shrink-0" title="' . $BL['be_article'] . '">' . backend_icon('page') . '</span>';
 
         if($acontent_count && $may_edit) {
             $a .= '<a href="phpwcms.php?do=articles&amp;opena=' . rawurlencode($article_id . ':' . ($is_open ? 0 : 1)) . '"';
@@ -327,7 +329,7 @@ function struct_articlecontentlist($article, $akey, $copy_article_content, $cut_
     }
 
     $rows   = '';
-    $indent = backend_indent($counter + 2, 1);
+    $indent = backend_indent($counter + 2);
 
     foreach($result as $article_content) {
 
@@ -358,7 +360,7 @@ function struct_articlecontentlist($article, $akey, $copy_article_content, $cut_
             $rows .= backend_sort_handle();
         }
 
-        $rows .= '<span class="fg-secondary flex-shrink-0">' . backend_icon('file') . '</span>';
+        $rows .= '<span class="fg-secondary flex-shrink-0">' . backend_icon('block') . '</span>';
 
         $rows .= '<div class="flex-grow-1 text-truncate"><span class="fg-secondary">' . html($label) . '</span>';
         $rows .= ' <span class="badge theme-secondary">' . html($block) . '</span>';

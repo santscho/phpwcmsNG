@@ -356,7 +356,7 @@ if($BE['LANG'] == 'ar') {
 
             </div>
         </aside>
-        <main class="col-12 md:col-9 xl:col-10 v11b" id="be_main_content">{STATUS_MESSAGE}{BE_PARSE_LANG}<!--BE_MAIN_CONTENT_START//-->
+        <main class="col-12 md:col-9 xl:col-10" id="be_main_content">{STATUS_MESSAGE}{BE_PARSE_LANG}<!--BE_MAIN_CONTENT_START//-->
 <?php
 
     switch ($do) {
