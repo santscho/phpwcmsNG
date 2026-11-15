@@ -409,8 +409,9 @@ existing entry already covers the action before adding a second glyph for it.
 
 - `filebrowser.php` is the picker behind every `open image browser` button
   (`openFileBrowser()` in `include/inc_js/phpwcms.js` opens it as a resizable
-  popup of at least 450×575). It is a standalone page, not part of the backend
-  frame, so it links `include/inc_ext/bootstrap/bootstrap.min.css` itself, takes
+  popup, `max(screen.width / 2.5, 900)` wide and `max(screen.height / 2, 575)`
+  high, so the two columns fit next to each other). It is a standalone page, not
+  part of the backend frame, so it links `include/inc_ext/bootstrap/bootstrap.min.css` itself, takes
   the screen mode from `$_SESSION['wcs_user_theme']` for `data-bs-theme` and
   loads the same `backend.bootstrap.js` (tooltips), `backend.confirm.js` (with
   its label JSON) and `backend.tags.js` modules as the frame.

@@ -367,10 +367,10 @@ function create_alias(str, encoding, ucfirst) {
     return str;
 }
 
-var fbw = 450,
+var fbw = 900,
     fbh = 575;
 if (screen.width !== undefined) {
-    fbw = Math.ceil(Math.max(screen.width / 5, fbw));
+    fbw = Math.ceil(Math.max(screen.width / 2.5, fbw));
 }
 if (screen.height !== undefined) {
     fbh = Math.ceil(Math.max(screen.height / 2, fbh));
