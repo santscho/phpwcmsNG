@@ -398,8 +398,9 @@ existing entry already covers the action before adding a second glyph for it.
   `set_begin`/`set_end` checkboxes still fill the field with the stored value in
   ISO form when ticked.
 - `initJsCalendar()` still loads `dynCalendar.js` for the article frame
-  (`phpwcms.php`) because the content part editor, news, ads and the calendar
-  module keep the widget.
+  (`phpwcms.php`) because news, ads and the calendar module keep the widget. The
+  content part editor does not: it asks for `initJsDatePicker()` itself, see
+  *Content part editor dates*.
 - The footer is one `card-footer d-flex flex-wrap gap-2 justify-content-end` with
   the submit inputs: `updatesubmit` (solid primary, `Update` when
   `$article["article_id"]` is set, `Create` otherwise) and `Submit`
@@ -430,6 +431,10 @@ existing entry already covers the action before adding a second glyph for it.
   `backend_weekstarts()` is the list, its keys are the stored values and its
   values extend to the `$BL['be_profile_weekstart_monday']`/
   `$BL['be_profile_weekstart_sunday']` labels.
+- `window.phpwcmsDatePickerSet(inputOrId, canonicalValue)` is the module's
+  setter for other inline handlers: it writes the canonical value through the
+  picker instance (so the visible twin follows) and dispatches `change`;
+  an empty value clears the field. Use it instead of touching `.value`.
 - `backend_date_formats()` in `include/inc_lib/backend.functions.inc.php` is the
   single list: `iso` (`2026-11-15 19:07:02`), `swiss` (`15.11.2026 19:07:02`),
   `uk` (`15/11/2026 19:07:02`) and `us` (`11/15/2026 7:07:02 PM`). Each entry
@@ -455,8 +460,33 @@ existing entry already covers the action before adding a second glyph for it.
   Typing is parsed on blur. Render the three values from `$backend_date_format`
   and `$backend_weekstart`, recomputed in the template when it also runs outside
   the backend frame.
+- `data-datepicker-defaulthour`, `-defaultminute` and `-defaultseconds` set the
+  time a day gets when it is picked without one (flatpickr's own default is
+  noon). The content part editor uses `0/0/0` for the live date and `23/59/59`
+  for the kill date, which is what its old calendar widget wrote.
 - Month names stay English, the ones flatpickr ships with: only the date and time
   pattern and the week start day follow the preference.
+
+## Content part editor dates
+
+- The live and kill fields of the content part editor
+  (`include/inc_tmpl/articlecontent.edit.tmpl.php`, `clivedate`/`ckilldate` with
+  their `set_livedate`/`set_killdate` checkboxes) are picker fields too. They hold
+  the canonical `Y-m-d H:i:s`, show the format and week start from the profile
+  and got a live/kill time of `00:00:00`/`23:59:59` from their default time
+  attributes, the values the replaced `dynCalendar` widget wrote. The template
+  calls `initJsDatePicker()` itself because the frame does not do it for
+  `aktion=2`.
+- `content_date_changed()` keeps the two rules `aBegin`/`aEnd` carried: picking a
+  date ticks its checkbox, and a live date after the kill date clears that kill
+  date (and the other way round), compared by date only.
+- `content_date_set(field, value)` is what the checkboxes call: it writes the
+  stored value through `window.phpwcmsDatePickerSet()` and ticks or unticks the
+  box, so unticking empties the field and ticking it restores the value the
+  server rendered.
+- The screen is still the legacy table layout; only the two date fields were
+  converted, so the picker fields keep the legacy `width150` class instead of
+  `form-control`.
 
 ## JavaScript libraries
 

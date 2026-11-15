@@ -44,7 +44,12 @@ if(empty($content["killdate"])) {
     $set_killdate = 1;
 }
 
-initJsCalendar();
+// the live and kill fields hold the canonical database value; the date picker
+// only shows it in the format and week start the user picked in the profile
+$backend_date_format = backend_date_format($_SESSION['wcs_user_date_format'] ?? '');
+$backend_weekstart   = backend_weekstart($_SESSION['wcs_user_weekstart'] ?? '');
+
+initJsDatePicker();
 
 ?>
 <script type="text/javascript">
@@ -60,6 +65,33 @@ initJsCalendar();
         } else {
             checkbox_element.checked = false;
             elem.value = '';
+        }
+    }
+
+    // the live and kill date fields: the checkbox keeps the stored value, and a
+    // live date after the kill date clears that kill date as the calendar did
+    function content_date_set(field, value) {
+        var form = document.articlecontent;
+        var live = field === 'live';
+        window.phpwcmsDatePickerSet(live ? form.clivedate : form.ckilldate, value);
+        (live ? form.set_livedate : form.set_killdate).checked = value !== '';
+    }
+
+    function content_date_changed(field) {
+        var form = document.articlecontent;
+        var live = form.clivedate.value;
+        var kill = form.ckilldate.value;
+
+        if(field === 'live' && live) {
+            form.set_livedate.checked = true;
+            if(kill && live.substring(0, 10) > kill.substring(0, 10)) {
+                content_date_set('kill', '');
+            }
+        } else if(field === 'kill' && kill) {
+            form.set_killdate.checked = true;
+            if(live && kill.substring(0, 10) < live.substring(0, 10)) {
+                content_date_set('live', '');
+            }
         }
     }
 </script>
@@ -689,69 +721,17 @@ echo $_save_close_buttons;
             <table border="0" cellpadding="2" cellspacing="0" summary="" bgcolor="#E7E8EB">
                 <tr>
                     <td class="chatlist">&nbsp;<br />
-                        <input name="set_livedate" type="checkbox" id="set_livedate" value="1"<?php is_checked(1, $set_livedate) ?> onclick="document.articlecontent.clivedate.value = this.checked ? '<?php echo $content["livedate"]; ?>' : '';" />
+                        <input name="set_livedate" type="checkbox" id="set_livedate" value="1"<?php is_checked(1, $set_livedate) ?> onclick="content_date_set('live', this.checked ? '<?php echo $content["livedate"]; ?>' : '');" />
                     </td>
-                    <td class="chatlist tdbottom3 nowrap" nowrap="nowrap">YYYY-MM-DD HH:MM:SS<br />
-                        <input name="clivedate" type="text" id="clivedate" class="width150" value="<?php echo $content["livedate"]; ?>" />
-                    </td>
-                    <td class="chatlist tdbottom3">&nbsp;<br />
-                        <script type="text/javascript">
-                            var currentDateBegin = 0,
-                                currentDateEnd = 0;
-
-                            function aBegin(day, month, year) {
-
-                                month = subrstr('00' + month, 2);
-                                day = subrstr('00' + day, 2);
-
-                                currentDateBegin = parseInt(year + month + day, 10);
-
-                                if(currentDateEnd > 0 && currentDateBegin > currentDateEnd) {
-                                    document.articlecontent.ckilldate.value = '';
-                                    document.articlecontent.set_killdate.checked = false;
-                                }
-
-                                document.articlecontent.clivedate.value = year + '-' + subrstr('00' + month, 2) + '-' + subrstr('00' + day, 2) + ' 00:00:00';
-                                document.articlecontent.set_livedate.checked = true;
-                            }
-
-                            calBegin = new dynCalendar('calBegin', 'aBegin', 'img/dynCal/');
-                            calBegin.setMonthCombo(false);
-                            calBegin.setYearCombo(false);
-
-                        </script>&nbsp;
+                    <td class="chatlist tdbottom3 nowrap" nowrap="nowrap">
+                        <input name="clivedate" type="text" id="clivedate" class="width150" value="<?php echo $content["livedate"]; ?>" data-datepicker="1" data-datepicker-alt-format="<?php echo html($backend_date_format['flatpickr']) ?>" data-datepicker-24h="<?php echo $backend_date_format['time_24hr'] ? '1' : '0' ?>" data-datepicker-weekstart="<?php echo $backend_weekstart ?>" data-datepicker-defaulthour="0" data-datepicker-defaultminute="0" data-datepicker-defaultseconds="0" data-datepicker-label="<?php echo html($BL['be_article_abegin']) ?>" onchange="content_date_changed('live');" />
                     </td>
                     <td align="right" class="chatlist" bgcolor="#F3F5F8">&nbsp;<br />&nbsp;&nbsp;<?php echo $BL['be_article_aend'] ?>:</td>
                     <td class="chatlist">&nbsp;<br />
-                        <input name="set_killdate" type="checkbox" id="set_killdate" value="1"<?php is_checked(1, $set_killdate) ?> onclick="document.articlecontent.ckilldate.value = this.checked ? '<?php echo $content["killdate"] ?>' : '';" />
+                        <input name="set_killdate" type="checkbox" id="set_killdate" value="1"<?php is_checked(1, $set_killdate) ?> onclick="content_date_set('kill', this.checked ? '<?php echo $content["killdate"] ?>' : '');" />
                     </td>
-                    <td class="chatlist tdbottom3 nowrap" nowrap="nowrap">YYYY-MM-DD HH:MM:SS<br />
-                        <input name="ckilldate" type="text" id="ckilldate" class="width150" value="<?php echo $content["killdate"]; ?>" />
-                    </td>
-                    <td class="chatlist tdbottom3">&nbsp;<br />
-                        <script type="text/javascript">
-
-                            function aEnd(day, month, year) {
-
-                                month = subrstr('00' + month, 2);
-                                day = subrstr('00' + day, 2);
-
-                                currentDateEnd = parseInt(year + month + day, 10);
-
-                                if(currentDateBegin > 0 && currentDateBegin > currentDateEnd) {
-                                    document.articlecontent.clivedate.value = '';
-                                    document.articlecontent.set_livedate.checked = false;
-                                }
-
-                                document.articlecontent.ckilldate.value = year + '-' + month + '-' + day + ' 23:59:59';
-                                document.articlecontent.set_killdate.checked = true;
-                            }
-
-                            calEnd = new dynCalendar('calEnd', 'aEnd', 'img/dynCal/');
-                            calEnd.setMonthCombo(false);
-                            calEnd.setYearCombo(false);
-
-                        </script>&nbsp;
+                    <td class="chatlist tdbottom3 nowrap" nowrap="nowrap">
+                        <input name="ckilldate" type="text" id="ckilldate" class="width150" value="<?php echo $content["killdate"]; ?>" data-datepicker="1" data-datepicker-alt-format="<?php echo html($backend_date_format['flatpickr']) ?>" data-datepicker-24h="<?php echo $backend_date_format['time_24hr'] ? '1' : '0' ?>" data-datepicker-weekstart="<?php echo $backend_weekstart ?>" data-datepicker-defaulthour="23" data-datepicker-defaultminute="59" data-datepicker-defaultseconds="59" data-datepicker-label="<?php echo html($BL['be_article_aend']) ?>" onchange="content_date_changed('kill');" />
                     </td>
                 </tr>
             </table>
