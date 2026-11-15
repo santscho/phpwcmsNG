@@ -149,9 +149,9 @@ MIT) inlined at 16x16 from `backend_icon()`. The names are fixed:
 
 - **type markers**: site structure `folder-fill`, article `journal-bookmark-fill`,
   content part `postcard-fill` — shown before the row title
-- **row actions**: edit `pen`, cut `scissors`, copy `copy`, paste
-  `clipboard-plus`, delete `trash`, restore from trash `restore` (Bootstrap icon
-  `arrow-counterclockwise`)
+- **row actions**: edit `pen`, cut `scissors` (solid `theme-warning` while the file
+  sits in the clipboard), copy `copy`, paste `clipboard-plus`, delete `trash`,
+  restore from trash `restore` (Bootstrap icon `arrow-counterclockwise`)
 - **visibility switch**: `eye` in `theme-success` while the entry is visible,
   `eye-slash` in `theme-danger` while it is hidden
 - **tree and add**: `chevron-right`, `chevron-down`, `plus`

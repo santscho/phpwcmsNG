@@ -67,7 +67,7 @@ function backend_file_item($file_row, $zieldatei, $cutID, $phpwcms) {
     echo backend_action('include/inc_act/act_download.php?dl=' . $file_row['f_id'], 'download', $BL['be_fprivfunc_dlfile'] . ': ' . $filename);
     // cut or already on the clipboard
     if($cutID == $file_row['f_id']) {
-        echo backend_action('#', 'scissors', $BL['be_fprivfunc_clipfile'] . ': ' . $filename, 'active');
+        echo backend_action('#', 'scissors', $BL['be_fprivfunc_clipfile'] . ': ' . $filename, 'active', '', 'warning');
     } else {
         echo backend_action($zieldatei . '&amp;cut=' . $file_row['f_id'], 'scissors', $BL['be_fprivfunc_cutfile'] . ': ' . $filename);
     }
