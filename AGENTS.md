@@ -436,9 +436,12 @@ existing entry already covers the action before adding a second glyph for it.
   value or timestamp from the query and render it with
   `date($backend_date_format['php'], $time)`, guarding `strtotime()` so an empty
   or unparsable value stays as it is. Do not format in SQL with `DATE_FORMAT()`
-  and do not use `$BL['be_longdatetime']`; HOME's two *last edited* cards
-  (`include/inc_tmpl/be_start.tmpl.php`) were converted that way, the article
-  summary header already was.
+  and do not use `$BL['be_longdatetime']` or `$BL['be_shortdatetime']`. Converted
+  that way: the article summary header, HOME's two *last edited* cards
+  (`include/inc_tmpl/be_start.tmpl.php`) and the article information panel with
+  its content part list (`include/inc_tmpl/articlecontent.list.tmpl.php`: last
+  edit, created, start and end date, each content part's timestamp and its live
+  and kill dates).
 - `window.phpwcmsDatePickerSet(inputOrId, canonicalValue)` is the module's
   setter for other inline handlers: it writes the canonical value through the
   picker instance (so the visible twin follows) and dispatches `change`;

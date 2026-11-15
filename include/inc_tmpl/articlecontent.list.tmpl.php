@@ -16,6 +16,9 @@ if (!defined('PHPWCMS_ROOT')) {
 }
 // ----------------------------------------------------------------
 
+// dates on this screen follow the format picked in the profile
+$backend_date_format = backend_date_format($_SESSION['wcs_user_date_format'] ?? '');
+
 $buttonAction  = '<table cellpadding="0" cellspacing="0" border="0"><tr>'.LF;
 // Article List
 $buttonAction .= '<td><input type="button" value="'.$BL['be_article_cnt_center'];
@@ -153,13 +156,13 @@ $buttonAction .= '</tr></table>';
             </tr>
             <tr>
               <td class="v10" style="color:#727889"><?php echo $BL['be_article_eslastedit'] ?>:&nbsp;</td>
-              <td class="v10"><?php echo phpwcms_strtotime($article["article_date"], $BL['be_longdatetime'], '') ?>&nbsp;&nbsp;<span style="color:#727889"><?php echo $BL['be_fprivedit_created'] ?>:</span>&nbsp;<?php echo date($BL['be_longdatetime'], $article["article_created"]) ?></td>
+              <td class="v10"><?php echo phpwcms_strtotime($article["article_date"], $backend_date_format['php'], '') ?>&nbsp;&nbsp;<span style="color:#727889"><?php echo $BL['be_fprivedit_created'] ?>:</span>&nbsp;<?php echo date($backend_date_format['php'], $article["article_created"]) ?></td>
             </tr>
             <tr>
               <td class="v10 nowrap" style="color:#727889" nowrap="nowrap"><?php echo $BL['be_article_cnt_start'] ?>:&nbsp;</td>
               <td class="v10">
-                  <?php echo $set_begin ? phpwcms_strtotime($article["article_begin"], $BL['be_longdatetime'], '') : $BL['be_not_set']; ?>&nbsp;&nbsp;<span style="color:#727889"><?php echo $BL['be_article_cnt_end'] ?>:</span>
-                  <?php echo $set_end ? phpwcms_strtotime($article["article_end"], $BL['be_longdatetime'], '') : $BL['be_not_set']; ?>
+                  <?php echo $set_begin ? phpwcms_strtotime($article["article_begin"], $backend_date_format['php'], '') : $BL['be_not_set']; ?>&nbsp;&nbsp;<span style="color:#727889"><?php echo $BL['be_article_cnt_end'] ?>:</span>
+                  <?php echo $set_end ? phpwcms_strtotime($article["article_end"], $backend_date_format['php'], '') : $BL['be_not_set']; ?>
               </td>
             </tr>
             <tr>
@@ -473,7 +476,7 @@ if(!$temp_count) {
                   <td class="v09 nowrap" style="color:#727889;padding:0 4px 0 5px" width="60" nowrap="nowrap">[ID:<?php echo $row["acontent_id"] ?>]</td>
                   <td class="v09 nowrap" nowrap="nowrap"><?php
 
-                  echo date($BL['be_shortdatetime'], $row["acontent_date"]).'&nbsp;';
+                  echo date($backend_date_format['php'], $row["acontent_date"]).'&nbsp;';
 
                   if($contentpart_block != 'CPSET') {
 
@@ -549,8 +552,8 @@ if(!$temp_count) {
             <tr><td colspan="3"><img src="img/leer.gif" alt="" width="1" height="3" /></td></tr>
 <?php   endif;
 
-        $acontent_livedate = is_null($row['acontent_livedate']) ? false : phpwcms_strtotime($row['acontent_livedate'], $BL['be_longdatetime'], '');
-        $acontent_killdate = is_null($row['acontent_killdate']) ? false : phpwcms_strtotime($row['acontent_killdate'], $BL['be_longdatetime'], '');
+        $acontent_livedate = is_null($row['acontent_livedate']) ? false : phpwcms_strtotime($row['acontent_livedate'], $backend_date_format['php'], '');
+        $acontent_killdate = is_null($row['acontent_killdate']) ? false : phpwcms_strtotime($row['acontent_killdate'], $backend_date_format['php'], '');
 
         if($acontent_livedate || $acontent_killdate):
 ?>
