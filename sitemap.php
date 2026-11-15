@@ -203,5 +203,5 @@ $xml_output = ob_get_clean();
 if (!is_dir($cache_dir) && !mkdir($cache_dir, 0777, true) && !is_dir($cache_dir)) {
     throw new RuntimeException(sprintf('Directory "%s" was not created', $cache_dir));
 }
-@file_put_contents($cache_file, $xml_output);
+write_textfile($cache_file, $xml_output);
 echo $xml_output;

@@ -383,7 +383,7 @@ function _dbLogError($log_msg='') {
         if(@is_dir(PHPWCMS_LOGDIR)) {
             $log_msg = '[' . date('Y-m-d H:i:s') . '] ' . $log_msg . LF;
 
-            @file_put_contents(PHPWCMS_LOGDIR . '/phpwcms_db_error.log', $log_msg, FILE_APPEND);
+            @file_put_contents(PHPWCMS_LOGDIR . '/phpwcms_db_error.log', $log_msg, FILE_APPEND | LOCK_EX);
         }
 
     }

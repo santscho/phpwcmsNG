@@ -548,9 +548,19 @@ function read_textfile($filename, $mode = 'rb') {
 }
 
 function write_textfile($filename, $text, $mode = 'w+b') {
-    if ($fp = @fopen($filename, $mode)) {
-        if (empty($text)) {
-            $text = "\n";
+    if (empty($text)) {
+        $text = "\n";
+    }
+
+    // Appending is one locked write, so parallel requests cannot interleave lines.
+    if (strpos($mode, 'a') !== false) {
+        return @file_put_contents($filename, $text, FILE_APPEND | LOCK_EX) !== false;
+    }
+
+    // Exclusive create keeps its semantics: it fails when the file exists.
+    if (strpos($mode, 'x') !== false) {
+        if (!$fp = @fopen($filename, 'xb')) {
+            return false;
         }
         fwrite($fp, $text);
         fclose($fp);
@@ -558,7 +568,33 @@ function write_textfile($filename, $text, $mode = 'w+b') {
         return true;
     }
 
-    return false;
+    // Truncating writes go to a temporary file in the same folder and replace the
+    // target with rename(). Readers never see a half written file and two requests
+    // writing the same file cannot mix their content.
+    if (!$temp = @tempnam(dirname($filename), '.phpwcms-')) {
+        return false;
+    }
+
+    if (@file_put_contents($temp, $text) === false) {
+        @unlink($temp);
+
+        return false;
+    }
+
+    $perms = @fileperms($filename);
+    @chmod($temp, ($perms !== false) ? ($perms & 0777) : (0666 & ~umask()));
+
+    if (!@rename($temp, $filename)) {
+        // Windows cannot rename over an existing file
+        @unlink($filename);
+        if (!@rename($temp, $filename)) {
+            @unlink($temp);
+
+            return false;
+        }
+    }
+
+    return true;
 }
 
 function check_cache($file, $cache_timeout = 0) {

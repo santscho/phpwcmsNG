@@ -38,7 +38,13 @@ class SVGMetadataExtractor {
             $sanitizer->removeXMLTag(true);
             $dirtySVG = file_get_contents( $filename );
             if ($dirtySVG && ($cleanSVG = $sanitizer->sanitize( $dirtySVG ))) {
-                file_put_contents( $filename, trim($cleanSVG) );
+                // Replace the file instead of rewriting it in place, a parallel
+                // request must never read a half written SVG.
+                if (function_exists('write_textfile')) {
+                    write_textfile( $filename, trim($cleanSVG) );
+                } else {
+                    file_put_contents( $filename, trim($cleanSVG), LOCK_EX );
+                }
             }
         }
 

@@ -322,9 +322,23 @@ class SPAF_FormValidator {
     }
 
     function writeFile( $file, $content ) {
-        $fl  = @fopen( $file, 'w' );
-        $ret = @fwrite( $fl, $content );
-        @fclose( $fl );
+        // Replace the tag file instead of writing it in place, a parallel request
+        // must never read a half written tag.
+        if ( !$temp = @tempnam( dirname( $file ), '.spaf-' ) ) {
+            return false;
+        }
+        $ret = @file_put_contents( $temp, $content );
+        if ( $ret === false ) {
+            @unlink( $temp );
+
+            return false;
+        }
+        @chmod( $temp, 0666 & ~umask() );
+        if ( !@rename( $temp, $file ) ) {
+            @unlink( $temp );
+
+            return false;
+        }
 
         return $ret;
     }

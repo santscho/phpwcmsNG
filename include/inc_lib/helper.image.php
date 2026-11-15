@@ -69,6 +69,7 @@ class Phpwcms_Image_lib {
     var $size_str = '';
     var $full_src_path = '';
     var $full_dst_path = '';
+    var $tmp_dst_path = '';
     var $create_fnc = 'imagecreatetruecolor';
     var $copy_fnc = 'imagecopyresampled';
     var $error_msg = [];
@@ -327,6 +328,7 @@ class Phpwcms_Image_lib {
         $file_ext = $xp['ext'];
         $this->full_src_path = $this->source_folder . $this->source_image;
         $this->full_dst_path = $this->dest_folder . $filename . $this->thumb_marker . $file_ext;
+        $this->tmp_dst_path = '';
         /*
          * Should we maintain image proportions?
          *
@@ -484,10 +486,8 @@ class Phpwcms_Image_lib {
             if (is_file($this->full_dst_path)) {
                 return true;
             } elseif (!PHPWCMS_RESIZE_ANIMATED_GIF) {
-                $copied = @copy($this->full_src_path, $this->full_dst_path);
-                if ($copied) {
-                    @chmod($this->full_dst_path, 0666);
-                    return true;
+                if (@copy($this->full_src_path, $this->write_dst_path())) {
+                    return $this->commit_dst(true);
                 }
                 return false;
             }
@@ -496,8 +496,8 @@ class Phpwcms_Image_lib {
         // If the target width/height match the source, AND if the new file name is not equal to the old file name
         // we'll simply make a copy of the original with the new name... assuming dynamic rendering is off.
         if ($this->dynamic_output === false && $this->colorspace != 'GRAY' && $this->orig_width == $this->width && $this->orig_height == $this->height) {
-            if ($this->source_image != $this->new_image && @copy($this->full_src_path, $this->full_dst_path)) {
-                @chmod($this->full_dst_path, 0666);
+            if ($this->source_image != $this->new_image && @copy($this->full_src_path, $this->write_dst_path())) {
+                return $this->commit_dst(true);
             }
             return true;
         }
@@ -558,7 +558,7 @@ class Phpwcms_Image_lib {
         }
         // Free image memory; GdImage objects are released automatically since PHP 8.0
         unset($dst_img, $src_img);
-        // Set the file to 777
+        // image_save_gd() moved the written file to its destination
         @chmod($this->full_dst_path, 0666);
         return true;
     }
@@ -598,10 +598,8 @@ class Phpwcms_Image_lib {
                 if (is_file($this->full_dst_path)) {
                     return true;
                 } elseif (!PHPWCMS_RESIZE_ANIMATED_GIF) {
-                    $copied = @copy($this->full_src_path, $this->full_dst_path);
-                    if ($copied) {
-                        @chmod($this->full_dst_path, 0666);
-                        return true;
+                    if (@copy($this->full_src_path, $this->write_dst_path())) {
+                        return $this->commit_dst(true);
                     }
                     return false;
                 }
@@ -610,7 +608,7 @@ class Phpwcms_Image_lib {
                 if (!$this->graphicsmagick) {
                     $coalesce .= '-layers RemoveDups ';
                 }
-                $resized_gif = $this->full_dst_path . '.miff';
+                $resized_gif = $this->write_dst_path() . '.miff';
                 $coalesce .= escapeshellarg($resized_gif) . ' 2>&1';
                 // Run the command
                 @exec($coalesce, $output, $retval);
@@ -665,11 +663,11 @@ class Phpwcms_Image_lib {
             }
         }
         if ($action == 'crop') {
-            $cmd .= ' -crop ' . $this->width . 'x' . $this->height . '+' . $this->x_axis . '+' . $this->y_axis . ' ' . escapeshellarg($this->full_src_path . $picnum) . ' -strip ' . escapeshellarg($this->full_dst_path) . ' 2>&1';
+            $cmd .= ' -crop ' . $this->width . 'x' . $this->height . '+' . $this->x_axis . '+' . $this->y_axis . ' ' . escapeshellarg($this->full_src_path . $picnum) . ' -strip ' . escapeshellarg($this->write_dst_path()) . ' 2>&1';
         } elseif ($action == 'crop-resize-center') {
             // combined centered crop and resize
             $cmd .= ' -resize x' . ($this->height * 2) . " -resize '" . ($this->width * 2) . "x<' -resize 50% -gravity center ";
-            $cmd .= ' -crop ' . $this->width . 'x' . $this->height . '+0+0 +repage ' . escapeshellarg($this->full_src_path . $picnum) . ' -strip ' . escapeshellarg($this->full_dst_path) . ' 2>&1';
+            $cmd .= ' -crop ' . $this->width . 'x' . $this->height . '+0+0 +repage ' . escapeshellarg($this->full_src_path . $picnum) . ' -strip ' . escapeshellarg($this->write_dst_path()) . ' 2>&1';
         } elseif ($action == 'rotate') {
             switch ($this->rotation_angle) {
                 case 'hor'  :
@@ -682,10 +680,10 @@ class Phpwcms_Image_lib {
                     $angle = '-rotate ' . $this->rotation_angle;
                     break;
             }
-            $cmd .= ' ' . $angle . ' ' . escapeshellarg($this->full_src_path . $picnum) . ' -strip ' . escapeshellarg($this->full_dst_path) . ' 2>&1';
+            $cmd .= ' ' . $angle . ' ' . escapeshellarg($this->full_src_path . $picnum) . ' -strip ' . escapeshellarg($this->write_dst_path()) . ' 2>&1';
         } else  // Resize
         {
-            $cmd .= ' -resize ' . $this->width . 'x' . $this->height . ' ' . escapeshellarg($this->full_src_path . $picnum) . ' -strip ' . escapeshellarg($this->full_dst_path) . ' 2>&1';
+            $cmd .= ' -resize ' . $this->width . 'x' . $this->height . ' ' . escapeshellarg($this->full_src_path . $picnum) . ' -strip ' . escapeshellarg($this->write_dst_path()) . ' 2>&1';
         }
         $retval = 1;
         // debug commands
@@ -697,11 +695,9 @@ class Phpwcms_Image_lib {
         // Did it work?
         if ($retval > 0) {
             $this->set_error('imglib_image_process_failed');
-            return false;
+            return $this->commit_dst(false);
         }
-        // Set the file to 666
-        @chmod($this->full_dst_path, 0666);
-        return true;
+        return $this->commit_dst(true);
     }
 
     // --------------------------------------------------------------------
@@ -784,21 +780,16 @@ class Phpwcms_Image_lib {
         $cmd = escapeshellarg($this->library_path . $cmd_in) . ' ' . escapeshellarg($this->full_src_path)
             . ' | ' . $cmd_inner
             . ' | ' . escapeshellarg($cmd_bin) . $cmd_args
-            . ' > ' . escapeshellarg($this->dest_folder . 'netpbm.tmp');
+            . ' > ' . escapeshellarg($this->write_dst_path());
         $retval = 1;
         @exec($cmd, $output, $retval);
         // Did it work?
         if ($retval > 0) {
             $this->set_error('imglib_image_process_failed');
-            return false;
+            return $this->commit_dst(false);
         }
-        // With NetPBM we have to create a temporary image.
-        // If you try manipulating the original it fails so
-        // we have to rename the temp file.
-        copy($this->dest_folder . 'netpbm.tmp', $this->full_dst_path);
-        unlink($this->dest_folder . 'netpbm.tmp');
-        @chmod($this->full_dst_path, 0666);
-        return true;
+        // NetPBM wrote the result to the temporary destination, move it in place.
+        return $this->commit_dst(true);
     }
 
     // --------------------------------------------------------------------
@@ -1235,6 +1226,52 @@ class Phpwcms_Image_lib {
     // --------------------------------------------------------------------
 
     /**
+     * Path the image processors write to
+     *
+     * They write to a process unique file and commit_dst() moves it to the real
+     * destination. A request reading the destination therefore never sees an image
+     * that is still being written, and two requests generating the same thumbnail
+     * cannot mix their bytes.
+     *
+     * @access  public
+     * @return  string
+     */
+    function write_dst_path() {
+        if ($this->tmp_dst_path === '') {
+            $this->tmp_dst_path = $this->full_dst_path . '.tmp-' . getmypid() . '-' . str_replace('.', '', uniqid('', true));
+        }
+        return $this->tmp_dst_path;
+    }
+
+    /**
+     * Move the written image to its destination
+     *
+     * @access  public
+     * @param   bool $result
+     * @return  bool
+     */
+    function commit_dst($result) {
+        $tmp = $this->tmp_dst_path;
+        $this->tmp_dst_path = '';
+        if ($tmp === '') {
+            return $result;
+        }
+        if (!$result || !is_file($tmp)) {
+            @unlink($tmp);
+            return $result;
+        }
+        @chmod($tmp, 0666);
+        if (!@rename($tmp, $this->full_dst_path)) {
+            @unlink($this->full_dst_path);
+            if (!@rename($tmp, $this->full_dst_path)) {
+                @unlink($tmp);
+                return false;
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Write image file to disk - GD
      *
      * Takes an image resource as input and writes the file
@@ -1247,55 +1284,56 @@ class Phpwcms_Image_lib {
      * @return  bool
      */
     function image_save_gd($resource) {
-        if (PHPWCMS_WEBP && $this->target_ext === 'webp' && function_exists('imagewebp') && imagewebp($resource, $this->full_dst_path, $this->quality)) {
-            return true;
+        $dst = $this->write_dst_path();
+        if (PHPWCMS_WEBP && $this->target_ext === 'webp' && function_exists('imagewebp') && imagewebp($resource, $dst, $this->quality)) {
+            return $this->commit_dst(true);
         }
         switch ($this->image_type) {
             case IMAGETYPE_GIF:
                 if (!function_exists('imagegif')) {
                     $this->set_error(array('imglib_unsupported_imagecreate', 'imglib_gif_not_supported'));
-                    return false;
+                    return $this->commit_dst(false);
                 }
-                if (!@imagegif($resource, $this->full_dst_path)) {
+                if (!@imagegif($resource, $dst)) {
                     $this->set_error('imglib_save_failed');
-                    return false;
+                    return $this->commit_dst(false);
                 }
                 break;
             case IMAGETYPE_JPEG:
                 if (!function_exists('imagejpeg')) {
                     $this->set_error(array('imglib_unsupported_imagecreate', 'imglib_jpg_not_supported'));
-                    return false;
+                    return $this->commit_dst(false);
                 }
-                if (!@imagejpeg($resource, $this->full_dst_path, $this->quality)) {
+                if (!@imagejpeg($resource, $dst, $this->quality)) {
                     $this->set_error('imglib_save_failed');
-                    return false;
+                    return $this->commit_dst(false);
                 }
                 break;
             case IMAGETYPE_PNG:
                 if (!function_exists('imagepng')) {
                     $this->set_error(array('imglib_unsupported_imagecreate', 'imglib_png_not_supported'));
-                    return false;
+                    return $this->commit_dst(false);
                 }
-                if (!@imagepng($resource, $this->full_dst_path)) {
+                if (!@imagepng($resource, $dst)) {
                     $this->set_error('imglib_save_failed');
-                    return false;
+                    return $this->commit_dst(false);
                 }
                 break;
             case IMAGETYPE_WEBP:
                 if (!function_exists('imagewebp')) {
                     $this->set_error(array('imglib_unsupported_imagecreate', 'imglib_png_not_supported'));
-                    return false;
+                    return $this->commit_dst(false);
                 }
-                if (!@imagewebp($resource, $this->full_dst_path, $this->quality)) {
+                if (!@imagewebp($resource, $dst, $this->quality)) {
                     $this->set_error('imglib_save_failed');
-                    return false;
+                    return $this->commit_dst(false);
                 }
                 break;
             default:
                 $this->set_error('imglib_unsupported_imagecreate');
-                return false;
+                return $this->commit_dst(false);
         }
-        return true;
+        return $this->commit_dst(true);
     }
 
     // --------------------------------------------------------------------
