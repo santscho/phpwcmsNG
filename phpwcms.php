@@ -160,6 +160,12 @@ switch ($do) {
         }
         $subnav .= subnavtext($BL['be_subnav_profile_login'], "phpwcms.php?do=profile", $p, "", 0);
         $subnav .= subnavtext($BL['be_subnav_profile_personal'], "phpwcms.php?do=profile&amp;p=1", $p, "1", 0);
+        if(!empty($_SESSION['wcs_user_admin'])) {
+            $subnav .= subnavtext($BL['be_subnav_profile_2fa'], "phpwcms.php?do=profile&amp;p=2", $p, "2", 0);
+        }
+        if($p === 2 && !empty($_SESSION['wcs_user_admin'])) {
+            include PHPWCMS_ROOT . '/include/inc_lib/profile.2fa.inc.php';
+        }
         break;
 
     case "logout":      //Logout
@@ -412,6 +418,8 @@ if($BE['LANG'] == 'ar') {
         case "profile": //Profile
             if ($p === 1) {
                 include PHPWCMS_ROOT . '/include/inc_tmpl/profile.data.tmpl.php';
+            } elseif ($p === 2 && !empty($_SESSION['wcs_user_admin'])) {
+                include PHPWCMS_ROOT . '/include/inc_tmpl/profile.2fa.tmpl.php';
             } else {
                 include PHPWCMS_ROOT . '/include/inc_tmpl/profile.account.tmpl.php';
             }
