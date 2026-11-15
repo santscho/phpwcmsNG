@@ -163,6 +163,8 @@ MIT) inlined at 16x16 from `backend_icon()`. The names are fixed:
 - **state switches** (files and directories alike): active `toggle-on` as a
   solid `theme-success` button, inactive `toggle-off` as an outline
   `theme-secondary` one; public `globe` and private `lock` follow the same rule
+- **public files**: file owner `person-fill`, shown before the owner name of
+  each group in the public file listing
 - **file types** (`backend_file_icon()` maps an extension to one of these):
   image `file-earmark-image`, pdf `file-earmark-pdf`, word `file-earmark-word`,
   excel `file-earmark-excel`, archive `file-earmark-zip`, text `file-earmark-text`,
@@ -208,6 +210,15 @@ existing entry already covers the action before adding a second glyph for it.
   paste, edit, the two state switches and delete; a non-empty directory gets the
   disabled trash button with the "not empty" title. File rows also carry
   download, cut and the file information editor.
+- The public listing (`files.public.list.tmpl.php` with the helpers in
+  `files.public-functions.inc.php`) is the same pattern, grouped per owner: a
+  `person-fill` row per owner with its `pklapp=u<id>` chevron, and the owner's
+  directories and files in a nested `list-group list-group-flush ms-5`. Directory
+  rows carry `folder-fill` and the `pklapp=<id>` chevron, file rows the
+  `backend_file_icon()` mark, name, `EXT &middot; size` meta, the thumbnail and a
+  download button that keeps `pl=1`. The name opens `fileinfo.php?public&fid=<id>`
+  in the `filedetail` popup, as before. `all=open` fills `pklapp` with every owner
+  and public directory, `all=close` clears it.
 - Thumbnails stay available through the header toggle and render inside the row,
   but only for image extensions.
 - `files.abschluss.tmpl.php` and `files.private-filelist.inc.php` are gone: the
