@@ -33,7 +33,7 @@ if(count($clink)) {
 		$clink_link = trim($clink_link[0]);
 		$clink_liste .= "<a href=\"".$clink_link."\" target=\"_blank\" ";
 		$clink_liste .= "title=\"Link: ".html($clink_link.trim(' '.$clink_target))."\">";
-		$clink_liste .= "<img src=\"img/symbole/link_to_1.gif\" border=\"0\" alt=\"\" />";
+		$clink_liste .= "<span class=\"d-inline-flex align-items-center\">" . backend_icon('arrow-up-right') . "</span> ";
 		$clink_liste .= html($clink_name ?: $clink_link)."</a>\n";
 	}
 	unset($clink);
@@ -45,10 +45,10 @@ foreach($cinfo as $value) {
 }
 $cinfo["result"] = str_replace("\n", " / ", html(chop($cinfo["result"])));
 if($cinfo["result"] || $clink_liste) { //Zeige Inhaltinfo
- echo "<tr><td>&nbsp;</td><td class=\"v10\">";
+ echo "<div class=\"small fg-secondary\">";
  if($cinfo["result"]) {
 	echo "<a href=\"phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id=".$article["article_id"]."&amp;acid=";
 	echo $row["acontent_id"]."\">".$cinfo["result"]."</a><br />";
  }
- echo nl2br(chop($clink_liste))."</td><td>&nbsp;</td></tr>";
+ echo nl2br(chop($clink_liste))."</div>";
 }

@@ -47,9 +47,9 @@ foreach($cinfo as $value) {
 }
 $cinfo["result"] = str_replace("\n", " / ", html(trim($cinfo["result"])));
 if($cinfo["result"] || $cinfo_image) { //Zeige Inhaltinfo
-    echo "<tr><td>&nbsp;</td><td class=\"v10\">";
+    echo "<div class=\"small fg-secondary\">";
     echo "<a href=\"phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id=".$article["article_id"]."&amp;acid=".$row["acontent_id"]."\">";
     echo $cinfo["result"];
     if($cinfo["result"] && $cinfo_image) echo "<br />";
-    echo $cinfo_image."</a></td><td>&nbsp;</td></tr>";
+    echo $cinfo_image."</a></div>";
 }

@@ -28,7 +28,7 @@ foreach($cinfo as $value) {
 $cinfo["result"] = str_replace("\n", " / ", trim($cinfo["result"]));
 
 
-echo "<tr><td>&nbsp;</td><td class=\"v10\">";
+echo "<div class=\"small fg-secondary\">";
 if($cinfo["result"]) { //Zeige Inhaltinfo
 	echo "<a href=\"phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id=".$article["article_id"]."&amp;acid=";
 	echo $row["acontent_id"]."\">".$cinfo["result"].'</a>';
@@ -36,6 +36,6 @@ if($cinfo["result"]) { //Zeige Inhaltinfo
 $rssfeed = unserialize($row['acontent_form'], ['allowed_classes' => false]);
 if($rssfeed['rssurl']) {
 	echo ' <a href="'.html($rssfeed['rssurl']).'" target="_blank">';
-	echo '<img src="img/symbole/xml.gif" width="36" height="14" border="0" style="vertical-align:middle;"></a>';
+	echo '<span class="d-inline-flex align-items-center align-middle">' . backend_icon('arrow-up-right') . '</span></a>';
 }
-echo "</td><td>&nbsp;</td></tr>";
+echo "</div>";

@@ -63,8 +63,8 @@ if( $row["acontent_form"] = @unserialize($row['acontent_form'], ['allowed_classe
 }
 
 if(count($cinfo["result"])) {
-    echo '<tr><td>&nbsp;</td><td class="v10">';
+    echo '<div class="small fg-secondary">';
     echo '<a href="phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id='.$article["article_id"].'&amp;acid='.$row["acontent_id"].'">';
     echo implode('<br />', $cinfo["result"]);
-    echo '</a></td><td>&nbsp;</td></tr>';
+    echo '</a></div>';
 }

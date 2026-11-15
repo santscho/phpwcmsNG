@@ -32,7 +32,7 @@ if($row["acontent_text"]) {
 
 if(count($cinfo)) { //Zeige Inhaltinfo
 	$cinfo = implode(" / ", $cinfo);
-	echo "<tr><td>&nbsp;</td><td class=\"v10\">";
+	echo "<div class=\"small fg-secondary\">";
 	echo "<a href=\"phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id=".$article["article_id"]."&amp;acid=".$row["acontent_id"]."\">";
-	echo $cinfo."</a></td><td>&nbsp;</td></tr>";
+	echo $cinfo."</a></div>";
 }

@@ -18,7 +18,7 @@ if (!defined('PHPWCMS_ROOT')) {
 
 
 // Alias ID
-echo "<tr><td>&nbsp;</td><td class=\"v10\">".$BL['be_alias_ID'].': ';
+echo "<div class=\"small fg-secondary\">".$BL['be_alias_ID'].': ';
 $content["alias"] = @unserialize($row['acontent_form'], ['allowed_classes' => false]);
 $content['alias_link'] = '';
 if(empty($content["alias"]['alias_ID'])) {
@@ -40,4 +40,4 @@ if(empty($content["alias"]['alias_ID'])) {
 }
 
 echo $content["alias"]['alias_ID'].$content['alias_link'];
-echo "</td><td>&nbsp;</td></tr>";
+echo "</div>";

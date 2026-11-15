@@ -28,7 +28,7 @@ foreach($cinfo as $value) {
 $cinfo["result"] = str_replace("\n", " / ", trim($cinfo["result"]));
 
 
-echo "<tr><td>&nbsp;</td><td class=\"v10\">";
+echo "<div class=\"small fg-secondary\">";
 if($cinfo["result"]) { //Zeige Inhaltinfo
 	echo "<a href=\"phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id=".$article["article_id"]."&amp;acid=";
 	echo $row["acontent_id"]."\">".$cinfo["result"].'</a>';
@@ -39,4 +39,4 @@ if($form['subject']) {
 	echo html($form['subject']);
 }
 unset($form);
-echo "</td><td>&nbsp;</td></tr>";
+echo "</div>";

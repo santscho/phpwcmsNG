@@ -196,7 +196,11 @@ MIT) inlined at 16x16 from `backend_icon()`. The names are fixed:
   restore from trash `restore` (Bootstrap icon `arrow-counterclockwise`)
 - **visibility switch**: `eye` in `theme-success` while the entry is visible,
   `eye-slash` in `theme-danger` while it is hidden
-- **tree and add**: `chevron-right`, `chevron-down`, `plus`
+- **tree, add and sort**: `chevron-right`, `chevron-down`, `chevron-up` (move
+  a content part up), `plus`
+- **external link marker**: `arrow-up-right`, before a link or feed preview that
+  opens somewhere else (the content part listings of link, link list and RSS
+  feed)
 - **file manager actions**: upload `upload`, download `download`, new directory
   `folder-plus`, help `question-circle`, expand all `chevron-bar-expand`,
   collapse all `chevron-bar-contract`, thumbnails off `image` / on `image-fill`
@@ -411,6 +415,47 @@ existing entry already covers the action before adding a second glyph for it.
 - Keep `document.article.*` working: the summary editor, the keyword autosuggest
   (`#article_keyword_autosuggest`, `#as-values-keyword-autosuggest`) and the
   inline `onchange`/`onclick` handlers reference form elements by name.
+
+## Article edit screen (content parts)
+
+- `ARTICLE > article center` and the article tree open this screen with the pen
+  action (`phpwcms.php?do=articles&p=2&s=1&id=<aid>`), it is
+  `include/inc_tmpl/articlecontent.list.tmpl.php`. It is one form
+  (`name="addcontent" id="addcontent"`) with two stacked cards in a `row g-4`.
+- The first card is the article: `journal-bookmark-fill`, the title as a link to
+  the basis form, `AID:<id>`, visible/inactive and the language code as badges in
+  the header, the pen, visibility (`eye` `theme-success` / `eye-slash`
+  `theme-danger`) and article delete actions on the right. The body is a
+  `row g-4` of label/value pairs from `$info_row()` (full width for summary,
+  images, status and robots), the article images as thumbnails. The footer
+  carries `article center` and `preview`.
+- Status marks are `badge theme-success`/`theme-secondary` and keep the
+  conditions the old list used — sitemap `article_nositemap == 1`, search
+  `article_nosearch != 1`, RSS `article_norsr != 1`, opengraph `== 1`, archive
+  `== 1`; robots noindex/nofollow are `badge theme-danger`.
+- The second card lists the content parts and carries the add form in its
+  header: the `ctype` select (changing it submits, `w-auto` keeps it narrow) and
+  the `image` submit, plus the hidden `csorting` at the end of the form. The POST
+  opens the content part editor for the chosen type, it does not insert a row.
+- The list is a `list-group list-group-flush`: block headers (`bg-2`, uppercase
+  `small fw-bold`) and tabbed headers, then one `list-group-item` per content
+  part with `postcard-fill` (plus `lock`/`person-fill` for the granted states),
+  the type as `small fw-bold text-uppercase`, `ID:<id>` badge, its date in the
+  user's format, meta badges (paginate page, space before/after, top link,
+  anchor), a visible/inactive badge, the live and kill dates, the type info line
+  and the action group: sort `chevron-up`/`chevron-down`, edit `pen`, copy `copy`,
+  visibility `eye`/`eye-slash`, delete `trash`. The sort URLs
+  (`act_articlecontent.php?sort=<id>:<sort>|<id>:<sort>`), the duplicate
+  (`act_structure.php?do=8|<cid>|<aid>|<sorting+5>`), the visibility toggle
+  (`do=2,<aid>,<cid>,<switch>`) and delete (`do=9,<aid>,<cid>`) calls and the
+  confirm texts are unchanged.
+- The 35 type listings `include/inc_tmpl/content/cnt*.list.inc.php` (and
+  `mod_glossary/inc/cnt.list.php`) are included per row. They output one
+  `<div class="small fg-secondary">` info block now, without table rows, spacer
+  gifs or button images, and keep the same variables (`$row`, `$article`,
+  `$cinfo`).
+- Dates come from `$backend_date_format`, like everywhere else. `$set_begin` and
+  `$set_end` are provided by the caller.
 
 ## Date and time format
 

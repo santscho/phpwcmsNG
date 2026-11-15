@@ -35,12 +35,12 @@ foreach($cinfo as $value) {
     }
 }
 $cinfo["result"] .= str_replace("\n", " / ", html(chop($cinfo["result"])));
-echo "<tr><td>&nbsp;</td><td class=\"v10\">";
+echo "<div class=\"small fg-secondary\">";
 echo "<a href=\"" . $content["link"] . "\" target=\"_blank\">";
-echo "<img src=\"img/symbole/link_to.gif\" border=\"0\" ";
-echo "title=\"test link to: " . html($content["link"]) . "\"></a>";
+echo "<span class=\"d-inline-flex align-items-center\" title=\"test link to: " . html($content["link"]) . "\">";
+echo backend_icon('arrow-up-right') . "</span></a>";
 if($cinfo["result"]) { //Zeige Inhaltinfo
     echo " <a href=\"phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id=" . $article["article_id"];
     echo "&amp;acid=" . $row["acontent_id"] . "\">" . $cinfo["result"] . "</a>";
 }
-echo "</td><td>&nbsp;</td></tr>";
+echo "</div>";

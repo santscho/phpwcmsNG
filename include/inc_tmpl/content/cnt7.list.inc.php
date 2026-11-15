@@ -57,7 +57,7 @@ if($row["acontent_files"]) {
 			}
 			if($fx) $cinfo_files .= "<br />";
 			$cinfo_files .= "<img src=\"img/icons/small_".extimg($value["fext"])."\" border=\"0\">";
-			$cinfo_files .= "<img src=\"img/leer.gif\" width=\"3\" height=\"1\" border=\"0\">";
+			$cinfo_files .= " ";
 			$cinfo_files .= $value["fname"];
 			$fx++;
 		}
@@ -76,7 +76,7 @@ if($cinfo["result"] && $cinfo_files) {
 }
 
 if($cinfo["result"]) { //Zeige Inhaltinfo
-	echo "<tr><td>&nbsp;</td><td class=\"v10\">";
+	echo "<div class=\"small fg-secondary\">";
 	echo "<a href=\"phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id=".$article["article_id"]."&amp;acid=".$row["acontent_id"]."\">";
-	echo $cinfo["result"]."</a></td><td>&nbsp;</td></tr>";
+	echo $cinfo["result"]."</a></div>";
 }

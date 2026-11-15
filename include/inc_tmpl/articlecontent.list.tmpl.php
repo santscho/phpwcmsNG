@@ -19,239 +19,198 @@ if (!defined('PHPWCMS_ROOT')) {
 // dates on this screen follow the format picked in the profile
 $backend_date_format = backend_date_format($_SESSION['wcs_user_date_format'] ?? '');
 
-$buttonAction  = '<table cellpadding="0" cellspacing="0" border="0"><tr>'.LF;
-// Article List
-$buttonAction .= '<td><input type="button" value="'.$BL['be_article_cnt_center'];
-$buttonAction .= '" class="button" title="'.$BL['be_article_cnt_center'].'" onclick="';
-$buttonAction .= "location.href='phpwcms.php?do=articles';return false;\"></td>\n<td>&nbsp;</td>\n";
-// Article Preview (new window)
-$buttonActionLink = rel_url(array('phpwcms-preview'=>1), array(), empty($article["article_alias"]) ? 'aid='.$article["article_id"] : $article["article_alias"]);
-$buttonAction .= '<td><input type="button" value="'.$BL['be_func_struct_preview'].'" class="button" title="'.$BL['be_func_struct_preview'].'" onclick="';
-$buttonAction .= "window.open('".$buttonActionLink."', 'articlePreviewWindows');return false;\"></td>";
-$buttonAction .= '</tr></table>';
+$article_edit_link    = 'phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=1&amp;id=' . $article["article_id"];
+$article_cp_link      = 'phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id=' . $article["article_id"];
+$article_preview_link = rel_url(array('phpwcms-preview' => 1), array(), empty($article["article_alias"]) ? 'aid=' . $article["article_id"] : $article["article_alias"]);
+$article_language     = strtolower(empty($article["article_lang"]) ? $phpwcms['default_lang'] : $article["article_lang"]);
+
+// the article information card is a grid of label/value pairs
+$info_row = static function ($label, $value, $class = 'col-12 md:col-6') {
+    return '<div class="' . $class . '"><div class="small fg-secondary">' . $label . '</div><div>' . $value . '</div></div>';
+};
+
+// status marks of the article, the conditions the old list used
+$article_flags = array(
+    $BL['be_ctype_sitemap']            => $article["article_nositemap"] == 1,
+    $BL['be_fsearch_searchlabel']      => $article["article_nosearch"] != 1,
+    $BL['be_no_rss']                   => $article["article_norss"] != 1,
+    $BL['be_opengraph_support']        => $article["article_opengraph"] == 1,
+    $BL['be_show_archived']            => $article["article_archive_status"] == 1,
+);
+
+// article images
+$thumb_image = false;
+if (!empty($article["image"]["hash"])) {
+    $thumb_image = get_cached_image(array(
+        "target_ext"    =>  $article['image']['ext'],
+        "image_name"    =>  $article['image']['hash'] . '.' . $article['image']['ext'],
+        "thumb_name"    =>  md5($article['image']['hash'] . $phpwcms["img_list_width"] . $phpwcms["img_list_height"] . $phpwcms["sharpen_level"] . $phpwcms['colorspace'])
+    ));
+}
+
+$thumb_list_image = false;
+if (!empty($article["image"]["list_hash"])) {
+    $thumb_list_image = get_cached_image(array(
+        "target_ext"    =>  $article['image']['list_ext'],
+        "image_name"    =>  $article['image']['list_hash'] . '.' . $article['image']['list_ext'],
+        "thumb_name"    =>  md5($article['image']['list_hash'] . $phpwcms["img_list_width"] . $phpwcms["img_list_height"] . $phpwcms["sharpen_level"] . $phpwcms['colorspace'])
+    ));
+}
 
 ?>
 <form action="phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id=<?php echo $article["article_id"] ?>" method="post" name="addcontent" id="addcontent">
-<table width="538" border="0" cellpadding="0" cellspacing="0" summary="">
-    <tr><td colspan="3" class="title"><?php echo $BL['be_article_cnt_ltitle'] ?></td></tr>
-    <tr><td colspan="3"><img src="img/leer.gif" alt="" width="1" height="8" /></td></tr>
-    <tr bgcolor="#92A1AF"><td colspan="3"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-    <tr bgcolor="#F3F5F8"><td><img src="img/leer.gif" alt="" width="23" height="4" /></td>
-        <td><img src="img/leer.gif" alt="" width="453" height="1" /></td>
-        <td><img src="img/leer.gif" alt="" width="62" height="1" /></td>
-    </tr>
-    <tr bgcolor="#F3F5F8">
-        <td width="23" align="right"><?php if(count($phpwcms['allowed_lang']) == 0): ?>
-            <img src="img/symbole/article_text.gif" alt="" width="9" height="11" border="0" style="margin-right:5px;" />
-        <?php else: ?>
-            <img src="img/famfamfam/lang/<?php echo ($lang = strtolower(empty($article["article_lang"]) ? $phpwcms['default_lang'] : $article["article_lang"])); ?>.png" title="<?php echo get_language_name($lang) ?>" style="margin-right:4px;" />
-        <?php endif; ?></td>
-        <td width="453" class="dir"><a href="phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=1&amp;id=<?php echo $article["article_id"] ?>"><strong><?php echo html($article["article_title"]) ?></strong></a>&nbsp;[AID:<?php echo $article["article_id"] ?>]</td>
-        <td width="62" align="right" class="h13" style="padding-right:1px"><a href="phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=1&amp;id=<?php echo $article["article_id"] ?>"><img src="img/button/edit_22x13.gif" alt="<?php echo $BL['be_article_cnt_ledit'] ?>" width="22" height="13" border="0" /></a><a href="include/inc_act/act_articlecontent.php?do=<?php echo "3,".$article["article_id"].",0,".switch_on_off($article["article_aktiv"]) ?>" title="<?php echo $BL['be_article_cnt_lvisible'] ?>"><img src="img/button/visible_12x13_<?php echo $article["article_aktiv"] ?>.gif" alt="" width="12" height="13" border="0" /></a><a href="include/inc_act/act_articlecontent.php?do=<?php echo "1,".$article["article_id"]; ?>" title="<?php echo $BL['be_article_cnt_ldel'] ?>" onclick="return confirm('<?php echo $BL['be_article_cnt_ldeljs'].'\n'.html($article["article_title"]); ?>  \n ');"><img src="img/button/trash_13x13_1.gif" alt="" width="13" height="13" border="0" /></a></td>
-    </tr>
-    <tr bgcolor="#F3F5F8"><td colspan="3"><img src="img/leer.gif" alt="" width="1" height="3" /></td>
-    </tr>
-        <tr bgcolor="#F3F5F8">
-          <td><img src="img/leer.gif" alt="" width="23" height="1" /></td>
-          <td><table border="0" cellpadding="0" cellspacing="0" summary="" class="tdMorepace">
-            <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="2" /></td></tr>
-            <tr>
-              <td valign="top" class="v10" style="color:#727889"><?php echo $BL['be_article_urlalias'] ?>:&nbsp;</td>
-              <td valign="top" class="v10"><strong><?php echo html($article["article_alias"]); ?></strong></td>
-            </tr>
-            <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-            <?php   if($article["article_subtitle"]) { ?>
-            <tr>
-              <td valign="top" class="v10" style="color:#727889"><?php echo $BL['be_article_asubtitle'] ?>:&nbsp;</td>
-              <td valign="top" class="v10"><strong><?php echo html($article["article_subtitle"]); ?></strong></td>
-            </tr>
-            <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-            <?php } ?>
+<div class="row g-4">
 
-            <?php if(!empty($article["article_summary"])) { ?>
-            <tr>
-              <td valign="top" class="v10" style="color:#727889"><?php echo $BL['be_article_asummary'] ?>:&nbsp;</td>
-              <td valign="top" class="v10"><?php echo html(getCleanSubString(strip_tags($article["article_summary"]), 250, '&#8230;'), false); ?></td>
-            </tr>
-            <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-            <?php   } ?>
-            <tr>
-              <td valign="top" class="v10" style="color:#727889"><?php echo $BL['be_article_cat'] ?>:&nbsp;</td>
-              <td valign="top" class="v10"><?php echo html($article["article_cat"]) ?></td>
-            </tr>
-            <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-            <tr>
-              <td valign="top" class="v10" style="color:#727889"><?php echo $BL['be_article_akeywords'] ?>:&nbsp;</td>
-              <td valign="top" class="v10"><?php if($article["article_keyword"]) {echo html($article["article_keyword"]);}else{echo "not defined/completed";} ?></td>
-            </tr>
-            <?php
-            if($article["article_canonical"]) {
-            ?>
-            <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-            <tr>
-              <td valign="top" class="v10" style="color:#727889"><?php echo $BL['be_canonical'] ?>:&nbsp;</td>
-              <td valign="top" class="v10"><?php echo html($article["article_canonical"]); ?></td>
-            </tr>
-            <?php
-            }
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
 
-            if($article["article_redirect"]) {
-            ?>
-            <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-            <tr>
-              <td valign="top" class="v10" style="color:#727889"><?php echo $BL['be_article_cnt_redirect'] ?>:&nbsp;</td>
-              <td valign="top" class="v10"><?php echo html($article["article_redirect"]); ?></td>
-            </tr>
-            <?php
-            }
+                <h2 class="h6 mb-0 d-flex flex-wrap align-items-center gap-2">
+                    <span class="fg-secondary d-inline-flex"><?php echo backend_icon('journal-bookmark-fill') ?></span>
+                    <a href="<?php echo $article_edit_link ?>"><?php echo html($article["article_title"]) ?></a>
+                    <span class="badge theme-secondary">AID:<?php echo $article["article_id"] ?></span>
+                    <span class="badge <?php echo $article["article_aktiv"] ? 'theme-success' : 'theme-secondary' ?>"><?php echo $article["article_aktiv"] ? $BL['be_admin_struct_visible'] : $BL['be_inactive'] ?></span>
+                    <span class="badge theme-secondary" data-bs-toggle="tooltip" title="<?php echo html(get_language_name($article_language)) ?>"><?php echo strtoupper($article_language) ?></span>
+                </h2>
 
-            $thumb_image = false;
-            if(!empty($article["image"]["hash"])) {
-                $thumb_image = get_cached_image(array(
-                    "target_ext"    =>  $article['image']['ext'],
-                    "image_name"    =>  $article['image']['hash'] . '.' . $article['image']['ext'],
-                    "thumb_name"    =>  md5($article['image']['hash'].$phpwcms["img_list_width"].$phpwcms["img_list_height"].$phpwcms["sharpen_level"].$phpwcms['colorspace'])
-                ));
-            }
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <?php
+                    echo backend_action($article_edit_link, 'pen', $BL['be_article_cnt_ledit']);
+                    echo backend_action(
+                        'include/inc_act/act_articlecontent.php?do=3,' . $article["article_id"] . ',0,' . switch_on_off($article["article_aktiv"]),
+                        $article["article_aktiv"] ? 'eye' : 'eye-slash',
+                        $BL['be_article_cnt_lvisible'],
+                        'normal',
+                        '',
+                        $article["article_aktiv"] ? 'success' : 'danger'
+                    );
+                    echo backend_action(
+                        'include/inc_act/act_articlecontent.php?do=1,' . $article["article_id"],
+                        'trash',
+                        $BL['be_article_cnt_ldel'],
+                        'normal',
+                        ' onclick="return confirm(\'' . js_singlequote($BL['be_article_cnt_ldeljs'] . "\n" . $article["article_title"]) . '\');"',
+                        'danger'
+                    );
+                    ?>
+                </div>
 
-            $thumb_list_image = false;
-            if(!empty($article["image"]["list_hash"])) {
-                $thumb_list_image = get_cached_image(array(
-                    "target_ext"    =>  $article['image']['list_ext'],
-                    "image_name"    =>  $article['image']['list_hash'] . '.' . $article['image']['list_ext'],
-                    "thumb_name"    =>  md5($article['image']['list_hash'].$phpwcms["img_list_width"].$phpwcms["img_list_height"].$phpwcms["sharpen_level"].$phpwcms['colorspace'])
-                ));
-            }
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
 
-            if($thumb_image || $thumb_list_image) {
+                    <?php
+                    echo $info_row($BL['be_article_urlalias'], '<strong>' . html($article["article_alias"]) . '</strong>');
 
-            ?>
-            <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-            <tr>
-              <td valign="top" class="v10" style="color:#727889"><?php echo $BL['be_cnt_image'] ?>:&nbsp;</td>
-              <td valign="top" class="v10"><?php
+                    if ($article["article_subtitle"]) {
+                        echo $info_row($BL['be_article_asubtitle'], '<strong>' . html($article["article_subtitle"]) . '</strong>');
+                    }
 
-            if($thumb_image) {
-                echo '<img src="'. $thumb_image['src'] .'" '.$thumb_image[3].' alt="" style="margin-right:5px;" />';
-            }
-            if($thumb_list_image) {
-                echo '<img src="'. $thumb_list_image['src'] .'" '.$thumb_list_image[3].' alt=""';
-                if(!empty($article['image']['list_usesummary'])) {
-                    echo ' class="inactive"';
-                }
-                echo ' />';
-            }
+                    if (!empty($article["article_summary"])) {
+                        echo $info_row($BL['be_article_asummary'], html(getCleanSubString(strip_tags($article["article_summary"]), 250, '&#8230;'), false), 'col-12');
+                    }
 
-            ?></td>
-            </tr>
-            <?php
+                    echo $info_row($BL['be_article_cat'], html($article["article_cat"]));
+                    echo $info_row($BL['be_article_akeywords'], $article["article_keyword"] ? html($article["article_keyword"]) : '<span class="fg-secondary">' . $BL['be_not_set'] . '</span>');
 
-            }
+                    if ($article["article_canonical"]) {
+                        echo $info_row($BL['be_canonical'], html($article["article_canonical"]));
+                    }
 
-            ?>
-            <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-            <tr>
-              <td class="v10" style="color:#727889"><?php echo $BL['be_article_username']; ?>:&nbsp;</td>
-              <td class="v10"><?php echo $article["article_username"] ?></td>
-            </tr>
-            <tr>
-              <td class="v10" style="color:#727889"><?php echo $BL['be_article_eslastedit'] ?>:&nbsp;</td>
-              <td class="v10"><?php echo phpwcms_strtotime($article["article_date"], $backend_date_format['php'], '') ?>&nbsp;&nbsp;<span style="color:#727889"><?php echo $BL['be_fprivedit_created'] ?>:</span>&nbsp;<?php echo date($backend_date_format['php'], $article["article_created"]) ?></td>
-            </tr>
-            <tr>
-              <td class="v10 nowrap" style="color:#727889" nowrap="nowrap"><?php echo $BL['be_article_cnt_start'] ?>:&nbsp;</td>
-              <td class="v10">
-                  <?php echo $set_begin ? phpwcms_strtotime($article["article_begin"], $backend_date_format['php'], '') : $BL['be_not_set']; ?>&nbsp;&nbsp;<span style="color:#727889"><?php echo $BL['be_article_cnt_end'] ?>:</span>
-                  <?php echo $set_end ? phpwcms_strtotime($article["article_end"], $backend_date_format['php'], '') : $BL['be_not_set']; ?>
-              </td>
-            </tr>
-            <tr>
-              <td class="v10 nowrap" style="color:#727889" nowrap="nowrap"><?php echo $BL['be_cnt_sortvalue'] ?>:&nbsp;</td>
-              <td class="v10"><?php echo $article["article_sort"] ?>&nbsp;&nbsp;<span style="color:#727889"><?php echo $BL['be_priorize'] ?>:</span>&nbsp;<?php echo $article["article_priorize"] ?></td>
-            </tr>
+                    if ($article["article_redirect"]) {
+                        echo $info_row($BL['be_article_cnt_redirect'], html($article["article_redirect"]));
+                    }
 
-            <tr>
-                <td class="v10 nowrap" style="color:#727889;vertical-align: top;" nowrap="nowrap"><?php echo $BL['be_ftptakeover_status'] ?>:&nbsp;</td>
-                <td class="v10">
-                    <table>
-                        <tr>
-                            <td><?php echo ($article["article_nositemap"] == 1 ? '&check;' : '-') . ' ' . $BL['be_ctype_sitemap'] ?>&nbsp;</td>
-                            <td><?php echo ($article["article_nosearch"] == 1 ? '-' : '&check;') . ' ' . $BL['be_fsearch_searchlabel'] ?></td>
-                        </tr>
-                        <tr>
-                            <td><?php echo ($article["article_norss"] == 1 ? '&check;' : '-') . ' ' . $BL['be_no_rss'] ?>&nbsp;</td>
-                            <td><?php echo ($article["article_opengraph"] == 1 ? '&check;' : '-') . ' ' . $BL['be_opengraph_support'] ?></td>
-                        </tr>
-                        <tr>
-                            <td colspan="2"><?php echo ($article["article_archive_status"] == 1 ? '&check;' : '-') . ' ' . $BL['be_show_archived']; ?></td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            <?php if($article["article_meta"]['noindex'] || $article["article_meta"]['nofollow']): ?>
-                <?php if($article["article_meta"]['noindex']): ?>
-                  <tr>
-                      <td class="v10 nowrap" style="color:#727889;" nowrap="nowrap"><?php echo $BL['be_robots'] ?>:&nbsp;</td>
-                      <td class="v10"><?php echo ($article["article_meta"]['noindex'] == 1 ? '&check;' : '-') . ' ' . $BL['be_robots_noindex'] ?></td>
-                  </tr>
-                <?php endif; ?>
-                <?php if($article["article_meta"]['nofollow']): ?>
-                  <tr>
-                      <td class="v10 nowrap" style="color:#727889;" nowrap="nowrap"><?php echo $article["article_meta"]['noindex'] ? '&nbsp;' : $BL['be_robots']; ?>:&nbsp;</td>
-                      <td><?php echo ($article["article_meta"]['nofollow'] == 1 ? '&check;' : '-') . ' ' . $BL['be_robots_nofollow'] ?></td>
-                  </tr>
-                <?php endif; ?>
-            <?php endif; ?>
-          </table></td>
-            <td>&nbsp;</td>
-        </tr>
-        <tr bgcolor="#F3F5F8"><td colspan="3"><img src="img/leer.gif" alt="" width="1" height="5" /></td></tr>
-        <tr><td colspan="3" bgcolor="#92A1AF"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-        <tr><td colspan="3"><img src="img/leer.gif" alt="" width="1" height="10" /></td></tr>
+                    if ($thumb_image || $thumb_list_image) {
+                        $image_value = '<div class="d-flex flex-wrap align-items-start gap-2">';
+                        if ($thumb_image) {
+                            $image_value .= '<img src="' . $thumb_image['src'] . '" ' . $thumb_image[3] . ' alt="" class="img-fluid" data-bs-toggle="tooltip" title="' . html($BL['be_cnt_image']) . '">';
+                        }
+                        if ($thumb_list_image) {
+                            $image_value .= '<img src="' . $thumb_list_image['src'] . '" ' . $thumb_list_image[3] . ' alt="" class="img-fluid' . (empty($article['image']['list_usesummary']) ? '' : ' opacity-50') . '">';
+                        }
+                        $image_value .= '</div>';
+                        echo $info_row($BL['be_cnt_image'], $image_value);
+                    }
 
-        <tr><td colspan="3"><?php echo $buttonAction; ?></td></tr>
+                    echo $info_row($BL['be_article_username'], html($article["article_username"]));
+                    echo $info_row($BL['be_article_eslastedit'], phpwcms_strtotime($article["article_date"], $backend_date_format['php'], '<span class="fg-secondary">' . $BL['be_not_set'] . '</span>'));
+                    echo $info_row($BL['be_fprivedit_created'], date($backend_date_format['php'], $article["article_created"]));
+                    echo $info_row($BL['be_article_cnt_start'], $set_begin ? phpwcms_strtotime($article["article_begin"], $backend_date_format['php'], '') : '<span class="fg-secondary">' . $BL['be_not_set'] . '</span>');
+                    echo $info_row($BL['be_article_cnt_end'], $set_end ? phpwcms_strtotime($article["article_end"], $backend_date_format['php'], '') : '<span class="fg-secondary">' . $BL['be_not_set'] . '</span>');
+                    echo $info_row($BL['be_cnt_sortvalue'], $article["article_sort"]);
+                    echo $info_row($BL['be_priorize'], $article["article_priorize"]);
 
-            <tr><td colspan="3"><img src="img/leer.gif" alt="" width="1" height="10" /></td></tr>
+                    $status_value = '<div class="d-flex flex-wrap gap-2">';
+                    foreach ($article_flags as $flag_label => $flag_active) {
+                        $status_value .= '<span class="badge ' . ($flag_active ? 'theme-success' : 'theme-secondary') . '">' . $flag_label . '</span>';
+                    }
+                    $status_value .= '</div>';
+                    echo $info_row($BL['be_ftptakeover_status'], $status_value, 'col-12');
 
-            <tr bgcolor="#92A1AF"><td colspan="3"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-            <tr bgcolor="#D9DEE3"><td colspan="3"><img src="img/leer.gif" alt="" width="1" height="4" /></td></tr>
-            <tr bgcolor="#D9DEE3"><td colspan="3"><table border="0" cellpadding="0" cellspacing="0" summary="">
-                <tr>
-                  <td><img src="img/leer.gif" alt="" width="7" height="1" /></td>
-                  <td><img src="img/symbole/add_content.gif" alt="" width="11" height="9" /><img src="img/leer.gif" alt="" width="5" height="1" /></td>
-                  <td><select name="ctype" class="v12" id="ctype" onchange="this.form.submit();">
+                    if ($article["article_meta"]['noindex'] || $article["article_meta"]['nofollow']) {
+                        $robots_value = '<div class="d-flex flex-wrap gap-2">';
+                        if ($article["article_meta"]['noindex']) {
+                            $robots_value .= '<span class="badge theme-danger">' . $BL['be_robots_noindex'] . '</span>';
+                        }
+                        if ($article["article_meta"]['nofollow']) {
+                            $robots_value .= '<span class="badge theme-danger">' . $BL['be_robots_nofollow'] . '</span>';
+                        }
+                        $robots_value .= '</div>';
+                        echo $info_row($BL['be_robots'], $robots_value, 'col-12');
+                    }
+                    ?>
+
+                </div>
+            </div>
+            <div class="card-footer d-flex flex-wrap gap-2">
+                <a class="btn theme-primary btn-solid btn-styled btn-sm" href="phpwcms.php?do=articles"><?php echo $BL['be_article_cnt_center'] ?></a>
+                <a class="btn btn-outline theme-secondary btn-sm" href="<?php echo $article_preview_link ?>" data-bs-toggle="tooltip" title="<?php echo html($BL['be_func_struct_preview']) ?>" onclick="window.open('<?php echo $article_preview_link ?>', 'articlePreviewWindows');return false;"><?php echo $BL['be_func_struct_preview'] ?></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="card">
+
+            <div class="card-header d-flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
+
+                <h2 class="h6 mb-0"><?php echo $BL['be_ctype'] ?></h2>
+
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <select name="ctype" class="form-control form-control-sm w-auto" id="ctype" onchange="this.form.submit();" aria-label="<?php echo html($BL['be_article_cnt_addtitle']) ?>">
 <?php
 
 $temp_count = 0;
 $user_selected_cp = isset($_SESSION["wcs_user_cp"]) && count($_SESSION["wcs_user_cp"]);
 
-if(is_array($article["article_cntpart"]) && count($article["article_cntpart"])) {
+if (is_array($article["article_cntpart"]) && count($article["article_cntpart"])) {
 
     // list all content parts usable for this article category
-    foreach($article["article_cntpart"] as $value) {
+    foreach ($article["article_cntpart"] as $value) {
 
-        if($user_selected_cp && !isset($_SESSION["wcs_user_cp"][$value])) {
+        if ($user_selected_cp && !isset($_SESSION["wcs_user_cp"][$value])) {
             continue;
         }
 
-        if(isset($wcs_content_type[$value])) {
+        if (isset($wcs_content_type[$value])) {
 
             echo getContentPartOptionTag($value, $wcs_content_type[$value], $article['article_cpdefault']);
             $temp_count++;
 
         }
         $value1 = $value * (-1);
-        if(isset($BL['be_admin_optgroup_label'][$value1]) && $value) {
-            echo '<optgroup label="[ '.$BL['be_admin_optgroup_label'][$value1].' ]" class="cntOptGroup"></optgroup>'."\n";
+        if (isset($BL['be_admin_optgroup_label'][$value1]) && $value) {
+            echo '<optgroup label="[ ' . $BL['be_admin_optgroup_label'][$value1] . ' ]" class="cntOptGroup"></optgroup>' . "\n";
         }
     }
 
 }
-if(!$temp_count) {
+if (!$temp_count) {
     //list all available content parts
-    foreach($wcs_content_type as $key => $value) {
+    foreach ($wcs_content_type as $key => $value) {
 
-        if($user_selected_cp && !isset($_SESSION["wcs_user_cp"][$key])) {
+        if ($user_selected_cp && !isset($_SESSION["wcs_user_cp"][$key])) {
             continue;
         }
 
@@ -259,347 +218,337 @@ if(!$temp_count) {
     }
 }
 ?>
-                    </select></td>
-                  <td><img src="img/leer.gif" alt="" width="5" height="1" /></td>
-                  <td><input type="submit" name="image" value="<?php echo  $BL['be_article_cnt_add'] ?>" class="v12" title="<?php echo  $BL['be_article_cnt_addtitle'] ?>" /></td>
-                </tr>
-              </table></td></tr>
-            <tr bgcolor="#D9DEE3"><td colspan="3"><img src="img/leer.gif" alt="" width="1" height="3" /></td></tr>
-            <tr bgcolor="#92A1AF"><td colspan="3"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-            <?php
+                    </select>
+                    <input type="submit" name="image" value="<?php echo $BL['be_article_cnt_add'] ?>" class="btn theme-primary btn-solid btn-styled btn-sm" data-bs-toggle="tooltip" title="<?php echo html($BL['be_article_cnt_addtitle']) ?>" />
+                </div>
 
-            // Sorting
-            $sc = 0;
-            $scc = 0;
-            $sbutton = array();
-            $sbutton_string = array();
+            </div>
 
-            $sql  = "SELECT acontent_id, acontent_sorting, acontent_trash, acontent_block FROM ".DB_PREPEND."phpwcms_articlecontent ";
-            $sql .= "WHERE acontent_aid=".$article["article_id"]." ORDER BY acontent_block, acontent_sorting, acontent_id";
-            $result = _dbQuery($sql);
+            <div class="list-group list-group-flush">
+<?php
 
-            if(isset($result[0]['acontent_id'])) {
+// Sorting
+$sc = 0;
+$scc = 0;
+$sbutton = array();
+$sbutton_string = array();
 
-                foreach($result as $row) {
-                    $scc++;
-                    if($row['acontent_trash'] == 0) {
-                        $sc++;
-                        $sbutton[$sc]["id"]    = $row['acontent_id'];
-                        $sbutton[$sc]["sort"]  = $row['acontent_sorting'];
-                        $sbutton[$sc]["block"] = $row['acontent_block'];
-                    }
-                }
-            }
-            if($sc) {
-                //Jetzt aufbauen der Sortieranweisung
-                foreach($sbutton as $key => $value) {
-                    if($key == 1) {
-                        // if 1st content part in list
-                        $sbutton[$key]["top"] = '<img src="img/button/sort_top_0.gif" border="0" alt="" />';
+$sql  = "SELECT acontent_id, acontent_sorting, acontent_trash, acontent_block FROM " . DB_PREPEND . "phpwcms_articlecontent ";
+$sql .= "WHERE acontent_aid=" . $article["article_id"] . " ORDER BY acontent_block, acontent_sorting, acontent_id";
+$result = _dbQuery($sql);
 
-                    } elseif(isset($sbutton[$key-1]["block"]) && $sbutton[$key-1]["block"] != $value["block"]) {
-                        // if this content part is selected for different block than previous
-                        $sbutton[$key]["top"] = '<img src="img/button/sort_top_0.gif" border="0" alt="" />';
+if (isset($result[0]['acontent_id'])) {
 
-                    } else {
-                        $sbutton[$key]["top"] = "<a href=\"include/inc_act/act_articlecontent.php?sort=".
-                        $value["id"].":".$sbutton[$key-1]["sort"]."|".
-                        $sbutton[$key-1]["id"].":". $value["sort"].
-                        "\" title=\"".$BL['be_article_cnt_up']."\"><img src=\"img/button/sort_top_1.gif\" border=\"0\" alt=\"\" /></a>";
-                    }
-                    if($key == $sc) {
-                        // if this is the last content part in list
-                        $sbutton[$key]["bottom"] = "<img src=\"img/button/sort_bottom_0.gif\" border=\"0\" alt=\"\" />";
-
-                    } elseif(isset($sbutton[$key+1]["block"]) && $sbutton[$key+1]["block"] != $sbutton[$key]["block"]) {
-                        // if this is the last content part in current block and next is different
-                        $sbutton[$key]["bottom"] = "<img src=\"img/button/sort_bottom_0.gif\" border=\"0\" alt=\"\" />";
-
-                    } else {
-                        $sbutton[$key]["bottom"] = "<a href=\"include/inc_act/act_articlecontent.php?sort=".
-                        $sbutton[$key]["id"].":".$sbutton[$key+1]["sort"]."|".
-                        $sbutton[$key+1]["id"].":".$sbutton[$key]["sort"].
-                        "\" title=\"".$BL['be_article_cnt_down']."\"><img src=\"img/button/sort_bottom_1.gif\" border=\"0\" alt=\"\" /></a>";
-                    }
-                    $sbutton_string[$sbutton[$key]["id"]] = $sbutton[$key]["top"].
-                    "<img src=\"img/leer.gif\" width=\"1\" height=\"1\" alt=\"\" />".
-                    $sbutton[$key]["bottom"];
-                }
-                unset($sbutton);
-            }
-
-            //Listing zugehöriger Artikel Content Teile
-            $sortierwert            = 1;
-            $contentpart_block      = ' ';
-            $contentpart_block_name = '';
-            $contentpart_tab        = '';
-            $contentpart_tab_close  = '';
-
-            $sql =  "SELECT *, UNIX_TIMESTAMP(acontent_tstamp) as acontent_date FROM ".DB_PREPEND."phpwcms_articlecontent ".
-                    "WHERE acontent_aid=".$article["article_id"]." AND acontent_trash=0 ".
-                    "ORDER BY acontent_block, acontent_sorting, acontent_tab, acontent_id";
-            $result = _dbQuery($sql);
-            if(isset($result[0]['acontent_id'])) {
-                foreach($result as $row) {
-
-                    // if type of content part not enabled available
-                    if(!isset($wcs_content_type[ $row["acontent_type"] ]) || ($row["acontent_type"] == 30 && !isset($phpwcms['modules'][$row["acontent_module"]]))) {
-                        continue;
-                    }
-
-                    if($contentpart_tab_close) {
-                        echo $contentpart_tab_close;
-                        $contentpart_tab_close = '';
-                    }
-
-                    // now show current block name
-                    if($contentpart_block != $row['acontent_block']) {
-                        $contentpart_block = $row['acontent_block'];
-                        $contentpart_block_name = html(' {'.$row['acontent_block'].'}');
-                        $contentpart_block_color = ' bgcolor="#E0D6EB"';
-
-                        switch($contentpart_block) {
-                            case '':
-                            case 'CONTENT':
-                                $contentpart_block_name = $BL['be_main_content'].$contentpart_block_name;
-                                if($article['article_paginate']) {
-                                    $contentpart_block_name .= ' / <img src="img/symbole/content_cppaginate.gif" alt="" style="margin-right:2px;" />';
-                                    $contentpart_block_name .= $BL['be_cnt_pagination'];
-                                }
-                                $contentpart_block_color = ' bgcolor="#F5CCCC"';
-                                break;
-
-                            case 'LEFT':
-                                $contentpart_block_name = $BL['be_cnt_left'].$contentpart_block_name;
-                                $contentpart_block_color = ' bgcolor="#E0EBD6"';
-                                break;
-
-                            case 'RIGHT':
-                                $contentpart_block_name = $BL['be_cnt_right'].$contentpart_block_name;
-                                $contentpart_block_color = ' bgcolor="#FFF5CC"';
-                                break;
-
-                            case 'HEADER':
-                                $contentpart_block_name = $BL['be_admin_page_header'].$contentpart_block_name;
-                                $contentpart_block_color = ' bgcolor="#EBEBD6"';
-                                break;
-
-                            case 'FOOTER':
-                                $contentpart_block_name = $BL['be_admin_page_footer'].$contentpart_block_name;
-                                $contentpart_block_color = ' bgcolor="#E1E8F7"';
-                                break;
-
-                            case 'CPSET':
-                                $contentpart_block_name = $BL['be_settings'].' <span style="font-weight:normal">('.$BL['be_system_container_norender'].')</span>';
-                                $contentpart_block_color = ' bgcolor="#cceaf5"';
-                                break;
-
-                            case 'SYSTEM':
-                                $contentpart_block_name = $BL['be_system_container'].' <span style="font-weight:normal">('.$BL['be_system_container_norender'].')</span>';
-                                $contentpart_block_color = ' bgcolor="#ffdc9d"';
-                                break;
-                        }
-
-            ?>
-            <tr<?php echo $contentpart_block_color ?>>
-                <td align="right" style="padding-right:5px;"><img src="img/symbole/<?php echo $contentpart_block == 'CPSET' ? 'cpset' : 'block' ?>.gif" alt="" width="9" height="11" border="0" /></td>
-                <td style="font-size:9px;font-weight:bold;"><?php echo  $contentpart_block_name ?></td>
-                <td><img src="img/leer.gif" alt="" width="1" height="15" /></td>
-            </tr>
-            <tr><td colspan="3" bgcolor="#D9DEE3"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-            <?php
-                    }
-
-                    // now check if content part is tabbed
-                    if($row['acontent_tab'] && $contentpart_tab != $row['acontent_tab']) {
-                        $contentpart_tab        = $row['acontent_tab'];
-                        $contentpart_tabbed     = explode('_', $contentpart_tab, 2);
-                        $contentpart_tab_title  = isset($contentpart_tabbed[1]) ? trim($contentpart_tabbed[1]) : '';
-                        $contentpart_tab_number = explode('|', $contentpart_tabbed[0]);
-                        $contentpart_tab_type   = empty($contentpart_tab_number[1]) ? 1 : $contentpart_tab_number[1];
-                        $contentpart_tab_number = intval($contentpart_tab_number[0]);
-
-            ?>
-            <tr<?php echo $contentpart_block_color ?>>
-                <td align="right" style="padding-right:5px;"><img src="img/symbole/tabbed.gif" alt="" width="9" height="11" border="0" /></td>
-                <td style="font-size:9px;"><?php
-
-                        if($contentpart_tab_type == 2) {
-                            echo $BL['be_ctype_accordion'];
-                        } elseif(isset($template_default['attributes']['cpgroup_custom'][$contentpart_tab_type])) {
-                            echo html($template_default['attributes']['cpgroup_custom'][$contentpart_tab_type]['title']);
-                        } else {
-                            echo $BL['be_ctype_tabs'];
-                        }
-                        echo ' / ' . $BL['be_cnt_paginate_subsection'] . ': ';
-                        if($contentpart_tab_title !== '') {
-                            echo html($contentpart_tab_title) . ' ';
-                        }
-                        echo '[' . $contentpart_tab_number . ']';
-
-                 ?>&nbsp;</td>
-                <td><img src="img/leer.gif" alt="" width="1" height="15" /></td>
-            </tr>
-            <tr><td colspan="3" bgcolor="#D9DEE3"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-            <?php
-
-                    } elseif($contentpart_tab && empty($row['acontent_tab'])) {
-
-                        // not the same tab but following cp is not tabbed
-                        $contentpart_tab = '';
-
-                        $contentpart_tab_close  = '<tr'.$contentpart_block_color.'><td colspan="3"><img src="img/leer.gif" alt="" width="1" height="3" /></td></tr>';
-                        $contentpart_tab_close .= '<tr><td colspan="3" bgcolor="#D9DEE3"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>';
-
-                    }
-
-            ?>
-            <tr><td colspan="3"><img src="img/leer.gif" alt="" width="1" height="3" /></td></tr>
-
-            <tr>
-              <td align="right" style="padding-right:5px;"><img src="img/symbole/content_9x11<?php if($row["acontent_granted"]) { echo $row["acontent_granted"] == 2 ? '_hidden_granted' : '_granted'; } ?>.gif" alt="" width="9" height="11" border="0" /></td>
-              <td><table border="0" cellpadding="0" cellspacing="0" summary="" width="100%">
-                <tr>
-                  <td width="180" style="font-size:9px;font-weight:bold;text-transform:uppercase;"><?php
-
-                $cntpart_title = $wcs_content_type[$row["acontent_type"]];
-                if(!empty($row["acontent_module"])) {
-
-                    $cntpart_title .= ': '.$BL['modules'][$row["acontent_module"]]['listing_title'];
-
-                }
-                echo $cntpart_title;
-
-
-                  ?></td>
-                  <td width="23" class="nowrap"><?php echo $sbutton_string[$row["acontent_id"]]; ?></td>
-                  <td class="v09 nowrap" style="color:#727889;padding:0 4px 0 5px" width="60" nowrap="nowrap">[ID:<?php echo $row["acontent_id"] ?>]</td>
-                  <td class="v09 nowrap" nowrap="nowrap"><?php
-
-                  echo date($backend_date_format['php'], $row["acontent_date"]).'&nbsp;';
-
-                  if($contentpart_block != 'CPSET') {
-
-                        //Display cp paginate page number
-                        if($article["article_paginate"]) {
-
-                            echo '<img src="img/symbole/content_cppaginate.gif" alt="subsection" title="subsection" />';
-                            echo $row["acontent_paginate_page"] == 0 ? 1 : $row["acontent_paginate_page"];
-
-                        }
-
-                        //Anzeigen der Space Before/After Info
-                        if(intval($row["acontent_before"])) {
-                            echo '<img src="img/symbole/content_space_before.gif" alt="" />'.$row["acontent_before"];
-                        }
-                        if(intval($row["acontent_after"])) {
-                            echo '<img src="img/symbole/content_space_after.gif" alt="" />'.$row["acontent_after"];
-                        }
-                        if($row["acontent_top"]) {
-                            echo '<img src="img/symbole/content_top.gif" alt="TOP" title="TOP" />';
-                        }
-                        if($row["acontent_anchor"]) {
-                            echo '<img src="img/symbole/content_anchor.gif" alt="Anchor" title="Anchor" />';
-                        }
-
-                  }
-
-                  ?></td>
-                </tr>
-              </table></td>
-              <td align="right" style="padding-right:1px;"><a href="phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id=<?php
-              echo $article["article_id"]."&amp;acid=".$row["acontent_id"];
-              ?>" title="<?php echo $BL['be_article_cnt_edit'] ?>"><img src="img/button/edit_22x13.gif" alt="" border="0" /></a><?php
-                // duplicate content part
-                echo '<a href="include/inc_act/act_structure.php?do=8%7C'.$row["acontent_id"].'%7C'.$article["article_id"].'%7C'.($row["acontent_sorting"]+5).'" ';
-                echo 'title="'.$BL['be_func_content_copy'].' [ID:'.$row["acontent_id"].']" ';
-                echo 'onclick="return confirm(\''.js_singlequote($BL['be_func_content_copy']).': \n'.js_singlequote($cntpart_title.' [ID:'.$row["acontent_id"].']').'\');">';
-                echo '<img src="img/button/copy_13x13.gif" border="0" alt="" width="13" height="13" /></a>';
-
-              ?><a href="include/inc_act/act_articlecontent.php?do=<?php
-              echo "2,".$article["article_id"].",".$row["acontent_id"].",".switch_on_off($row["acontent_visible"])
-              ?>" title="<?php
-              echo $BL['be_article_cnt_lvisible']
-              ?>"><img src="img/button/visible_12x13_<?php
-              echo $row["acontent_visible"]
-              ?>.gif" alt="" width="12" height="13" border="0" /></a><a href="include/inc_act/act_articlecontent.php?do=<?php
-              echo "9,".$article["article_id"].",".$row["acontent_id"]
-              ?>" title="<?php echo $BL['be_article_cnt_delpart'] ?>" onclick="return confirm('<?php
-              echo $BL['be_article_cnt_delpartjs'] ?> \n[ID: <?php echo $row["acontent_id"]
-              ?>]\n ');"><img src="img/button/trash_13x13_1.gif" alt="" width="13" height="13" border="0" /></a></td>
-            </tr>
-
-<?php   if($row["acontent_block"] === 'SYSTEM'): ?>
-            <tr>
-                <td class="v09">&nbsp;</td>
-                <td colspan="2" class="v09"><?php
-                    echo '<span class="greyed">', $BL['be_article_rendering'], ':</span> <span class="tool-title">';
-
-                    if(empty($row["acontent_tid"])) {
-                        echo $BL['be_custom_scriptlogic'];
-                    } elseif($row["acontent_tid"] == 3) {
-                        echo $BL['be_article_forlist'].' + '.$BL['be_article_forfull'];
-                    } elseif($row["acontent_tid"] == 2) {
-                        echo $BL['be_article_forfull'];
-                    } else { // == 1
-                        echo $BL['be_article_forlist'];
-                    }
-
-                    echo '</span>';
-
-                ?></td>
-            </tr>
-            <tr><td colspan="3"><img src="img/leer.gif" alt="" width="1" height="3" /></td></tr>
-<?php   endif;
-
-        $acontent_livedate = is_null($row['acontent_livedate']) ? false : phpwcms_strtotime($row['acontent_livedate'], $backend_date_format['php'], '');
-        $acontent_killdate = is_null($row['acontent_killdate']) ? false : phpwcms_strtotime($row['acontent_killdate'], $backend_date_format['php'], '');
-
-        if($acontent_livedate || $acontent_killdate):
-?>
-            <tr>
-                <td class="v09">&nbsp;</td>
-                <td class="v10" colspan="2">
-                    <span class="chatlist"><?php echo $BL['be_article_cnt_start'] ?>:</span> <?php echo $acontent_livedate ?: $BL['be_not_set']; ?>
-                    &nbsp;&nbsp;
-                    <span class="chatlist"><?php echo $BL['be_article_cnt_end'] ?>:</span> <?php echo $acontent_killdate ?: $BL['be_not_set']; ?>
-                </td>
-            </tr>
-<?php   endif;
-
-    // list content type overview
-    $cinfo = NULL;
-
-    // check default content parts (system internals
-    if($row['acontent_type'] != 30 && file_exists('include/inc_tmpl/content/cnt'.$row['acontent_type'].'.list.inc.php')) {
-
-        include PHPWCMS_ROOT.'/include/inc_tmpl/content/cnt'.$row['acontent_type'].'.list.inc.php';
-
-    } elseif($row['acontent_type'] == 30 && file_exists($phpwcms['modules'][$row['acontent_module']]['path'].'inc/cnt.list.php')) {
-
-        // custom module
-        include $phpwcms['modules'][$row['acontent_module']]['path'].'inc/cnt.list.php';
-
-    } else {
-
-        // default fallback
-        include PHPWCMS_ROOT.'/include/inc_tmpl/content/cnt0.list.inc.php';
-
+    foreach ($result as $row) {
+        $scc++;
+        if ($row['acontent_trash'] == 0) {
+            $sc++;
+            $sbutton[$sc]["id"]    = $row['acontent_id'];
+            $sbutton[$sc]["sort"]  = $row['acontent_sorting'];
+            $sbutton[$sc]["block"] = $row['acontent_block'];
+        }
     }
-    // end list
+}
+if ($sc) {
+    //Jetzt aufbauen der Sortieranweisung
+    foreach ($sbutton as $key => $value) {
+        if ($key == 1) {
+            // if 1st content part in list
+            $sbutton[$key]["top"] = backend_action('phpwcms.php?do=articles', 'chevron-up', $BL['be_article_cnt_up'], 'disabled');
 
-?>
-            <tr><td colspan="3"><img src="img/leer.gif" alt="" width="1" height="4" /></td></tr>
-            <tr><td colspan="3" bgcolor="#D9DEE3"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
+        } elseif (isset($sbutton[$key-1]["block"]) && $sbutton[$key-1]["block"] != $value["block"]) {
+            // if this content part is selected for different block than previous
+            $sbutton[$key]["top"] = backend_action('phpwcms.php?do=articles', 'chevron-up', $BL['be_article_cnt_up'], 'disabled');
+
+        } else {
+            $sbutton[$key]["top"] = backend_action(
+                'include/inc_act/act_articlecontent.php?sort=' .
+                $value["id"] . ":" . $sbutton[$key-1]["sort"] . "|" .
+                $sbutton[$key-1]["id"] . ":" . $value["sort"],
+                'chevron-up',
+                $BL['be_article_cnt_up']
+            );
+        }
+        if ($key == $sc) {
+            // if this is the last content part in list
+            $sbutton[$key]["bottom"] = backend_action('phpwcms.php?do=articles', 'chevron-down', $BL['be_article_cnt_down'], 'disabled');
+
+        } elseif (isset($sbutton[$key+1]["block"]) && $sbutton[$key+1]["block"] != $sbutton[$key]["block"]) {
+            // if this is the last content part in current block and next is different
+            $sbutton[$key]["bottom"] = backend_action('phpwcms.php?do=articles', 'chevron-down', $BL['be_article_cnt_down'], 'disabled');
+
+        } else {
+            $sbutton[$key]["bottom"] = backend_action(
+                'include/inc_act/act_articlecontent.php?sort=' .
+                $sbutton[$key]["id"] . ":" . $sbutton[$key+1]["sort"] . "|" .
+                $sbutton[$key+1]["id"] . ":" . $sbutton[$key]["sort"],
+                'chevron-down',
+                $BL['be_article_cnt_down']
+            );
+        }
+        $sbutton_string[$sbutton[$key]["id"]] = $sbutton[$key]["top"] . $sbutton[$key]["bottom"];
+    }
+    unset($sbutton);
+}
+
+//Listing zugehöriger Artikel Content Teile
+$sortierwert            = 1;
+$contentpart_block      = ' ';
+$contentpart_block_name = '';
+$contentpart_tab        = '';
+
+$sql =  "SELECT *, UNIX_TIMESTAMP(acontent_tstamp) as acontent_date FROM " . DB_PREPEND . "phpwcms_articlecontent " .
+        "WHERE acontent_aid=" . $article["article_id"] . " AND acontent_trash=0 " .
+        "ORDER BY acontent_block, acontent_sorting, acontent_tab, acontent_id";
+$result = _dbQuery($sql);
+if (isset($result[0]['acontent_id'])) {
+    foreach ($result as $row) {
+
+        // if type of content part not enabled available
+        if (!isset($wcs_content_type[ $row["acontent_type"] ]) || ($row["acontent_type"] == 30 && !isset($phpwcms['modules'][$row["acontent_module"]]))) {
+            continue;
+        }
+
+        // now show current block name
+        if ($contentpart_block != $row['acontent_block']) {
+            $contentpart_block = $row['acontent_block'];
+            $contentpart_block_name = html(' {' . $row['acontent_block'] . '}');
+
+            switch ($contentpart_block) {
+                case '':
+                case 'CONTENT':
+                    $contentpart_block_name = $BL['be_main_content'] . $contentpart_block_name;
+                    if ($article['article_paginate']) {
+                        $contentpart_block_name .= ' <span class="badge theme-secondary">' . $BL['be_cnt_pagination'] . '</span>';
+                    }
+                    break;
+
+                case 'LEFT':
+                    $contentpart_block_name = $BL['be_cnt_left'] . $contentpart_block_name;
+                    break;
+
+                case 'RIGHT':
+                    $contentpart_block_name = $BL['be_cnt_right'] . $contentpart_block_name;
+                    break;
+
+                case 'HEADER':
+                    $contentpart_block_name = $BL['be_admin_page_header'] . $contentpart_block_name;
+                    break;
+
+                case 'FOOTER':
+                    $contentpart_block_name = $BL['be_admin_page_footer'] . $contentpart_block_name;
+                    break;
+
+                case 'CPSET':
+                    $contentpart_block_name = $BL['be_settings'] . ' <span class="fg-secondary">(' . $BL['be_system_container_norender'] . ')</span>';
+                    break;
+
+                case 'SYSTEM':
+                    $contentpart_block_name = $BL['be_system_container'] . ' <span class="fg-secondary">(' . $BL['be_system_container_norender'] . ')</span>';
+                    break;
+            }
+
+            echo '<div class="list-group-item bg-2"><div class="small fw-bold text-uppercase">' . $contentpart_block_name . '</div></div>' . LF;
+        }
+
+        // now check if content part is tabbed
+        if ($row['acontent_tab'] && $contentpart_tab != $row['acontent_tab']) {
+            $contentpart_tab        = $row['acontent_tab'];
+            $contentpart_tabbed     = explode('_', $contentpart_tab, 2);
+            $contentpart_tab_title  = isset($contentpart_tabbed[1]) ? trim($contentpart_tabbed[1]) : '';
+            $contentpart_tab_number = explode('|', $contentpart_tabbed[0]);
+            $contentpart_tab_type   = empty($contentpart_tab_number[1]) ? 1 : $contentpart_tab_number[1];
+            $contentpart_tab_number = intval($contentpart_tab_number[0]);
+
+            $contentpart_tab_name = '';
+
+            if ($contentpart_tab_type == 2) {
+                $contentpart_tab_name = $BL['be_ctype_accordion'];
+            } elseif (isset($template_default['attributes']['cpgroup_custom'][$contentpart_tab_type])) {
+                $contentpart_tab_name = html($template_default['attributes']['cpgroup_custom'][$contentpart_tab_type]['title']);
+            } else {
+                $contentpart_tab_name = $BL['be_ctype_tabs'];
+            }
+            $contentpart_tab_name .= ' / ' . $BL['be_cnt_paginate_subsection'] . ': ';
+            if ($contentpart_tab_title !== '') {
+                $contentpart_tab_name .= html($contentpart_tab_title) . ' ';
+            }
+            $contentpart_tab_name .= '[' . $contentpart_tab_number . ']';
+
+            echo '<div class="list-group-item bg-2"><div class="small fg-secondary">' . $contentpart_tab_name . '</div></div>' . LF;
+
+        } elseif ($contentpart_tab && empty($row['acontent_tab'])) {
+
+            // not the same tab but following cp is not tabbed
+            $contentpart_tab = '';
+        }
+
+        $cntpart_title = $wcs_content_type[$row["acontent_type"]];
+        if (!empty($row["acontent_module"])) {
+            $cntpart_title .= ': ' . $BL['modules'][$row["acontent_module"]]['listing_title'];
+        }
+
+        $contentpart_meta = '';
+        if ($contentpart_block != 'CPSET') {
+
+            //Display cp paginate page number
+            if ($article["article_paginate"]) {
+                $contentpart_meta .= '<span class="badge theme-secondary" data-bs-toggle="tooltip" title="' . html($BL['be_cnt_paginate_subsection']) . '">' . ($row["acontent_paginate_page"] == 0 ? 1 : $row["acontent_paginate_page"]) . '</span>';
+            }
+
+            //Anzeigen der Space Before/After Info
+            if (intval($row["acontent_before"])) {
+                $contentpart_meta .= '<span class="badge theme-secondary" data-bs-toggle="tooltip" title="' . html($BL['be_article_cnt_before']) . '">' . $row["acontent_before"] . '</span>';
+            }
+            if (intval($row["acontent_after"])) {
+                $contentpart_meta .= '<span class="badge theme-secondary" data-bs-toggle="tooltip" title="' . html($BL['be_article_cnt_after']) . '">' . $row["acontent_after"] . '</span>';
+            }
+            if ($row["acontent_top"]) {
+                $contentpart_meta .= '<span class="badge theme-secondary">' . $BL['be_article_cnt_toplink'] . '</span>';
+            }
+            if ($row["acontent_anchor"]) {
+                $contentpart_meta .= '<span class="badge theme-secondary" data-bs-toggle="tooltip" title="' . html($BL['be_article_cnt_anchor']) . '">#</span>';
+            }
+
+        }
+
+        ?>
+                <div class="list-group-item">
+
+                    <div class="d-flex align-items-start gap-3">
+
+                        <div class="d-flex align-items-center gap-2 flex-shrink-0 fg-secondary">
+                            <?php
+                            echo backend_icon('postcard-fill');
+                            if ($row["acontent_granted"]) {
+                                echo $row["acontent_granted"] == 2
+                                    ? '<span data-bs-toggle="tooltip" title="' . html($BL['be_hidden_for_feuser']) . '">' . backend_icon('lock') . '</span>'
+                                    : '<span data-bs-toggle="tooltip" title="' . html($BL['be_granted_feuser']) . '">' . backend_icon('person-fill') . '</span>';
+                            }
+                            ?>
+                        </div>
+
+                        <div class="flex-grow-1 min-w-0">
+
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <span class="fw-bold small text-uppercase"><?php echo $cntpart_title ?></span>
+                                <span class="badge theme-secondary">ID:<?php echo $row["acontent_id"] ?></span>
+                                <span class="small fg-secondary"><?php echo date($backend_date_format['php'], $row["acontent_date"]) ?></span>
+                                <?php echo $contentpart_meta ?>
+                                <span class="badge <?php echo $row["acontent_visible"] ? 'theme-success' : 'theme-secondary' ?>"><?php echo $row["acontent_visible"] ? $BL['be_admin_struct_visible'] : $BL['be_inactive'] ?></span>
+                            </div>
+
+                            <?php if ($row["acontent_block"] === 'SYSTEM'): ?>
+                            <div class="small fg-secondary">
+                                <?php
+                                echo $BL['be_article_rendering'] . ': ';
+                                if (empty($row["acontent_tid"])) {
+                                    echo $BL['be_custom_scriptlogic'];
+                                } elseif ($row["acontent_tid"] == 3) {
+                                    echo $BL['be_article_forlist'] . ' + ' . $BL['be_article_forfull'];
+                                } elseif ($row["acontent_tid"] == 2) {
+                                    echo $BL['be_article_forfull'];
+                                } else { // == 1
+                                    echo $BL['be_article_forlist'];
+                                }
+                                ?>
+                            </div>
+                            <?php endif; ?>
+
+                            <?php
+                            $acontent_livedate = is_null($row['acontent_livedate']) ? false : phpwcms_strtotime($row['acontent_livedate'], $backend_date_format['php'], '');
+                            $acontent_killdate = is_null($row['acontent_killdate']) ? false : phpwcms_strtotime($row['acontent_killdate'], $backend_date_format['php'], '');
+
+                            if ($acontent_livedate || $acontent_killdate):
+                            ?>
+                            <div class="small">
+                                <span class="fg-secondary"><?php echo $BL['be_article_cnt_start'] ?>:</span> <?php echo $acontent_livedate ?: $BL['be_not_set']; ?>
+                                &nbsp;&nbsp;
+                                <span class="fg-secondary"><?php echo $BL['be_article_cnt_end'] ?>:</span> <?php echo $acontent_killdate ?: $BL['be_not_set']; ?>
+                            </div>
+                            <?php endif; ?>
+
+<?php
+
+        // list content type overview
+        $cinfo = NULL;
+
+        // check default content parts (system internals
+        if ($row['acontent_type'] != 30 && file_exists('include/inc_tmpl/content/cnt' . $row['acontent_type'] . '.list.inc.php')) {
+
+            include PHPWCMS_ROOT . '/include/inc_tmpl/content/cnt' . $row['acontent_type'] . '.list.inc.php';
+
+        } elseif ($row['acontent_type'] == 30 && file_exists($phpwcms['modules'][$row['acontent_module']]['path'] . 'inc/cnt.list.php')) {
+
+            // custom module
+            include $phpwcms['modules'][$row['acontent_module']]['path'] . 'inc/cnt.list.php';
+
+        } else {
+
+            // default fallback
+            include PHPWCMS_ROOT . '/include/inc_tmpl/content/cnt0.list.inc.php';
+
+        }
+        // end list
+
+        ?>
+
+                        </div>
+
+                        <div class="d-flex flex-wrap align-items-start justify-content-end gap-2 flex-shrink-0">
+
+                            <div class="d-flex gap-1">
+                                <?php echo $sbutton_string[$row["acontent_id"]]; ?>
+                            </div>
+
+                            <?php
+                            echo backend_action(
+                                $article_cp_link . '&amp;acid=' . $row["acontent_id"],
+                                'pen',
+                                $BL['be_article_cnt_edit']
+                            );
+
+                            echo backend_action(
+                                'include/inc_act/act_structure.php?do=8%7C' . $row["acontent_id"] . '%7C' . $article["article_id"] . '%7C' . ($row["acontent_sorting"] + 5),
+                                'copy',
+                                $BL['be_func_content_copy'] . ' [ID:' . $row["acontent_id"] . ']',
+                                'normal',
+                                ' onclick="return confirm(\'' . js_singlequote($BL['be_func_content_copy'] . ': ' . $cntpart_title . ' [ID:' . $row["acontent_id"] . ']') . '\');"'
+                            );
+
+                            echo backend_action(
+                                'include/inc_act/act_articlecontent.php?do=2,' . $article["article_id"] . ',' . $row["acontent_id"] . ',' . switch_on_off($row["acontent_visible"]),
+                                $row["acontent_visible"] ? 'eye' : 'eye-slash',
+                                $BL['be_article_cnt_lvisible'],
+                                'normal',
+                                '',
+                                $row["acontent_visible"] ? 'success' : 'danger'
+                            );
+
+                            echo backend_action(
+                                'include/inc_act/act_articlecontent.php?do=9,' . $article["article_id"] . ',' . $row["acontent_id"],
+                                'trash',
+                                $BL['be_article_cnt_delpart'],
+                                'normal',
+                                ' onclick="return confirm(\'' . js_singlequote($BL['be_article_cnt_delpartjs'] . ' [ID: ' . $row["acontent_id"] . ']') . '\');"',
+                                'danger'
+                            );
+                            ?>
+
+                        </div>
+
+                    </div>
+
+                </div>
 <?php
     }
 } //Ende Listing Artikel Content Teile
 ?>
-            <tr><td colspan="3"><img src="img/leer.gif" alt="" width="1" height="10" /></td></tr>
+            </div>
 
-</table>
-<input name="csorting" type="hidden" id="csorting" value="<?php echo ($scc*10); ?>" />
+        </div>
+    </div>
+
+</div>
+<input name="csorting" type="hidden" id="csorting" value="<?php echo ($scc * 10); ?>" />
 </form>
-<?php
-
-echo $buttonAction;

@@ -27,7 +27,7 @@ $row["acontent_form"] = @unserialize($row['acontent_form'], ['allowed_classes' =
 unset($row['acontent_form']['tabwysiwygoff'], $row['acontent_form']['tab_fieldgroup']);
 
 if($cinfo["result"] || count($row["acontent_form"])) {
-	echo "<tr><td>&nbsp;</td><td class=\"v10\">";
+	echo "<div class=\"small fg-secondary\">";
 	echo '<a href="phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id='.$article["article_id"].'&amp;acid='.$row["acontent_id"].'">';
 	echo $cinfo["result"];
 
@@ -40,5 +40,5 @@ if($cinfo["result"] || count($row["acontent_form"])) {
 
 	}
 
-	echo "</a></td><td>&nbsp;</td></tr>";
+	echo "</a></div>";
 }
