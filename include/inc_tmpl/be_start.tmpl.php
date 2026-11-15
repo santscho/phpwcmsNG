@@ -75,13 +75,6 @@ $_last10_article = _dbQuery($_asql_1);
 
 ?>
 
-<?php
-// inline pencil icon for the row action buttons
-$_be_edit_icon  = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">';
-$_be_edit_icon .= '<path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>';
-$_be_edit_icon .= '</svg>';
-?>
-
 <div class="card mb-5">
 
     <div class="card-header d-flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
@@ -99,51 +92,45 @@ $_be_edit_icon .= '</svg>';
 
     </div>
 
-    <table class="table table-hover align-middle mb-0">
-
-        <thead>
-            <tr>
-                <th scope="col"><?php echo $BL['be_article_atitle'] ?></th>
-                <th scope="col" class="text-center text-nowrap"><?php echo $BL['be_cnt_last_edited'] ?></th>
-                <th scope="col" class="text-end">&nbsp;</th>
-            </tr>
-        </thead>
-
-        <tbody>
+    <div class="list-group list-group-flush">
 <?php
 
     if(count($_last10_article)) {
 
         foreach($_last10_article as $value) {
 
-            echo '<tr style="cursor:pointer" title="'.$BL['be_func_struct_edit'].'"';
-            echo ' onclick="document.location.href=\'phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;id='.$value['article_id'].'\'">'.LF;
+            $_article_link = 'phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;id='.$value['article_id'];
 
-            echo "\t".'<td>'.html($value['article_title']);
+            echo '<div class="list-group-item list-group-item-action d-flex align-items-center gap-2" role="link"';
+            echo ' title="'.html($BL['be_func_struct_edit']).'"';
+            echo ' onclick="document.location.href=\''.$_article_link.'\'">'.LF;
+
+            echo '<span class="flex-shrink-0 fg-secondary">'.backend_icon('journal-bookmark-fill').'</span>';
+
+            echo '<div class="flex-grow-1 text-truncate">';
+            echo '<div class="text-truncate">'.html($value['article_title']);
             if($value['article_subtitle']) {
                 echo ' <span class="fg-secondary">/ '.html($value['article_subtitle']).'</span>';
             }
-            echo '</td>'.LF;
+            echo '</div>';
+            echo '<div class="small fg-secondary text-truncate">'.$value['article_date'].'</div>';
+            echo '</div>';
 
-            echo "\t".'<td class="text-center text-nowrap">'.$value['article_date'].'</td>'.LF;
-
-            echo "\t".'<td class="text-end text-nowrap">';
             echo '<span class="badge '.($value['article_aktiv'] ? 'theme-success' : 'theme-secondary').'">';
             echo $value['article_aktiv'] ? $BL['be_admin_struct_visible'] : $BL['be_inactive'];
-            echo '</span> ';
-            echo '<a class="btn btn-outline theme-secondary btn-sm" href="phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;id='.$value['article_id'].'"';
-            echo ' title="'.$BL['be_func_struct_edit'].'" aria-label="'.$BL['be_func_struct_edit'].'">'.$_be_edit_icon.'</a>';
-            echo '</td>'.LF;
+            echo '</span>';
 
-            echo '</tr>'.LF;
+            echo '<div class="d-flex align-items-center gap-2 flex-shrink-0">';
+            echo backend_action($_article_link, 'pen', $BL['be_func_struct_edit']);
+            echo '</div>';
+
+            echo '</div>'.LF;
 
         }
     }
 
 ?>
-        </tbody>
-
-    </table>
+    </div>
 
     <div class="card-footer d-flex flex-column md:flex-row gap-3">
         <a class="btn theme-primary btn-solid btn-styled btn-sm" href="phpwcms.php?do=articles"><?php echo $BL['be_subnav_article_center'] ?></a>
@@ -175,18 +162,7 @@ $_be_edit_icon .= '</svg>';
 
     </div>
 
-    <table class="table table-hover align-middle mb-0">
-
-        <thead>
-            <tr>
-                <th scope="col" class="text-nowrap"><?php echo $BL['be_cnt_type'] ?></th>
-                <th scope="col"><?php echo $BL['be_article_atitle'].' / '.$BL['be_profile_label_notes'] ?></th>
-                <th scope="col" class="text-center text-nowrap"><?php echo $BL['be_cnt_last_edited'] ?></th>
-                <th scope="col" class="text-end">&nbsp;</th>
-            </tr>
-        </thead>
-
-        <tbody>
+    <div class="list-group list-group-flush">
 <?php
 
     if(count($_last10_articlecontent)) {
@@ -207,35 +183,37 @@ $_be_edit_icon .= '</svg>';
 
             $value['notice'] = html(preg_replace('/\s+/', ' ', $value['notice'], false));
 
-            echo '<tr style="cursor:pointer" title="'.html($value['notice_long'], false).'"';
-            echo ' onclick="document.location.href=\'phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id='.$value['acontent_aid'].'&amp;acid='.$value['acontent_id'].'\'">'.LF;
+            $_content_link = 'phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id='.$value['acontent_aid'].'&amp;acid='.$value['acontent_id'];
 
-            echo "\t".'<td class="text-nowrap">'.$wcs_content_type[$value["acontent_type"]];
+            echo '<div class="list-group-item list-group-item-action d-flex align-items-center gap-2" role="link"';
+            echo ' title="'.html($value['notice_long'], false).'"';
+            echo ' onclick="document.location.href=\''.$_content_link.'\'">'.LF;
+
+            echo '<span class="flex-shrink-0 fg-secondary">'.backend_icon('postcard-fill').'</span>';
+
+            echo '<div class="flex-grow-1 text-truncate">';
+            echo '<div class="text-truncate">'.$value['notice'].'</div>';
+            echo '<div class="small fg-secondary text-truncate">'.$wcs_content_type[$value["acontent_type"]];
             if($value["acontent_type"] == 30) {
                 echo ' <span class="fg-secondary">'.$BL['modules'][$value["acontent_module"]]['listing_title'].'</span>';
             }
-            echo '</td>'.LF;
+            echo ' &middot; '.$value['acontent_changed'].'</div>';
+            echo '</div>';
 
-            echo "\t".'<td>'.$value['notice'].'</td>'.LF;
-
-            echo "\t".'<td class="text-center text-nowrap">'.$value['acontent_changed'].'</td>'.LF;
-
-            echo "\t".'<td class="text-end text-nowrap">';
             echo '<span class="badge '.($value['acontent_visible'] ? 'theme-success' : 'theme-secondary').'">';
             echo $value['acontent_visible'] ? $BL['be_admin_struct_visible'] : $BL['be_inactive'];
-            echo '</span> ';
-            echo '<a class="btn btn-outline theme-secondary btn-sm" href="phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id='.$value['acontent_aid'].'&amp;acid='.$value['acontent_id'].'"';
-            echo ' title="'.$BL['be_func_content_edit'].'" aria-label="'.$BL['be_func_content_edit'].'">'.$_be_edit_icon.'</a>';
-            echo '</td>'.LF;
+            echo '</span>';
 
-            echo '</tr>'.LF;
+            echo '<div class="d-flex align-items-center gap-2 flex-shrink-0">';
+            echo backend_action($_content_link, 'pen', $BL['be_func_content_edit']);
+            echo '</div>';
+
+            echo '</div>'.LF;
 
         }
     }
 
 ?>
-        </tbody>
-
-    </table>
+    </div>
 
 </div>
