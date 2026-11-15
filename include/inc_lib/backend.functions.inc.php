@@ -1182,6 +1182,30 @@ function getItemsPerPageMenu($base_url='', $steps=array(10,25,50,100,250,0), $se
     return implode($separator, $menu);
 }
 
+// The date and time formats a backend user can pick, mapped to the PHP pattern
+// used to render a date and to the flatpickr tokens used to edit it
+function backend_date_formats() {
+    return array(
+        'iso'   => array('php' => 'Y-m-d H:i:s',  'flatpickr' => 'Y-m-d H:i:S',  'time_24hr' => true,  'sample' => '2026-11-15 19:07:02'),
+        'swiss' => array('php' => 'd.m.Y H:i:s',  'flatpickr' => 'd.m.Y H:i:S',  'time_24hr' => true,  'sample' => '15.11.2026 19:07:02'),
+        'uk'    => array('php' => 'd/m/Y H:i:s',  'flatpickr' => 'd/m/Y H:i:S',  'time_24hr' => true,  'sample' => '15/11/2026 19:07:02'),
+        'us'    => array('php' => 'm/d/Y g:i:s A', 'flatpickr' => 'm/d/Y h:i:S K', 'time_24hr' => false, 'sample' => '11/15/2026 7:07:02 PM'),
+    );
+}
+
+function backend_date_format($format = '') {
+    $formats = backend_date_formats();
+    $format  = is_string($format) ? $format : '';
+
+    return isset($formats[$format]) ? $formats[$format] : $formats['iso'];
+}
+
+function initJsDatePicker() {
+    $GLOBALS['BE']['HEADER']['flatpickr.css'] = '<link href="include/inc_ext/flatpickr/flatpickr.min.css" rel="stylesheet">';
+    $GLOBALS['BE']['HEADER']['flatpickr.js'] = getJavaScriptSourceLink('include/inc_ext/flatpickr/flatpickr.min.js');
+    $GLOBALS['BE']['HEADER']['backend.datepicker.js'] = '<script type="module" src="include/inc_js/backend.datepicker.js"></script>';
+}
+
 function initJsCalendar() {
     $GLOBALS['BE']['HEADER']['date.js'] = getJavaScriptSourceLink('include/inc_js/date.js');
     $GLOBALS['BE']['HEADER']['dynCalendar.js'] = getJavaScriptSourceLink('include/inc_js/dynCalendar.js');

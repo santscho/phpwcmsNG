@@ -376,14 +376,15 @@ existing entry already covers the action before adding a second glyph for it.
 - The article owner `<select name="article_uid">` marks admin users by appending
   `($BL['be_article_adminuser'])` to the option label, sorted admins first; the
   old inline `style="background-color:#FFC299"` is gone.
-- The begin and end fields are native `input type="datetime-local" step="1"`
-  controls (`article_begin`/`article_end`), not the `dynCalendar` widget: nothing
-  on this screen uses `img/dynCal/` any more. The stored `Y-m-d H:i:s` value is
-  rendered as `Y-m-d\TH:i:s` (`$article_begin_iso`/`$article_end_iso`, guarded
-  with `strtotime()` so an unset or unparsable value stays empty), and
-  `phpwcms_strtotime()` parses the submitted ISO value back on save, so
-  `article.editcontent.inc.php` is untouched. `step="1"` keeps the seconds the
-  widget used to write.
+- The begin and end fields are flatpickr date and time pickers
+  (`article_begin`/`article_end`, `input[data-datepicker]`), not the
+  `dynCalendar` widget: nothing on this screen uses `img/dynCal/` any more. The
+  field keeps the canonical `Y-m-d H:i:s` value phpwcms stores
+  (`$article_begin_value`/`$article_end_value`, guarded with `strtotime()` so an
+  unset value stays empty) and only the visible twin shows the date and time
+  format from the user's profile, see *Date and time format*. The submitted value
+  never depends on the display, so `article.editcontent.inc.php` is untouched.
+  The `last edit` note in the card header uses the same format.
 - `article_date_changed()` holds the two rules the callbacks used to carry:
   picking a date marks its own boundary active (`set_begin`/`set_end`), and a
   begin after the end clears that end, compared by date only as before. The
@@ -401,6 +402,38 @@ existing entry already covers the action before adding a second glyph for it.
 - Keep `document.article.*` working: the summary editor, the keyword autosuggest
   (`#article_keyword_autosuggest`, `#as-values-keyword-autosuggest`) and the
   inline `onchange`/`onclick` handlers reference form elements by name.
+
+## Date and time format
+
+- Every user picks the backend date and time format in the profile
+  (`PROFILE > account`, `$BL['be_profile_label_dateformat']`). It is stored in
+  `phpwcms_user.usr_date_format` (revision 557, `iso` by default) and loaded into
+  `$_SESSION['wcs_user_date_format']` at login; `phpwcms.php` turns it into
+  `$backend_date_format` through `backend_date_format()`.
+- `backend_date_formats()` in `include/inc_lib/backend.functions.inc.php` is the
+  single list: `iso` (`2026-11-15 19:07:02`), `swiss` (`15.11.2026 19:07:02`),
+  `uk` (`15/11/2026 19:07:02`) and `us` (`11/15/2026 7:07:02 PM`). Each entry
+  carries the PHP pattern (`php`), the flatpickr tokens (`flatpickr`),
+  `time_24hr` and a `sample`, and the sample is the `option` label of the profile
+  select, so a new format needs no language string.
+- The picker is flatpickr, vendored at `include/inc_ext/flatpickr/` (4.6.13, MIT:
+  `flatpickr.min.js`, `flatpickr.min.css`, `LICENSE`). `initJsDatePicker()`
+  registers the stylesheet, the library and the ES module
+  `include/inc_js/backend.datepicker.js`; the article screens load it next to
+  `initJsCalendar()`.
+- The native `datetime-local` control is deliberately not used: its face is fixed
+  by the browser or operating system locale (Safari takes it from the system
+  language list, Chromium from the region), so the same field reads differently
+  for every editor and no markup can change that. The preference plus the picker
+  is the replacement.
+- A picker field is `<input type="text" name="…" id="…" class="form-control"
+  value="canonical Y-m-d H:i:s" data-datepicker="1"
+  data-datepicker-alt-format="…" data-datepicker-24h="0|1"
+  data-datepicker-label="…">`. The module creates the visible twin, copies the
+  `class` and the label, and dispatches `change` on the canonical input, so the
+  existing inline `onchange` handlers keep working. Typing is parsed on blur.
+- The picker keeps flatpickr's defaults for the week start (Sunday) and English
+  month names; only the date and time pattern follows the preference.
 
 ## JavaScript libraries
 

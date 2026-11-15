@@ -26,11 +26,20 @@ $template_default['article']['image_default_height']     = $template_default['ar
 $template_default['article']['imagelist_default_width']  = $template_default['article']['imagelist_default_width'] ?? '';
 $template_default['article']['imagelist_default_height'] = $template_default['article']['imagelist_default_height'] ?? '';
 
-// the begin/end fields are native datetime-local inputs, which need the ISO 8601 value
-$article_begin_time = empty($article["article_begin"]) ? false : strtotime($article["article_begin"]);
-$article_end_time   = empty($article["article_end"])   ? false : strtotime($article["article_end"]);
-$article_begin_iso  = $article_begin_time === false ? '' : date('Y-m-d\TH:i:s', $article_begin_time);
-$article_end_iso    = $article_end_time === false ? '' : date('Y-m-d\TH:i:s', $article_end_time);
+// the begin/end fields hold the canonical database value; the date picker only
+// shows it in the format the user picked in the profile
+$backend_date_format = backend_date_format($_SESSION['wcs_user_date_format'] ?? '');
+$article_begin_time  = empty($article["article_begin"]) ? false : strtotime($article["article_begin"]);
+$article_end_time    = empty($article["article_end"])   ? false : strtotime($article["article_end"]);
+$article_begin_value = $article_begin_time === false ? '' : date('Y-m-d H:i:s', $article_begin_time);
+$article_end_value   = $article_end_time === false ? '' : date('Y-m-d H:i:s', $article_end_time);
+
+// the "last edit" note beside the card title follows the same format
+$article_date_display = $article["article_date"] ?? '';
+$article_date_time    = strtotime((string) $article_date_display);
+if ($article_date_time !== false) {
+    $article_date_display = date($backend_date_format['php'], $article_date_time);
+}
 
 ?>
 <form action="phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=1&amp;id=<?php echo $article["article_id"] ?>" method="post" name="article" id="article">
@@ -39,7 +48,7 @@ $article_end_iso    = $article_end_time === false ? '' : date('Y-m-d\TH:i:s', $a
     <div class="card-header d-flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
         <h2 class="h6 mb-0"><?php echo $BL['be_article_estitle'] ?></h2>
 <?php if(isset($article["article_date"])) { ?>
-        <span class="small fg-secondary"><?php echo $BL['be_article_eslastedit'] ?>: <?php echo (empty($_POST["article_update"]) || !intval($_POST["article_update"])) ? $article["article_date"] : $BL['be_article_esnoupdate']; ?></span>
+        <span class="small fg-secondary"><?php echo $BL['be_article_eslastedit'] ?>: <?php echo (empty($_POST["article_update"]) || !intval($_POST["article_update"])) ? $article_date_display : $BL['be_article_esnoupdate']; ?></span>
 <?php } ?>
     </div>
     <div class="card-body">
@@ -72,18 +81,18 @@ $article_end_iso    = $article_end_time === false ? '' : date('Y-m-d\TH:i:s', $a
 
             <div class="col-12 md:col-6">
                 <div class="form-field mb-2">
-                    <input class="check" name="set_begin" type="checkbox" id="set_begin" value="1"<?php is_checked(1, $set_begin) ?> onclick="document.article.article_begin.value = this.checked ? '<?php echo $article_begin_iso ?>' : '';" />
+                    <input class="check" name="set_begin" type="checkbox" id="set_begin" value="1"<?php is_checked(1, $set_begin) ?> onclick="document.article.article_begin.value = this.checked ? '<?php echo $article_begin_value ?>' : '';" />
                     <label for="set_begin"><?php echo $BL['be_article_abegin'] ?></label>
                 </div>
-                <input name="article_begin" type="datetime-local" step="1" id="article_begin" class="form-control" aria-label="<?php echo html($BL['be_article_abegin']) ?>" value="<?php echo $article_begin_iso ?>" onchange="article_date_changed('begin');" />
+                <input name="article_begin" type="text" id="article_begin" class="form-control" value="<?php echo $article_begin_value ?>" data-datepicker="1" data-datepicker-alt-format="<?php echo html($backend_date_format['flatpickr']) ?>" data-datepicker-24h="<?php echo $backend_date_format['time_24hr'] ? '1' : '0' ?>" data-datepicker-label="<?php echo html($BL['be_article_abegin']) ?>" onchange="article_date_changed('begin');" />
             </div>
 
             <div class="col-12 md:col-6">
                 <div class="form-field mb-2">
-                    <input class="check" name="set_end" type="checkbox" id="set_end" value="1"<?php is_checked(1, $set_end) ?> onclick="document.article.article_end.value = this.checked ? '<?php echo $article_end_iso ?>' : '';" />
+                    <input class="check" name="set_end" type="checkbox" id="set_end" value="1"<?php is_checked(1, $set_end) ?> onclick="document.article.article_end.value = this.checked ? '<?php echo $article_end_value ?>' : '';" />
                     <label for="set_end"><?php echo $BL['be_article_aend'] ?></label>
                 </div>
-                <input name="article_end" type="datetime-local" step="1" id="article_end" class="form-control" aria-label="<?php echo html($BL['be_article_aend']) ?>" value="<?php echo $article_end_iso ?>" onchange="article_date_changed('end');" />
+                <input name="article_end" type="text" id="article_end" class="form-control" value="<?php echo $article_end_value ?>" data-datepicker="1" data-datepicker-alt-format="<?php echo html($backend_date_format['flatpickr']) ?>" data-datepicker-24h="<?php echo $backend_date_format['time_24hr'] ? '1' : '0' ?>" data-datepicker-label="<?php echo $BL['be_article_aend'] ?>" onchange="article_date_changed('end');" />
             </div>
 
             <script type="text/javascript">

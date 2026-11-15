@@ -152,6 +152,7 @@ $BL['be_profile_label_repeatpass']      = 'repeat new pwd';
 $BL['be_profile_label_email']           = 'email';
 $BL['be_profile_account_button']        = 'update';
 $BL['be_profile_label_lang']            = 'language';
+$BL['be_profile_label_dateformat']      = 'date and time format';
 
 
 // files.ftptakeover.tmpl.php

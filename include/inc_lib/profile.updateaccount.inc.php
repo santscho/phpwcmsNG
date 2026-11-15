@@ -51,6 +51,9 @@ if($_SESSION["wcs_user"] != "guest") { //Prüfung für Gastzugang
 
     $new_language = isset($_POST["form_lang"]) ? slweg(trim($_POST["form_lang"])) : $phpwcms["default_lang"];
 
+    $date_formats    = backend_date_formats();
+    $new_date_format = isset($_POST["form_date_format"], $date_formats[$_POST["form_date_format"]]) ? $_POST["form_date_format"] : 'iso';
+
     $new_wysiwyg = empty($_POST['form_wysiwyg']) ? 0 : intval($_POST['form_wysiwyg']);
     $user_var['template'] = empty($_POST['form_wysiwyg_template']) ? '' : clean_slweg($_POST['form_wysiwyg_template']);
 
@@ -79,6 +82,7 @@ if($_SESSION["wcs_user"] != "guest") { //Prüfung für Gastzugang
 
         $sql .= "usr_email="._dbEscape($new_email);
         $sql .= ", usr_lang="._dbEscape($new_language);
+        $sql .= ", usr_date_format="._dbEscape($new_date_format);
         $sql .= ", usr_wysiwyg=".$new_wysiwyg;
         $sql .= " , usr_vars="._dbEscape(serialize($user_var));
         $sql .= " WHERE usr_id=".$_SESSION["wcs_user_id"];
@@ -92,6 +96,7 @@ if($_SESSION["wcs_user"] != "guest") { //Prüfung für Gastzugang
             $_SESSION["wcs_user"]           = $new_username;
             $_SESSION["wcs_user_email"]     = $new_email;
             $_SESSION["wcs_user_lang"]      = $new_language;
+            $_SESSION["wcs_user_date_format"] = $new_date_format;
             $_SESSION["WYSIWYG_EDITOR"]     = $new_wysiwyg;
             $_SESSION["wcs_user_cp"]        = $user_var['selected_cp'];
 

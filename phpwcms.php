@@ -44,6 +44,9 @@ $backend_theme      = (isset($_SESSION['wcs_user_theme']) && in_array($_SESSION[
 $backend_theme_attr = $backend_theme === 'auto' ? '' : ' data-bs-theme="' . $backend_theme . '"';
 
 require_once PHPWCMS_ROOT.'/include/inc_lib/backend.functions.inc.php';
+
+// date and time format picked in the profile, used by the backend date pickers
+$backend_date_format = backend_date_format($_SESSION['wcs_user_date_format'] ?? '');
 require_once PHPWCMS_ROOT.'/include/inc_lib/default.backend.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lang/backend/en/lang.inc.php'; //load default language EN
 include_once PHPWCMS_ROOT."/include/inc_lang/code.lang.inc.php";
@@ -240,6 +243,7 @@ if($do == "messages" && $p == 1) {
     }
     if(($p == 1) || ($p == 2 && isset($_GET["aktion"]) && intval($_GET["aktion"]) == 1)) {
         initJsCalendar();
+        initJsDatePicker();
     }
 
 } elseif($do == 'admin' && ($p == 6 || $p == 11)) {

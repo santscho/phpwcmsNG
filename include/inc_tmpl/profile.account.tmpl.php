@@ -82,6 +82,18 @@ if (!defined('PHPWCMS_ROOT')) {
 	</tr>
 	<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="10"></td></tr>
 	<tr>
+		<td align="right"><?php echo $BL['be_profile_label_dateformat'] ?>:&nbsp;</td>
+		<td><select name="form_date_format" id="form_date_format" class="v12 width250">
+<?php
+	$selected_date_format = isset($_SESSION['wcs_user_date_format']) ? $_SESSION['wcs_user_date_format'] : 'iso';
+	foreach(backend_date_formats() as $format_key => $format_data) {
+		echo '<option value="'.$format_key.'"'.($format_key === $selected_date_format ? ' selected="selected"' : '').'>'.html($format_data['sample']).'</option>';
+	}
+?>
+        </select></td>
+	</tr>
+	<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="10"></td></tr>
+	<tr>
 		<td align="right" valign="top" class="tdtop5"><?php echo $BL['be_WYSIWYG'] ?>:&nbsp;</td>
 		<td>
         <?php
