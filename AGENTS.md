@@ -62,7 +62,9 @@
   **drawer**, dropdown → **menu**, collapse/accordion → native `<details>`.
 - Bootstrap 6 wraps its CSS in `@layer`. Unlayered author CSS (e.g.
   `phpwcms.min.css`) always wins over it — keep that in mind before wondering
-  why a v6 rule is not applied.
+  why a v6 rule is not applied. The old px based `.mb-2`…`.mb-5` and
+  `.mt-2`…`.mt-5` helpers were deleted for that reason: they shadowed the v6
+  margin utilities (`mb-5` meant 5px instead of 1rem).
 
 ## Buttons
 

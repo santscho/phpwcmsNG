@@ -74,156 +74,168 @@ $_asql_1 .= 'ORDER BY article_tstamp DESC LIMIT '.$_phpwcms_home['homeMaxArticle
 $_last10_article = _dbQuery($_asql_1);
 
 ?>
-<div style="margin:0 0 10px 0;padding:0;">
-	<form class="formRightInput" action="phpwcms.php?do=home" id="setHomeMaxArticles" name="setHomeMaxArticles" method="post">
-		<select name="homeMaxArticles" onchange="this.form.submit();">
-	<?php foreach(array(5,10,15,25,50,75,100,150) as $x): ?>
-			<option value="<?php echo $x ?>"<?php is_selected($_phpwcms_home['homeMaxArticles'], $x) ?>><?php echo $x ?></option>
-	<?php endforeach; ?>
-			<option value="99999"<?php is_selected(99999, $_phpwcms_home['homeMaxArticles']) ?>><?php echo $BL['be_ftptakeover_all'] ?></option>
-		</select>
-	</form>
-	<h1 class="title" style="margin-top:5px;"><?php echo $BL['be_cnt_articles'] .' <span class="v10">('. $_be_search . ')</span>' ?></h1>
-</div>
-<table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
-
-	<tr class="tableHeadRow">
-		<th>&nbsp;</th>
-		<th style="text-align:left"><?php echo $BL['be_article_atitle'] ?></th>
-		<th><?php echo $BL['be_cnt_last_edited'] ?></th>
-		<th>&nbsp;</th>
-	</tr>
-
-	<tr><td colspan="4" bgcolor="#92A1AF"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
 
 <?php
-
-	if(count($_last10_article)) {
-
-		$row_count = 0;
-
-		foreach($_last10_article as $value) {
-
-			if($row_count) {
-				echo '<tr><td colspan="4" bgcolor="#D9DEE3"><img src="img/leer.gif" alt="" width="1" height="1"></td></tr>'.LF;
-			}
-
-			echo '<tr'.( ($row_count % 2) ? ' bgcolor="#F3F5F8"' : '' ).' class="listrow" style="cursor:pointer" ';
-			echo 'onclick="document.location.href=\'phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;id='.$value['article_id'].'\'" title="'.$BL['be_func_struct_edit'].'">'.LF;
-			echo '	<td style="width:11px;padding:1px 4px 1px 2px;"><img src="img/symbole/text_1.gif" alt="" /></td>'.LF;
-			echo '	<td class="overflow-ellipsis home-article">'.html($value['article_title']);
-			if($value['article_subtitle']) {
-				echo ' / ' . html($value['article_subtitle']);
-			}
-			echo '</td>'.LF;
-			echo '	<td align="center" class="nowrap" style="width:115px">&nbsp;'.$value['article_date'].'&nbsp;</td>'.LF;
-			echo '	<td style="padding:3px;width:42px;" class="nowrap">';
-			echo '<img src="img/button/visible_12x13_'.$value["article_aktiv"].'.gif" alt="" border="0" style="margin-right:2px;" />';
-			echo '<a href="phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;id='.$value['article_id'];
-			echo '"><img src="img/button/edit_22x13.gif" alt="Edit" border="0" /></a>';
-			echo '</td>'.LF;
-			echo '</tr>'.LF;
-
-			$row_count++;
-
-		}
-
-		echo '<tr><td colspan="4" bgcolor="#92A1AF"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>'.LF;
-	}
-
+// inline pencil icon for the row action buttons
+$_be_edit_icon  = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">';
+$_be_edit_icon .= '<path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>';
+$_be_edit_icon .= '</svg>';
 ?>
-	<tr>
-		<td colspan="4" style="padding: 6px 0 0 3px;">
-			<input type="button" value="<?php echo $BL['be_subnav_article_center'] ?>" class="button" onclick="document.location.href='phpwcms.php?do=articles'" />
-			<input type="button" value="<?php echo $BL['be_subnav_article_new'] ?>" class="button" onclick="document.location.href='phpwcms.php?do=articles&amp;p=1&amp;struct=0'" />
-		</td>
-	</tr>
 
-</table>
+<div class="card mb-5">
 
-<div style="margin:25px 0 10px 0;padding:0;">
-	<form class="formRightInput" action="phpwcms.php?do=home" id="setHomeMaxCntParts" name="setHomeMaxCntParts" method="post">
-		<select name="homeCntType" onChange="this.form.submit();" class="width150">
-			<option value="">&#8211;</option>
-	<?php foreach($wcs_content_type as $key => $value): ?>
-			<option value="<?php echo $key ?>"<?php is_selected($_phpwcms_home['homeCntType'], $key) ?>><?php echo $value ?></option>
-	<?php endforeach; ?>
-		</select><select name="homeMaxCntParts" onchange="this.form.submit();">
-	<?php foreach(array(5,10,15,25,50,75,100,150,200,250) as $x): ?>
-			<option value="<?php echo $x ?>"<?php is_selected($_phpwcms_home['homeMaxCntParts'], $x) ?>><?php echo $x ?></option>
-	<?php endforeach; ?>
-			<option value="99999"<?php is_selected(99999, $_phpwcms_home['homeMaxCntParts']) ?>><?php echo $BL['be_ftptakeover_all'] ?></option>
-		</select>
-	</form>
-	<h1 class="title" style="margin:0;"><?php echo $BL['be_ctype'] .' <span class="v10">('. $_be_search .')</span>' ?></h1>
-</div>
-<table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <div class="card-header d-flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
 
-	<tr class="tableHeadRow">
-		<th width="20">&nbsp;</th>
-		<th style="text-align:left"><?php echo $BL['be_cnt_type'] ?>&nbsp;</th>
-		<th style="text-align:left"><?php echo $BL['be_article_atitle'].'/'.$BL['be_profile_label_notes'] ?></th>
-		<th><?php echo $BL['be_cnt_last_edited'] ?>&nbsp;</th>
-		<th>&nbsp;</th>
-	</tr>
+        <h2 class="h6 mb-0"><?php echo $BL['be_cnt_articles'] ?> <span class="fg-secondary">(<?php echo $_be_search ?>)</span></h2>
 
-	<tr><td colspan="5" bgcolor="#92A1AF"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
+        <form action="phpwcms.php?do=home" id="setHomeMaxArticles" name="setHomeMaxArticles" method="post">
+            <select name="homeMaxArticles" id="homeMaxArticles" class="form-control form-control-sm" onchange="this.form.submit();" aria-label="<?php echo $BL['be_cnt_articles'] ?>">
+<?php foreach(array(5,10,15,25,50,75,100,150) as $x): ?>
+                <option value="<?php echo $x ?>"<?php is_selected($_phpwcms_home['homeMaxArticles'], $x) ?>><?php echo $x ?></option>
+<?php endforeach; ?>
+                <option value="99999"<?php is_selected(99999, $_phpwcms_home['homeMaxArticles']) ?>><?php echo $BL['be_ftptakeover_all'] ?></option>
+            </select>
+        </form>
+
+    </div>
+
+    <table class="table table-hover align-middle mb-0">
+
+        <thead>
+            <tr>
+                <th scope="col"><?php echo $BL['be_article_atitle'] ?></th>
+                <th scope="col" class="text-center text-nowrap"><?php echo $BL['be_cnt_last_edited'] ?></th>
+                <th scope="col" class="text-end">&nbsp;</th>
+            </tr>
+        </thead>
+
+        <tbody>
 <?php
 
-	if(count($_last10_articlecontent)) {
+    if(count($_last10_article)) {
 
-		$row_count = 0;
+        foreach($_last10_article as $value) {
 
-		foreach($_last10_articlecontent as $value) {
+            echo '<tr style="cursor:pointer" title="'.$BL['be_func_struct_edit'].'"';
+            echo ' onclick="document.location.href=\'phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;id='.$value['article_id'].'\'">'.LF;
 
-			if(($value["acontent_type"] == 30 && !isset($phpwcms['modules'][$value["acontent_module"] ])) || !isset($wcs_content_type[$value["acontent_type"]])) {
-				continue;
-			}
+            echo "\t".'<td>'.html($value['article_title']);
+            if($value['article_subtitle']) {
+                echo ' <span class="fg-secondary">/ '.html($value['article_subtitle']).'</span>';
+            }
+            echo '</td>'.LF;
 
-			if($row_count) {
-				echo '<tr><td colspan="5" bgcolor="#D9DEE3"><img src="img/leer.gif" alt="" width="1" height="1"></td></tr>'.LF;
-			}
+            echo "\t".'<td class="text-center text-nowrap">'.$value['article_date'].'</td>'.LF;
 
-			echo '<tr'.( ($row_count % 2) ? ' bgcolor="#F3F5F8"' : '' ).' class="listrow" style="cursor:pointer" ';
-			echo 'onclick="document.location.href=\'phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;';
-			echo 'id='.$value['acontent_aid'].'&amp;acid='.$value['acontent_id'].'\'" title="'.$BL['be_func_content_edit'].'">'.LF;
+            echo "\t".'<td class="text-end text-nowrap">';
+            echo '<span class="badge '.($value['article_aktiv'] ? 'theme-success' : 'theme-secondary').'">';
+            echo $value['article_aktiv'] ? $BL['be_admin_struct_visible'] : $BL['be_inactive'];
+            echo '</span> ';
+            echo '<a class="btn btn-outline theme-secondary btn-sm" href="phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;id='.$value['article_id'].'"';
+            echo ' title="'.$BL['be_func_struct_edit'].'" aria-label="'.$BL['be_func_struct_edit'].'">'.$_be_edit_icon.'</a>';
+            echo '</td>'.LF;
 
-			echo '	<td style="padding:1px 4px 1px 2px;width:11px;"><img src="img/symbole/add_content.gif" alt="" /></td>'.LF;
+            echo '</tr>'.LF;
 
-			echo '	<td class="overflow-ellipsis home-type">'.$wcs_content_type[$value["acontent_type"]];
-			if($value["acontent_type"] == 30) {
-				echo ': '.$BL['modules'][$value["acontent_module"]]['listing_title'];
-			}
-			echo '&nbsp;</td>'.LF;
-
-			$value['notice'] = str_replace('###', ', ', trim($value['acontent_title'].'###'.$value['acontent_subtitle'].'###'.$value['acontent_comment'], '#'));
-			if($value['notice']) {
-				$value['notice_long'] = $value['article_title'] . ' > ' . $value['notice'];
-				$value['notice'] = getCleanSubString($value['article_title'], 15, '.') . ' > ' . $value['notice'];
-			} else {
-				$value['notice_long'] = $value['notice'] = $value['article_title'];
-			}
-
-			$value['notice'] = html(preg_replace('/\s+/', ' ', $value['notice'], false));
-
-			echo '	<td class="overflow-ellipsis home-cp" title="'.$BL['be_func_content_edit'].': '.html($value['notice_long'], false).'" style="font-weight:normal">'.$value['notice'].'</td>'.LF;
-			echo '	<td align="center" class="nowrap" style="width:115px">&nbsp;'.$value['acontent_changed'].'&nbsp;</td>'.LF;
-
-			echo '	<td style="padding:3px;width:42px;" class="nowrap">';
-			echo '<img src="img/button/visible_12x13_'.$value["acontent_visible"].'.gif" alt="" border="0" style="margin-right:2px;" />';
-			echo '<a href="phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;';
-			echo 'id='.$value['acontent_aid'].'&amp;acid='.$value['acontent_id'];
-			echo '"><img src="img/button/edit_22x13.gif" alt="Edit" border="0" /></a>';
-			echo '</td>'.LF;
-			echo '</tr>'.LF;
-
-			$row_count++;
-
-		}
-
-		echo '<tr><td colspan="5" bgcolor="#92A1AF"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>'.LF;
-	}
+        }
+    }
 
 ?>
-	<tr><td colspan="5"><img src="img/leer.gif" alt="" width="1" height="25" /></td></tr>
-</table>
+        </tbody>
+
+    </table>
+
+    <div class="card-footer d-flex flex-column md:flex-row gap-3">
+        <a class="btn theme-primary btn-solid btn-styled btn-sm" href="phpwcms.php?do=articles"><?php echo $BL['be_subnav_article_center'] ?></a>
+        <a class="btn btn-outline theme-secondary btn-sm" href="phpwcms.php?do=articles&amp;p=1&amp;struct=0"><?php echo $BL['be_subnav_article_new'] ?></a>
+    </div>
+
+</div>
+
+<div class="card mb-5">
+
+    <div class="card-header d-flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
+
+        <h2 class="h6 mb-0"><?php echo $BL['be_ctype'] ?> <span class="fg-secondary">(<?php echo $_be_search ?>)</span></h2>
+
+        <form action="phpwcms.php?do=home" id="setHomeMaxCntParts" name="setHomeMaxCntParts" method="post" class="d-flex flex-column md:flex-row gap-3">
+            <select name="homeCntType" class="form-control form-control-sm" onchange="this.form.submit();" aria-label="<?php echo $BL['be_cnt_type'] ?>">
+                <option value="">&#8211;</option>
+<?php foreach($wcs_content_type as $key => $value): ?>
+                <option value="<?php echo $key ?>"<?php is_selected($_phpwcms_home['homeCntType'], $key) ?>><?php echo $value ?></option>
+<?php endforeach; ?>
+            </select>
+            <select name="homeMaxCntParts" class="form-control form-control-sm" onchange="this.form.submit();" aria-label="<?php echo $BL['be_ctype'] ?>">
+<?php foreach(array(5,10,15,25,50,75,100,150,200,250) as $x): ?>
+                <option value="<?php echo $x ?>"<?php is_selected($_phpwcms_home['homeMaxCntParts'], $x) ?>><?php echo $x ?></option>
+<?php endforeach; ?>
+                <option value="99999"<?php is_selected(99999, $_phpwcms_home['homeMaxCntParts']) ?>><?php echo $BL['be_ftptakeover_all'] ?></option>
+            </select>
+        </form>
+
+    </div>
+
+    <table class="table table-hover align-middle mb-0">
+
+        <thead>
+            <tr>
+                <th scope="col" class="text-nowrap"><?php echo $BL['be_cnt_type'] ?></th>
+                <th scope="col"><?php echo $BL['be_article_atitle'].' / '.$BL['be_profile_label_notes'] ?></th>
+                <th scope="col" class="text-center text-nowrap"><?php echo $BL['be_cnt_last_edited'] ?></th>
+                <th scope="col" class="text-end">&nbsp;</th>
+            </tr>
+        </thead>
+
+        <tbody>
+<?php
+
+    if(count($_last10_articlecontent)) {
+
+        foreach($_last10_articlecontent as $value) {
+
+            if(($value["acontent_type"] == 30 && !isset($phpwcms['modules'][$value["acontent_module"] ])) || !isset($wcs_content_type[$value["acontent_type"]])) {
+                continue;
+            }
+
+            $value['notice'] = str_replace('###', ', ', trim($value['acontent_title'].'###'.$value['acontent_subtitle'].'###'.$value['acontent_comment'], '#'));
+            if($value['notice']) {
+                $value['notice_long'] = $value['article_title'] . ' > ' . $value['notice'];
+                $value['notice'] = getCleanSubString($value['article_title'], 15, '.') . ' > ' . $value['notice'];
+            } else {
+                $value['notice_long'] = $value['notice'] = $value['article_title'];
+            }
+
+            $value['notice'] = html(preg_replace('/\s+/', ' ', $value['notice'], false));
+
+            echo '<tr style="cursor:pointer" title="'.html($value['notice_long'], false).'"';
+            echo ' onclick="document.location.href=\'phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id='.$value['acontent_aid'].'&amp;acid='.$value['acontent_id'].'\'">'.LF;
+
+            echo "\t".'<td class="text-nowrap">'.$wcs_content_type[$value["acontent_type"]];
+            if($value["acontent_type"] == 30) {
+                echo ' <span class="fg-secondary">'.$BL['modules'][$value["acontent_module"]]['listing_title'].'</span>';
+            }
+            echo '</td>'.LF;
+
+            echo "\t".'<td>'.$value['notice'].'</td>'.LF;
+
+            echo "\t".'<td class="text-center text-nowrap">'.$value['acontent_changed'].'</td>'.LF;
+
+            echo "\t".'<td class="text-end text-nowrap">';
+            echo '<span class="badge '.($value['acontent_visible'] ? 'theme-success' : 'theme-secondary').'">';
+            echo $value['acontent_visible'] ? $BL['be_admin_struct_visible'] : $BL['be_inactive'];
+            echo '</span> ';
+            echo '<a class="btn btn-outline theme-secondary btn-sm" href="phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id='.$value['acontent_aid'].'&amp;acid='.$value['acontent_id'].'"';
+            echo ' title="'.$BL['be_func_content_edit'].'" aria-label="'.$BL['be_func_content_edit'].'">'.$_be_edit_icon.'</a>';
+            echo '</td>'.LF;
+
+            echo '</tr>'.LF;
+
+        }
+    }
+
+?>
+        </tbody>
+
+    </table>
+
+</div>
