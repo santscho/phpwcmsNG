@@ -221,6 +221,23 @@ existing entry already covers the action before adding a second glyph for it.
   the listing afterwards. The qq FileUploader widget is not used here anymore,
   but `filebrowser.php` still loads it, so its files stay.
 
+## File actions
+
+- `FILE > file actions` (`include/inc_tmpl/files.actions.tmpl.php`) is three
+  stacked cards: the folder choice (`folderform`, still posting on change), the
+  file list and the action panel. The screen title is the header of the first
+  card, the step labels are the headers of the other two.
+- The files of the selected folder are a `list-group list-group-flush` of
+  `list-group-item` rows: `.check` checkbox, the file type icon from
+  `backend_file_icon()`, the name as the row label, then icon-only `badge` state
+  marks — `toggle-on` `theme-success`/`toggle-off` `theme-secondary` for active and
+  `globe` `theme-info`/`lock` `theme-secondary` for public. The select-all
+  checkbox sits in the `card-footer`.
+- The action panel is a `form-control` select on `file_action`; the folder, status
+  and owner fields plus the submit button are cells that `showAction()` reveals by
+  toggling `d-none` — vanilla JS, no MooTools. The result message is an
+  `alert theme-success` (or `theme-danger` when nothing was marked).
+
 ## Bootstrap skills
 
 All official Bootstrap agent skills are installed in `skills/` (source

@@ -99,193 +99,202 @@ if($file_action['action'] === 1 && $file_action["mark"]) {
     }
 }
 
+// an action was performed on at least one marked file
+$_files_action_ok = $file_action['action'] > 0 && !empty($file_action['mark']) && $file_action_msg !== $BL['file_actions_msg_error'];
 
-?>
-<script type=text/javascript>
-function showAction() {
-    let divid = parseInt(document.filetakeover.file_action.value, 10);
-    if (divid === 0) {
-        document.getElementById("div_button").style.display='none';
-        document.getElementById("div_status").style.display='none';
-        document.getElementById("div_folder").style.display='none';
-        document.getElementById("div_user").style.display='none';
-    } else if (divid === 1) {
-        document.getElementById("div_button").style.display='block';
-        document.getElementById("div_status").style.display='none';
-        document.getElementById("div_folder").style.display='none';
-        document.getElementById("div_user").style.display='none';
-    } else if (divid === 2) {
-        document.getElementById("div_button").style.display='block';
-        document.getElementById("div_status").style.display='none';
-        document.getElementById("div_folder").style.display='block';
-        document.getElementById("div_user").style.display='none';
-    } else if (divid === 3) {
-        document.getElementById("div_button").style.display='block';
-        document.getElementById("div_status").style.display='block';
-        document.getElementById("div_folder").style.display='none';
-        document.getElementById("div_user").style.display='none';
-    } else if (divid === 4) {
-        document.getElementById("div_button").style.display='block';
-        document.getElementById("div_status").style.display='none';
-        document.getElementById("div_folder").style.display='none';
-        document.getElementById("div_user").style.display='block';
-    }
-}
-</script>
-
-<h1 class="title"><?php echo $BL['be_subnav_file_actions'] ?></h1>
-<?php if($file_action_msg) { echo '<p><b>'.$file_action_msg.'</b></p>'; } ?>
-
-<form action="phpwcms.php?do=files&amp;p=4" method="post" style="background:#F3F5F8;border-top:1px solid #92A1AF;border-bottom:1px solid #92A1AF;margin:0 0 5px 0;padding:10px 8px 10px 8px" name="folderform" id="folderform">
-    <strong><?php echo $BL['file_actions_step1'] ?></strong><br />
-    <select name="file_dir" id="file_dir" class="v11 width400" onchange="submit();">
-        <option value="0"><?php echo $BL['be_ftptakeover_rootdir'] ?></option>
-        <?php //get folders for user
-            dir_menu(0, $file_action["file_dir"], "+", $_SESSION["wcs_user_id"], "+");
-        ?>
-    </select>
-</form>
-
-&nbsp;&nbsp;<strong><?php echo $BL['file_actions_step2'] ?><strong>
-<form action="phpwcms.php?do=files&amp;p=4" method="post" name="filetakeover" id="filetakeover" style="margin-top:3px">
-    <input name="file_dir" type="hidden" value="<?php echo $file_action["file_dir"] ?>" />
-
-<table width="538" border="0" cellpadding="0" cellspacing="0" summary="" style="margin-bottom:10px">
-    <tr bgcolor="#92A1AF"><td colspan="6"><img src="img/leer.gif" alt="" width="1" height="1" /></td>
-    </tr>
-        <tr bgcolor="#D9DEE3">
-            <td width="35" align="center" class="v09"><?php echo $BL['be_ftptakeover_mark'] ?></td>
-            <td width="1" bgcolor="#F2F3F5"><img src="img/leer.gif" alt="" width="1" height="14" /></td>
-            <td width="21"><img src="img/leer.gif" alt="" width="21" height="1" /></td>
-            <td width="420" class="v09"><?php echo $BL['be_ftptakeover_available'] ?></td>
-            <td width="1" bgcolor="#F2F3F5"><img src="img/leer.gif" alt="" width="1" height="1" /></td>
-            <td width="50" align="right" class="v09"><?php echo $BL['be_ftptakeover_status'] ?>&nbsp;&nbsp;</td>
-        </tr>
-        <tr bgcolor="#92A1AF"><td colspan="6" bgcolor="#D9DEE3"><img src="img/leer.gif" alt="" width="1" height="1" /></td>
-    </tr>
-<?php
-//Browse files in selected folder
+// browse files of the selected folder
 $fx = 0;
+$_files_action_list = array();
 $file_sql = "SELECT * FROM ".DB_PREPEND."phpwcms_file WHERE f_pid=" . $file_action["file_dir"] .
             " AND f_trash=0 AND f_kid = 1 AND f_uid = " . $_SESSION["wcs_user_id"] . " ORDER BY f_name";
 $file_result = _dbQuery($file_sql);
 if(isset($file_result[0]['f_id'])) {
-
     foreach($file_result as $file_row) {
-        $fxb = ($fx % 2) ? " bgColor=\"#F9FAFB\"" : "";
         // there is a big problem with special chars on Mac OS X and seems Windows too
         if(PHPWCMS_CHARSET !== 'utf-8' && phpwcms_seems_utf8($file_row["f_name"])) {
             $filename = str_replace('?', '', mb_convert_encoding($file_row["f_name"], PHPWCMS_CHARSET));
         } else {
             $filename = $file_row["f_name"];
         }
-        $filename = html($filename);
-?>
-    <tr<?php echo $fxb ?>>
-        <td align="center"><input name="ftp_mark[<?php echo $file_row["f_id"] ?>]" type="checkbox" id="ftp_mark_<?php echo $file_row["f_id"] ?>" value="1" class="ftp_mark" /></td>
-        <td bgcolor="#D9DEE3"><img src="img/leer.gif" alt="" width="1" height="17" /></td>
-        <td align="center"><img src="img/icons/small_<?php echo extimg($file_row["f_ext"]) ?>" alt="" width="13" height="11" /></td>
-        <td class="v10"><?php echo $filename ?></td>
-        <td bgcolor="#D9DEE3"><img src="img/leer.gif" alt="" width="1" height="1" /></td>
-        <td align="right" class="v10">
-            <?php
-            //Icons Public/Non-Public
-            echo "<img src=\"img/button/aktiv_12x13_".$file_row["f_aktiv"].".gif\" border=\"0\">";
-            echo "<img src=\"img/button/public_12x13_".$file_row["f_public"].".gif\" border=\"0\">";
-             ?>&nbsp;
-            <input name="ftp_fileid[<?php echo $fx ?>]" type="hidden" value="<?php echo $file_row["f_id"] ?>" />
-        </td>
-    </tr>
-<?php
+        $file_row['filename'] = html($filename);
+        $_files_action_list[] = $file_row;
         $fx++;
     }
 }
-if(!$fx) {
+
+$_files_action_status = array(
+    'active'    => '<span class="badge theme-success" title="' . html($BL['be_ftptakeover_active']) . '">' . backend_icon('toggle-on') . '</span>',
+    'inactive'  => '<span class="badge theme-secondary" title="' . html($BL['be_inactive']) . '">' . backend_icon('toggle-off') . '</span>',
+    'public'    => '<span class="badge theme-info" title="' . html($BL['be_ftptakeover_public']) . '">' . backend_icon('globe') . '</span>',
+    'private'   => '<span class="badge theme-secondary" title="' . html($BL['be_fsearch_personal']) . '">' . backend_icon('lock') . '</span>',
+);
 ?>
-    <tr>
-        <td colspan="5" class="dir">&nbsp;<?php echo $BL['file_actions_no'] ?></td>
-        <td><img src="img/leer.gif" alt="" width="1" height="17" /></td>
-    </tr>
-<?php } else { ?>
-    <tr bgcolor="#92A1AF"><td colspan="6" bgcolor="#D9DEE3"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-    <tr bgcolor="#EAEDF0">
-        <td align="center" class="subnavactive"><input name="toggle" type="checkbox" id="toggle" value="1" title="<?php echo $BL['be_ftptakeover_all'] ?>" /></td>
-        <td bgcolor="#D9DEE3"><img src="img/leer.gif" alt="" width="1" height="17" /></td>
-        <td>&nbsp;</td>
-        <td class="v10">
-            <?php echo $BL['be_ftptakeover_all'] ?>
-            <button id="delete-selected-files" style="display:none;margin-left:3em;" class="v10"><?php echo $BL['be_delete_selected_files'] ?></button>
-        </td>
-        <td bgcolor="#D9DEE3"><img src="img/leer.gif" alt="" width="1" height="1" /></td>
-        <td align="right" class="v10"></td>
-    </tr>
-    <tr bgcolor="#92A1AF"><td colspan="6"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
+<script type="text/javascript">
+function showAction() {
+    var select = document.getElementById('file_action');
+    var action = select ? parseInt(select.value, 10) : 0;
+    var panel = {
+        folder: document.getElementById('div_folder'),
+        status: document.getElementById('div_status'),
+        user:   document.getElementById('div_user'),
+        button: document.getElementById('div_button')
+    };
+    if (!panel.button) {
+        return;
+    }
+    panel.folder.classList.toggle('d-none', action !== 2);
+    panel.status.classList.toggle('d-none', action !== 3);
+    panel.user.classList.toggle('d-none', action !== 4);
+    panel.button.classList.toggle('d-none', action === 0);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    showAction();
+
+    var form = document.getElementById('filetakeover');
+    var toggle = document.getElementById('toggle');
+    if (!form || !toggle) {
+        return;
+    }
+    toggle.addEventListener('change', function () {
+        var marks = form.querySelectorAll('input.ftp_mark');
+        for (var i = 0; i < marks.length; i++) {
+            marks[i].checked = toggle.checked;
+        }
+    });
+});
+</script>
+
+<?php if($file_action_msg) { ?>
+<div class="alert <?php echo $_files_action_ok ? 'theme-success' : 'theme-danger' ?> mb-5" role="alert"><?php echo html($file_action_msg) ?></div>
 <?php } ?>
-    <tr bgcolor="#D9DEE3">
-        <td><img src="img/leer.gif" alt="" width="35" height="1" /></td>
-        <td><img src="img/leer.gif" alt="" width="1" height="1" /></td>
-        <td><img src="img/leer.gif" alt="" width="21" height="1" /></td>
-        <td><img src="img/leer.gif" alt="" width="400" height="1" /></td>
-        <td><img src="img/leer.gif" alt="" width="1" height="1" /></td>
-        <td><img src="img/leer.gif" alt="" width="50" height="1" /></td>
-    </tr>
-</table>
-<?php
-//if files available
-if($fx) {
-?>
-<div style="background:#F3F5F8;border-top:1px solid #92A1AF;border-bottom:1px solid #92A1AF;margin:0 0 5px 0;padding:10px 8px 15px 8px">
-    <div class="mb-4">
-        <?php echo $BL['file_actions_step3'] ?>
-        <select name="file_action" id="file_action" class="v12" onChange="showAction()">
-            <option value="0">- <?php echo $BL['file_actions_pdl_empty'] ?> -</option>
-            <option value="1"><?php echo $BL['file_actions_pdl_delete'] ?></option>
-            <option value="2"><?php echo $BL['file_actions_pdl_move'] ?></option>
-            <option value="3"><?php echo $BL['file_actions_pdl_status'] ?></option>
-            <option value="4"><?php echo $BL['file_actions_pdl_user'] ?></option>
-        </select>
+
+<div class="card mb-5">
+
+    <div class="card-header d-flex flex-column md:flex-row md:align-items-center gap-3">
+        <h2 class="h6 mb-0"><?php echo $BL['be_subnav_file_actions'] ?></h2>
     </div>
 
+    <div class="card-body">
 
-        <div id="div_folder" style="display: none;">
-        <table>
-            <tr>
-                <td>&nbsp;</td>
-                <td><?php echo $BL['file_actions_bemfolder']; ?></td>
-            </tr>
-            <tr>
-                <td align="right" class="chatlist"><?php echo $BL['be_ftptakeover_directory'] ?>:&nbsp;</td>
-                <td class="v10">
-                <select name="file_newdir" id="file_newdir" class="v11 width400">
-                    <option value="0"><?php echo $BL['be_ftptakeover_rootdir'] ?></option>
-                    <?php dir_menu(0, 0, "+", $_SESSION["wcs_user_id"], "+"); ?>
-                </select></td>
-            </tr>
-        </table>
+        <form action="phpwcms.php?do=files&amp;p=4" method="post" name="folderform" id="folderform">
+
+            <div class="row g-3">
+                <div class="col-12 md:col-6">
+                    <label class="form-label" for="file_dir"><?php echo $BL['file_actions_step1'] ?></label>
+                    <select name="file_dir" id="file_dir" class="form-control" onchange="submit();">
+                        <option value="0"><?php echo $BL['be_ftptakeover_rootdir'] ?></option>
+                        <?php //get folders for user
+                            dir_menu(0, $file_action["file_dir"], "+", $_SESSION["wcs_user_id"], "+");
+                        ?>
+                    </select>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<form action="phpwcms.php?do=files&amp;p=4" method="post" name="filetakeover" id="filetakeover">
+
+    <input name="file_dir" type="hidden" value="<?php echo $file_action["file_dir"] ?>" />
+
+    <div class="card mb-5">
+
+        <div class="card-header d-flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
+            <h2 class="h6 mb-0"><?php echo $BL['file_actions_step2'] ?></h2>
+            <span class="badge theme-secondary"><?php echo $fx ?> <?php echo $BL['be_ftptakeover_available'] ?></span>
         </div>
-        <div id="div_status" style="display: none;">
-        <table>
-            <tr>
-            <td align="right" class="v09" valign="top"><?php echo $BL['be_ftptakeover_status'] ?>:&nbsp;</td>
-            <td>
-            <table border="0" cellpadding="1" cellspacing="0" bgcolor="#E6EAED" summary="">
-                <tr>
-                    <td><input name="file_aktiv" type="checkbox" id="file_aktiv" value="1" /></td>
-                    <td class="v10"><strong><label for="file_aktiv"><?php echo $BL['be_ftptakeover_active'] ?></label></strong>&nbsp;&nbsp;</td>
-                    <td><input name="file_public" type="checkbox" id="file_public" value="1" /></td>
-                    <td class="v10"><strong><label for="file_public"><?php echo $BL['be_ftptakeover_public'] ?></label></strong>&nbsp;&nbsp;</td>
-                </tr>
-            </table>
-            </td>
-        </tr>
-        </table>
+
+        <div class="list-group list-group-flush">
+<?php if($fx): ?>
+<?php foreach($_files_action_list as $_files_action_index => $_files_action_file): ?>
+            <div class="list-group-item d-flex align-items-center gap-2">
+
+                <input class="check flex-shrink-0 ftp_mark" type="checkbox" name="ftp_mark[<?php echo $_files_action_file["f_id"] ?>]" id="ftp_mark_<?php echo $_files_action_file["f_id"] ?>" value="1" />
+
+                <span class="flex-shrink-0 fg-secondary"><?php echo backend_icon(backend_file_icon($_files_action_file["f_ext"])) ?></span>
+
+                <label class="flex-grow-1 text-truncate mb-0" for="ftp_mark_<?php echo $_files_action_file["f_id"] ?>"><?php echo $_files_action_file['filename'] ?></label>
+
+                <span class="flex-shrink-0 d-flex gap-2">
+                    <?php echo $_files_action_file["f_aktiv"] ? $_files_action_status['active'] : $_files_action_status['inactive'] ?>
+                    <?php echo $_files_action_file["f_public"] ? $_files_action_status['public'] : $_files_action_status['private'] ?>
+                </span>
+
+                <input name="ftp_fileid[<?php echo $_files_action_index ?>]" type="hidden" value="<?php echo $_files_action_file["f_id"] ?>" />
+
+            </div>
+<?php endforeach; ?>
+<?php else: ?>
+            <div class="list-group-item fg-secondary"><?php echo $BL['file_actions_no'] ?></div>
+<?php endif; ?>
         </div>
-        <div id="div_user" style="display: none;">
-        <table>
-            <tr>
-                <td align="right" class="chatlist" valign="top"><?php echo $BL["login_username"]; ?>:&nbsp;</td>
-                <td class="v10">
-                    <select name="file_user" id="file_user" class="v12b">
+
+<?php if($fx): ?>
+        <div class="card-footer d-flex flex-column md:flex-row md:align-items-center gap-3">
+
+            <div class="form-field flex-shrink-0">
+                <input class="check" name="toggle" type="checkbox" id="toggle" value="1" />
+                <label for="toggle"><?php echo $BL['be_ftptakeover_all'] ?></label>
+            </div>
+
+            <button type="button" id="delete-selected-files" class="btn theme-danger btn-solid btn-styled btn-sm d-none"><?php echo $BL['be_delete_selected_files'] ?></button>
+
+        </div>
+<?php endif; ?>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-header">
+            <h2 class="h6 mb-0"><?php echo $BL['file_actions_step3'] ?></h2>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-5">
+
+                <div class="col-12 md:col-6">
+                    <label class="visually-hidden" for="file_action"><?php echo $BL['file_actions_step3'] ?></label>
+                    <select name="file_action" id="file_action" class="form-control" onchange="showAction();">
+                        <option value="0">- <?php echo $BL['file_actions_pdl_empty'] ?> -</option>
+                        <option value="1"><?php echo $BL['file_actions_pdl_delete'] ?></option>
+                        <option value="2"><?php echo $BL['file_actions_pdl_move'] ?></option>
+                        <option value="3"><?php echo $BL['file_actions_pdl_status'] ?></option>
+                        <option value="4"><?php echo $BL['file_actions_pdl_user'] ?></option>
+                    </select>
+                </div>
+
+                <div class="col-12 md:col-6 d-none" id="div_folder">
+                    <label class="form-label" for="file_newdir"><?php echo $BL['be_ftptakeover_directory'] ?></label>
+                    <select name="file_newdir" id="file_newdir" class="form-control">
+                        <option value="0"><?php echo $BL['be_ftptakeover_rootdir'] ?></option>
+                        <?php dir_menu(0, 0, "+", $_SESSION["wcs_user_id"], "+"); ?>
+                    </select>
+                    <div class="form-text"><?php echo $BL['file_actions_bemfolder'] ?></div>
+                </div>
+
+                <div class="col-12 d-none" id="div_status">
+                    <div class="form-label"><?php echo $BL['be_ftptakeover_status'] ?></div>
+                    <div class="d-flex flex-wrap gap-5">
+                        <div class="form-field">
+                            <input class="check" name="file_aktiv" type="checkbox" id="file_aktiv" value="1" />
+                            <label for="file_aktiv"><?php echo $BL['be_ftptakeover_active'] ?></label>
+                        </div>
+                        <div class="form-field">
+                            <input class="check" name="file_public" type="checkbox" id="file_public" value="1" />
+                            <label for="file_public"><?php echo $BL['be_ftptakeover_public'] ?></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6 d-none" id="div_user">
+                    <label class="form-label" for="file_user"><?php echo $BL['login_username'] ?></label>
+                    <select name="file_user" id="file_user" class="form-control">
                         <option value="">--- <?php echo $BL['be_selection'] ?> ---</option>
 <?php
     $result = _dbGet('phpwcms_user', 'usr_id, usr_name, usr_aktiv', '', '', 'usr_name');
@@ -293,40 +302,25 @@ if($fx) {
         $this_uid = intval($_SESSION["wcs_user_id"]);
         foreach($result as $row):
 ?>
-            <option value="<?php echo $row['usr_id']; ?>"<?php if (intval($row['usr_id']) === $this_uid): ?> disabled="disabled"<?php endif; ?>>
-                <?php echo html($row['usr_name']); ?>
-                <?php if (!$row['usr_aktiv']): ?>(<?php echo $BL['be_inactive']; ?>)
-                <?php elseif ($row['usr_aktiv'] == 9): ?>(<?php echo $BL['be_msg_del']; ?>)
-                <?php endif; ?>
-            </option>
+                        <option value="<?php echo $row['usr_id']; ?>"<?php if (intval($row['usr_id']) === $this_uid): ?> disabled="disabled"<?php endif; ?>>
+                            <?php echo html($row['usr_name']); ?><?php if (!$row['usr_aktiv']): ?> (<?php echo $BL['be_inactive']; ?>)<?php elseif ($row['usr_aktiv'] == 9): ?> (<?php echo $BL['be_msg_del']; ?>)<?php endif; ?>
+                        </option>
 <?php
         endforeach;
     endif;
 ?>
                     </select>
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td class="tdtop3 tdbottom3"><?php echo $BL['file_actions_bemuser']; ?></td>
-            </tr>
-         </table>
-         </div>
+                    <div class="form-text"><?php echo $BL['file_actions_bemuser'] ?></div>
+                </div>
 
-        <div id="div_button" style="display: none;" class="mt-5">
-            <input name="Submit" type="submit" class="button" value="<?php echo $BL['file_actions_button'] ?>" />
+            </div>
+
         </div>
-</div>
 
-<?php } ?>
+        <div class="card-footer d-none" id="div_button">
+            <input name="Submit" type="submit" class="btn theme-primary btn-solid btn-styled btn-sm" value="<?php echo $BL['file_actions_button'] ?>" />
+        </div>
+
+    </div>
+
 </form>
-<?php if($fx) { ?>
-<script type="text/javascript">
-$('toggle').addEvent('change',function(e) {
-    var toggle = $('toggle').checked;
-    $$('#filetakeover input.ftp_mark').each(function(check) {
-        check.checked = toggle;
-    });
-});
-</script>
-<?php } ?>
