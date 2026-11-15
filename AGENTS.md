@@ -457,6 +457,32 @@ existing entry already covers the action before adding a second glyph for it.
 - Dates come from `$backend_date_format`, like everywhere else. `$set_begin` and
   `$set_end` are provided by the caller.
 
+## Tag and keyword fields
+
+- Every tag and keyword field runs on the jQuery autoSuggest plugin
+  (`include/inc_js/jquery/jquery.autoSuggest.min.js`): the article keywords
+  (`#article_keyword_autosuggest`), the news keywords
+  (`#news_keyword_autosuggest`), the file tags (`#file_tags_autosuggest`) and the
+  news category in the news content part. `initJsAutocompleter()` loads the
+  plugin and `include/inc_js/backend.tags.js`; it does not load
+  `include/inc_css/autoSuggest.css` any more, that stylesheet is kept for
+  `filebrowser.php` only, which has no Bootstrap.
+- The plugin builds its own markup, so the module maps the generated elements to
+  Bootstrap components: the selections list becomes a `form-control` box, a
+  selected term a `badge rounded-pill theme-primary` reading `term ×`, and the
+  result list a `list-group` panel with `list-group-item list-group-item-action`
+  entries. The plugin marks the hovered suggestion with `active`, which the list
+  group item already styles, and it shows and hides the panel itself, so the
+  panel cannot be the `menu` component (that one is only visible with `show`).
+- The plugin rewrites the result list on every keystroke and the selections after
+  every add or remove, so the module decorates from a MutationObserver rather
+  than once. It only adds classes and never removes them, which keeps the
+  observer from feeding itself. Do not defer that work to
+  `requestAnimationFrame`: it never runs in a background tab.
+- The plugin's hidden `as_values_<id>` input stays the contract for the screens:
+  the article form reads `#as-values-keyword-autosuggest` on submit, and every
+  widget keeps its `asHtmlID` and options.
+
 ## Date and time format
 
 - Every backend date and time field is a flatpickr picker that displays the
