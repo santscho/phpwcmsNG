@@ -197,10 +197,11 @@ existing entry already covers the action before adding a second glyph for it.
 
 ## File center
 
-- `FILE` keeps its folder tabs as a Bootstrap `nav nav-pills` inside the
-  `card-header` of `include/inc_tmpl/files.reiter.tmpl.php` (`nav-link` anchors,
-  the current folder `active` plus `aria-current="page"`), with the folder
-  actions as `btn-icon` buttons on the right of the same header.
+- `FILE` keeps its folder tabs as a Bootstrap `nav nav-pills` at the top of the
+  content column in `include/inc_tmpl/files.reiter.tmpl.php`, without a card
+  around it: `nav-link` anchors, the current folder `active` plus
+  `aria-current="page"`, and the folder actions as `btn-icon` buttons on the
+  right of the same row.
 - The private listing is a `card` with a `list-group list-group-flush`; directory
   and file rows are `list-group-item` rows of the same shape as the article tree
   (open/close chevron, type icon, name, actions). Opening a directory nests a

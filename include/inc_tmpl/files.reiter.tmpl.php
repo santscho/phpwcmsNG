@@ -67,20 +67,14 @@ $_files_tabs = array(
 );
 
 ?>
-<div class="card mb-5">
+<div class="d-flex flex-column lg:flex-row lg:align-items-center gap-3 mb-5">
 
-    <div class="card-header d-flex flex-column lg:flex-row lg:align-items-center gap-3">
-
-        <h2 class="h6 mb-0"><?php echo $BL['be_ftab_title'] ?></h2>
-
-        <div class="nav nav-pills flex-wrap me-auto">
+    <div class="nav nav-pills flex-wrap me-auto">
 <?php foreach($_files_tabs as $_files_key => $_files_tab): ?>
-            <a href="<?php echo $_files_tab['link'] ?>" class="nav-link<?php echo $files_folder === $_files_key ? ' active' : '' ?>"<?php echo $files_folder === $_files_key ? ' aria-current="page"' : '' ?>><?php echo $_files_tab['label'] ?></a>
+        <a href="<?php echo $_files_tab['link'] ?>" class="nav-link<?php echo $files_folder === $_files_key ? ' active' : '' ?>"<?php echo $files_folder === $_files_key ? ' aria-current="page"' : '' ?>><?php echo $_files_tab['label'] ?></a>
 <?php endforeach; ?>
-        </div>
-
-        <div class="d-flex flex-wrap align-items-center gap-2 flex-shrink-0"><?php echo $_files_actions ?></div>
-
     </div>
+
+    <div class="d-flex flex-wrap align-items-center gap-2 flex-shrink-0"><?php echo $_files_actions ?></div>
 
 </div>
