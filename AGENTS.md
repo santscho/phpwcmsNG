@@ -212,6 +212,14 @@ existing entry already covers the action before adding a second glyph for it.
 - `files.abschluss.tmpl.php` and `files.private-filelist.inc.php` are gone: the
   closing bar was decoration and the root files are listed by
   `list_private_files()` now.
+- The multiple upload screen (`files.ftptakeover.tmpl.php`) is cards too: a drop
+  zone with a native multiple `form-control` file input, the files waiting in the
+  FTP directory as a list group with the total size in a badge, then the file
+  information split by a language `nav nav-pills` header with one `card-body`
+  pane per language. `include/inc_js/backend.upload.js` sends one request per file
+  to `include/inc_act/act_upload.php` under the field name `qqfile` and reloads
+  the listing afterwards. The qq FileUploader widget is not used here anymore,
+  but `filebrowser.php` still loads it, so its files stay.
 
 ## Bootstrap skills
 

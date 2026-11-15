@@ -137,7 +137,7 @@ function check_image_extension($file, $filename, &$file_image_size) {
 
     $result = false;
     if(empty($file_image_size[2])) {
-        $file_image_size = getimagesize($file);
+        $file_image_size = @getimagesize($file);
     }
 
     if(!empty($file_image_size[2])) {
