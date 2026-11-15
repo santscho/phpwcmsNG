@@ -38,8 +38,8 @@ These apply to every backend screen that is modernized:
   legible), then `container` → `row` / `col` → `card` / `card-body`, with the
   standard button classes below.
 - The backend frame (`phpwcms.php`) is a primary `navbar sticky-top`; the main
-  sections are a Bootstrap `nav nav-pills` (`nav-link` anchors, `active` plus
-  `aria-current="page"` on the current one) and the theme switcher, host and
+  sections are a base Bootstrap `nav` (`nav-link` anchors, `active` plus
+  `aria-current="page"` on the current one, no `nav-pills`) and the theme switcher, host and
   logout sit on the right. The unread message count is a `badge theme-warning`
   inside the messages pill. Below it a fluid container row: sidebar column
   (`col-12 md:col-3 xl:col-2`) next to the content column
