@@ -17,10 +17,17 @@
   standard button classes below.
 - The backend frame (`phpwcms.php`) is a primary `navbar sticky-top` carrying
   the main sections plus host and logout, then a fluid container row: sidebar column
-  (`col-12 md:col-3 xl:col-2`, holding the section sub navigation, the search
-  and the online users) next to the content column
-  (`col-12 md:col-9 xl:col-10`, keeping the `#be_main_content` id). Navigation
-  entries are `nav-link` elements, not table rows or image bullets.
+  (`col-12 md:col-3 xl:col-2`) next to the content column
+  (`col-12 md:col-9 xl:col-10`, keeping the `#be_main_content` id).
+- The sidebar is a single light panel `bg-1 border rounded overflow-hidden`.
+  Inside it the section sub navigation is a `nav` holding a
+  `list-group list-group-flush`; entries are `list-group-item
+  list-group-item-action` emitted by `subnavtext()`, the current one also gets
+  `active` and `aria-current="page"`. Below it a `p-5` block carries the
+  backend search as an `input-group` of `form-control` and
+  `btn theme-primary btn-solid btn-styled btn-sm`, `hr` separators, `h2.h6`
+  section titles and the online users as `small` text. No table rows, image
+  bullets or `nav-link` entries.
 - Exceptions are possible, but only when deliberately agreed and kept minimal;
   note the reason in the commit message.
 

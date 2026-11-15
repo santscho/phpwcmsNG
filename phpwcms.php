@@ -206,7 +206,7 @@ switch ($do) {
 
 //Subnav Wrap Text Tabelle
 if($subnav) {
-    $subnav = '<nav class="nav flex-column gap-1 mb-5">' . $subnav . '</nav>' . LF;
+    $subnav = '<nav class="list-group list-group-flush">' . $subnav . '</nav>' . LF;
 }
 
 //Wenn der User kein Admin ist, anderenfalls
@@ -320,32 +320,41 @@ if($BE['LANG'] == 'ar') {
 <div class="container-fluid py-5">
     <div class="row g-5">
         <aside class="col-12 md:col-3 xl:col-2">
+            <div class="bg-1 border rounded overflow-hidden">
 
-            <?php echo $subnav; ?>
+                <?php if($subnav): ?>
+                <div><?php echo $subnav; ?></div>
+                <?php endif; ?>
 
-            <form action="phpwcms.php?do=home" method="POST" class="mb-5">
+                <div class="p-5">
 
-                <label class="form-label" for="backend_search_input"><?php echo $BL['be_ctype_search'] ?></label>
-                <div class="d-flex gap-2">
-                    <input type="search" class="form-control" id="backend_search_input" name="backend_search_input" value="<?php
+                    <h2 class="h6 fg-secondary mb-3"><?php echo $BL['be_ctype_search'] ?></h2>
 
-                        if(isset($_POST['backend_search_input'])) {
-                            $_SESSION['phpwcms_backend_search'] = clean_slweg($_POST['backend_search_input']);
-                        }
+                    <form action="phpwcms.php?do=home" method="POST">
+                        <div class="input-group">
+                            <input type="search" class="form-control" id="backend_search_input" name="backend_search_input" aria-label="<?php echo $BL['be_ctype_search'] ?>" value="<?php
 
-                        if(!empty($_SESSION['phpwcms_backend_search'])) {
-                            echo html_specialchars($_SESSION['phpwcms_backend_search']);
-                        }
-                    ?>">
-                    <button type="submit" class="btn theme-primary btn-solid btn-styled btn-sm"><?php echo $BL['be_ctype_search'] ?></button>
+                                if(isset($_POST['backend_search_input'])) {
+                                    $_SESSION['phpwcms_backend_search'] = clean_slweg($_POST['backend_search_input']);
+                                }
+
+                                if(!empty($_SESSION['phpwcms_backend_search'])) {
+                                    echo html_specialchars($_SESSION['phpwcms_backend_search']);
+                                }
+                            ?>">
+                            <button type="submit" class="btn theme-primary btn-solid btn-styled btn-sm"><?php echo $BL['be_ctype_search'] ?></button>
+                        </div>
+                    </form>
+
+                    <hr class="my-5">
+
+                    <h2 class="h6 fg-secondary mb-3"><?php echo $BL['usr_online'] ?></h2>
+
+                    <div class="small fg-secondary"><?php echo online_users('<br />', '<span class="fg-3">|</span>'); ?></div>
+
                 </div>
 
-            </form>
-
-            <h2 class="h6 mb-2"><?php echo $BL['usr_online'] ?></h2>
-
-            <div class="small"><?php echo online_users('<br />', '<span class="fg-secondary">|</span>'); ?></div>
-
+            </div>
         </aside>
         <main class="col-12 md:col-9 xl:col-10 v11b" id="be_main_content">{STATUS_MESSAGE}{BE_PARSE_LANG}<!--BE_MAIN_CONTENT_START//-->
 <?php

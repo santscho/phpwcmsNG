@@ -81,7 +81,7 @@ function backend_theme_icon($theme) {
 function subnavtext($text, $link, $is, $should, $getback=1, $js='') {
     //generate subnavigation based on text
     $nav_active = (string) ($is ?: '0') === (string) ($should ?: '0');
-    $sn = '<a href="' . $link . '" class="nav-link justify-content-start' . ($nav_active ? ' active' : '') . '"';
+    $sn = '<a href="' . $link . '" class="list-group-item list-group-item-action' . ($nav_active ? ' active' : '') . '"';
     $sn .= ($nav_active ? ' aria-current="page"' : '') . ' ' . $js . '>' . $text . '</a>';
     $sn .= "\n";
     if(!$getback) {
@@ -95,7 +95,7 @@ function subnavtext($text, $link, $is, $should, $getback=1, $js='') {
 
 function subnavtextext($text, $link, $target='_blank', $getback=1) {
     //generate subnavigation based on text and links to new page
-    $sn  = '<a href="' . $link . '" target="' . $target . '" class="nav-link justify-content-start">' . $text . '</a>';
+    $sn  = '<a href="' . $link . '" target="' . $target . '" class="list-group-item list-group-item-action">' . $text . '</a>';
     $sn .= "\n";
 
     if($getback) {
