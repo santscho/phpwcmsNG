@@ -51,15 +51,22 @@ These apply to every backend screen that is modernized:
   `card-header` title, an `alert theme-success`/`theme-danger` status line and
   `badge theme-success`/`theme-danger` marks on the newer version number; no
   `versioncheck`, `valid` or `error` classes and no separate stylesheet rules.
-- The sidebar is a single light panel `bg-1 border rounded overflow-hidden`.
-  Inside it the section sub navigation is a `nav` holding a
-  `list-group list-group-flush`; entries are `list-group-item
-  list-group-item-action` emitted by `subnavtext()`, the current one also gets
-  `active` and `aria-current="page"`. Below it a `p-5` block carries the
-  backend search as an `input-group` of `form-control` and
-  `btn theme-primary btn-solid btn-styled btn-sm`, `hr` separators, `h2.h6`
-  section titles and the online users as `small` text. No table rows, image
-  bullets or `nav-link` entries.
+- The sidebar is a full height column: the content area is a
+  `container-fluid d-flex flex-column flex-grow-1 p-0` holding a
+  `row g-0 flex-grow-1`, so the `aside` (`col-12 md:col-3 xl:col-2`) runs from
+  the header down to the footer. The column carries the light `bg-2` surface and
+  `md:border-end` as its only divider from the content column, which keeps its
+  `p-5` padding and `id="be_main_content"`.
+- Everything in the sidebar is a card, stacked with `mb-5` and no `hr`
+  separators between the blocks: the section sub navigation (a `nav` with
+  `list-group list-group-flush`, `list-group-item list-group-item-action` rows
+  from `subnavtext()`, current one `active` plus `aria-current="page"`, rendered
+  inside `card overflow-hidden` and omitted entirely on HOME), the search card
+  (`card-header` title, `card-body` with the `input-group` of `form-control` and
+  `btn theme-primary btn-solid btn-styled btn-sm`) and the users online card
+  (`card-header` title, `list-group list-group-flush` of `list-group-item`
+  rows). No table rows, image bullets, `nav-link` entries or `small` text
+  scratch lists.
 - Exceptions are possible, but only when deliberately agreed and kept minimal;
   note the reason in the commit message.
 

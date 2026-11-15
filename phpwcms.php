@@ -91,7 +91,6 @@ switch ($do) {
         include PHPWCMS_ROOT.'/include/inc_lib/article.functions.inc.php'; //load article funtions
         $subnav .= subnavtext($BL['be_subnav_article_center'], "phpwcms.php?do=articles", $p, "", 0);
         $subnav .= subnavtext($BL['be_subnav_article_new'], "phpwcms.php?do=articles&amp;p=1&amp;struct=0", $p, "1", 0);
-        $subnav .= '<hr class="my-2">'."\n";
         $subnav .= subnavtext($BL['be_news'], "phpwcms.php?do=articles&amp;p=3", $p, "3", 0);
         break;
 
@@ -125,10 +124,6 @@ switch ($do) {
             $subnav .= subnavtext($BL['be_subnav_msg_newslettersend'], "phpwcms.php?do=messages&amp;p=3", $p, "3", 0);
             $subnav .= subnavtext($BL['be_subnav_msg_subscribers'], "phpwcms.php?do=messages&amp;p=4", $p, "4", 0);
             $subnav .= subnavtext($BL['be_subnav_msg_newsletter'], "phpwcms.php?do=messages&amp;p=2", $p, "2", 0);
-
-            if(!empty($phpwcms['enable_messages'])) {
-                $subnav .= '<hr class="my-2">'."\n";
-            }
         }
         if(!empty($phpwcms['enable_messages'])) {
             $subnav .= subnavtext($BL['be_subnav_msg_center'], "phpwcms.php?do=messages", $p, "", 0);
@@ -170,18 +165,15 @@ switch ($do) {
         if(!empty($_SESSION["wcs_user_admin"])) {
             include PHPWCMS_ROOT.'/include/inc_lib/admin.functions.inc.php';
             $subnav .= subnavtext($BL['be_subnav_admin_sitestructure'], "phpwcms.php?do=admin&amp;p=6", $p, "6", 0);
-            $subnav .= '<hr class="my-2">'."\n";
             $subnav .= subnavtext($BL['be_subnav_admin_pagelayout'], "phpwcms.php?do=admin&amp;p=8", $p, "8", 0);
             $subnav .= subnavtext($BL['be_subnav_admin_templates'], "phpwcms.php?do=admin&amp;p=11", $p, "11", 0);
             if(!empty($phpwcms['enable_deprecated'])) {
                 $subnav .= subnavtext($BL['be_subnav_admin_css'], "phpwcms.php?do=admin&amp;p=10", $p, "10", 0);
             }
-            $subnav .= '<hr class="my-2">'."\n";
             $subnav .= subnavtext($BL['be_subnav_admin_users'], "phpwcms.php?do=admin", $p, "", 0);
             if(!empty($phpwcms['usergroup_support'])) {
                 $subnav .= subnavtext($BL['be_subnav_admin_groups'], "phpwcms.php?do=admin&amp;p=1", $p, "1", 0);
             }
-            $subnav .= '<hr class="my-2">'."\n";
             //$subnav .= subnavtext($BL['be_admin_keywords'], "phpwcms.php?do=admin&amp;p=5", $p, "5", 0);
             $subnav .= subnavtext($BL['be_subnav_admin_filecat'], "phpwcms.php?do=admin&amp;p=7", $p, "7", 0);
             if(!empty($phpwcms['enable_deprecated'])) {
@@ -190,10 +182,8 @@ switch ($do) {
             $subnav .= subnavtext($BL['be_alias'], 'phpwcms.php?do=admin&amp;p=13', $p, "13", 0);
             $subnav .= subnavtext($BL['be_link'] . ' &amp; ' . $BL['be_redirect'], 'phpwcms.php?do=admin&amp;p=14', $p, "14", 0);
 
-            $subnav .= '<hr class="my-2">'."\n";
             $subnav .= subnavtext($BL['be_flush_image_cache'], '#', 1, 0, 0, 'onclick="return flush_image_cache(this,\'include/inc_act/ajax_connector.php?action=flush_image_cache&value=1\');" ');
             $subnav .= subnavtext($BL['be_cnt_move_deleted'], 'include/inc_act/act_file.php?movedeletedfiles='. $_SESSION["wcs_user_id"], 1, 0, 0, 'onclick="return confirm(\''.$BL['be_cnt_move_deleted_msg'].'\');" ');
-            $subnav .= '<hr class="my-2">'."\n";
             $subnav .= subnavtextext('phpinfo()', 'include/inc_act/act_phpinfo.php', '_blank', 0);
         }
         break;
@@ -317,18 +307,19 @@ if($BE['LANG'] == 'ar') {
         });
     });
 </script>
-<div class="container-fluid py-5 flex-grow-1">
-    <div class="row g-5">
-        <aside class="col-12 md:col-3 xl:col-2">
-            <div class="bg-1 border rounded overflow-hidden">
+<div class="container-fluid d-flex flex-column flex-grow-1 p-0">
+    <div class="row g-0 flex-grow-1">
+        <aside class="col-12 md:col-3 xl:col-2 bg-2 border-bottom md:border-bottom-0 md:border-end p-5">
 
-                <?php if($subnav): ?>
-                <div><?php echo $subnav; ?></div>
-                <?php endif; ?>
+            <?php if($subnav): ?>
+            <div class="card mb-5 overflow-hidden"><?php echo $subnav; ?></div>
+            <?php endif; ?>
 
-                <div class="p-5">
+            <div class="card mb-5">
 
-                    <h2 class="h6 fg-secondary mb-3"><?php echo $BL['be_ctype_search'] ?></h2>
+                <h2 class="card-header h6 mb-0"><?php echo $BL['be_ctype_search'] ?></h2>
+
+                <div class="card-body">
 
                     <form action="phpwcms.php?do=home" method="POST">
                         <div class="input-group">
@@ -346,17 +337,20 @@ if($BE['LANG'] == 'ar') {
                         </div>
                     </form>
 
-                    <hr class="my-5">
-
-                    <h2 class="h6 fg-secondary mb-3"><?php echo $BL['usr_online'] ?></h2>
-
-                    <div class="small fg-secondary"><?php echo online_users('<br />', '<span class="fg-3">|</span>'); ?></div>
-
                 </div>
 
             </div>
+
+            <div class="card">
+
+                <h2 class="card-header h6 mb-0"><?php echo $BL['usr_online'] ?></h2>
+
+                <div class="list-group list-group-flush"><?php echo online_users('</div><div class="list-group-item">', '<div class="list-group-item">|</div>'); ?></div>
+
+            </div>
+
         </aside>
-        <main class="col-12 md:col-9 xl:col-10" id="be_main_content">{STATUS_MESSAGE}{BE_PARSE_LANG}<!--BE_MAIN_CONTENT_START//-->
+        <main class="col-12 md:col-9 xl:col-10 p-5" id="be_main_content">{STATUS_MESSAGE}{BE_PARSE_LANG}<!--BE_MAIN_CONTENT_START//-->
 <?php
 
     switch ($do) {
