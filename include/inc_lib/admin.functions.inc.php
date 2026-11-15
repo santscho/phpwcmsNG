@@ -66,7 +66,7 @@ function struct_levellist($struct, $key, $counter, $copy_article_content, $cut_a
     }
     $a .= '>' . LF;
 
-    $a .= '<span class="fg-secondary flex-shrink-0" title="' . $BL['be_admin_struct_title'] . '">' . backend_icon('folder') . '</span>';
+    $a .= '<span class="fg-secondary flex-shrink-0" title="' . $BL['be_admin_struct_title'] . '">' . backend_icon('folder-fill') . '</span>';
 
     if($child_count) {
         $a .= '<a href="phpwcms.php?' . $page_val . '&amp;open=' . rawurlencode($acat_id . ':' . ($is_open ? 0 : 1)) . '"';
@@ -92,21 +92,21 @@ function struct_levellist($struct, $key, $counter, $copy_article_content, $cut_a
 
         if($cut_id) {
             if($cut_id != $acat_id && !$forbid_cut) {
-                $a .= backend_action('include/inc_act/act_structure.php?do=1%7C' . $cut_id . '%7C' . $acat_id . '%7C' . $child_sort, 'cut', $BL['be_func_struct_paste_level'] . ' [' . $an . ']', 'active');
+                $a .= backend_action('include/inc_act/act_structure.php?do=1%7C' . $cut_id . '%7C' . $acat_id . '%7C' . $child_sort, 'clipboard-plus', $BL['be_func_struct_paste_level'] . ' [' . $an . ']', 'active');
             } else {
-                $a .= backend_action('phpwcms.php?do=admin&amp;p=6', 'cut', $BL['be_func_struct_paste_cancel'] . ' [' . $an . ']', 'disabled');
+                $a .= backend_action('phpwcms.php?do=admin&amp;p=6', 'clipboard-plus', $BL['be_func_struct_paste_cancel'] . ' [' . $an . ']', 'disabled');
             }
         } elseif($acat_id) {
-            $a .= backend_action('phpwcms.php?do=admin&amp;p=6&amp;cut=' . $acat_id, 'cut', $BL['be_func_struct_cut_level'] . ' [' . $an . ']');
+            $a .= backend_action('phpwcms.php?do=admin&amp;p=6&amp;cut=' . $acat_id, 'scissors', $BL['be_func_struct_cut_level'] . ' [' . $an . ']');
         } else {
-            $a .= backend_action('phpwcms.php?do=admin&amp;p=6', 'cut', $BL['be_func_struct_no_cut'], 'disabled');
+            $a .= backend_action('phpwcms.php?do=admin&amp;p=6', 'scissors', $BL['be_func_struct_no_cut'], 'disabled');
         }
 
         if($copy_id) {
             if($copy_id != $acat_id && !$forbid_copy) {
-                $a .= backend_action('include/inc_act/act_structure.php?do=6%7C' . $copy_id . '%7C' . $acat_id . '%7C' . $child_sort, 'copy', $BL['be_func_struct_paste_level'] . ' [' . $an . ']', 'active');
+                $a .= backend_action('include/inc_act/act_structure.php?do=6%7C' . $copy_id . '%7C' . $acat_id . '%7C' . $child_sort, 'clipboard-plus', $BL['be_func_struct_paste_level'] . ' [' . $an . ']', 'active');
             } else {
-                $a .= backend_action('phpwcms.php?do=admin&amp;p=6', 'copy', $BL['be_func_struct_paste_cancel'] . ' [' . $an . ']', 'disabled');
+                $a .= backend_action('phpwcms.php?do=admin&amp;p=6', 'clipboard-plus', $BL['be_func_struct_paste_cancel'] . ' [' . $an . ']', 'disabled');
             }
         } elseif($acat_id) {
             $a .= backend_action('phpwcms.php?do=admin&amp;p=6&amp;cop=' . $acat_id, 'copy', $BL['be_func_struct_copy_level'] . ' [' . $an . ']');
@@ -114,7 +114,7 @@ function struct_levellist($struct, $key, $counter, $copy_article_content, $cut_a
             $a .= backend_action('phpwcms.php?do=admin&amp;p=6', 'copy', $BL['be_func_struct_no_copy'], 'disabled');
         }
 
-        $a .= backend_action('phpwcms.php?do=admin&amp;p=6&amp;struct=' . ($acat_id ? $acat_parent . '&amp;cat=' . $acat_id : 'index'), 'pencil', $BL['be_func_struct_sedit'] . ' [' . $an . ']');
+        $a .= backend_action('phpwcms.php?do=admin&amp;p=6&amp;struct=' . ($acat_id ? $acat_parent . '&amp;cat=' . $acat_id : 'index'), 'pen', $BL['be_func_struct_sedit'] . ' [' . $an . ']');
 
         if($acat_id) {
             $onclick = ' onclick="return confirm(\'' . $BL['be_func_struct_del_sjsmsg'] . ' \\n\\n[' . js_singlequote($an) . '] \');"';
@@ -126,13 +126,13 @@ function struct_levellist($struct, $key, $counter, $copy_article_content, $cut_a
         $a .= backend_action('phpwcms.php?do=articles&amp;p=1&amp;struct=' . $acat_id, 'plus', $BL['be_func_struct_new_article'] . ' [' . $an . ']');
 
         if($cut_article) {
-            $a .= backend_action('include/inc_act/act_structure.php?do=3%7C' . intval($cut_article) . '%7C' . $acat_id, 'cut', $BL['be_func_struct_paste_article'] . ' [' . $an . ']', 'active');
+            $a .= backend_action('include/inc_act/act_structure.php?do=3%7C' . intval($cut_article) . '%7C' . $acat_id, 'clipboard-plus', $BL['be_func_struct_paste_article'] . ' [' . $an . ']', 'active');
         } else {
-            $a .= backend_action('phpwcms.php?do=articles', 'cut', $BL['be_func_struct_no_cut'], 'disabled');
+            $a .= backend_action('phpwcms.php?do=articles', 'scissors', $BL['be_func_struct_no_cut'], 'disabled');
         }
 
         if($copy_article) {
-            $a .= backend_action('include/inc_act/act_structure.php?do=5%7C' . intval($copy_article) . '%7C' . $acat_id, 'copy', $BL['be_func_struct_paste_article'] . ' [' . $an . ']', 'active');
+            $a .= backend_action('include/inc_act/act_structure.php?do=5%7C' . intval($copy_article) . '%7C' . $acat_id, 'clipboard-plus', $BL['be_func_struct_paste_article'] . ' [' . $an . ']', 'active');
         } else {
             $a .= backend_action('phpwcms.php?do=articles', 'copy', $BL['be_func_struct_no_copy'], 'disabled');
         }
@@ -236,7 +236,7 @@ function struct_articlelist($struct_id, $counter, $copy_article_content, $cut_ar
         }
         $a .= '>' . LF;
 
-        $a .= '<span class="fg-secondary flex-shrink-0" title="' . $BL['be_article'] . '">' . backend_icon('page') . '</span>';
+        $a .= '<span class="fg-secondary flex-shrink-0" title="' . $BL['be_article'] . '">' . backend_icon('journal-bookmark-fill') . '</span>';
 
         if($acontent_count && $may_edit) {
             $a .= '<a href="phpwcms.php?do=articles&amp;opena=' . rawurlencode($article_id . ':' . ($is_open ? 0 : 1)) . '"';
@@ -257,28 +257,28 @@ function struct_articlelist($struct_id, $counter, $copy_article_content, $cut_ar
         $a .= '<div class="d-flex align-items-center gap-2 flex-shrink-0">';
 
         if($may_edit) {
-            $a .= backend_action('phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;id=' . $article_id, 'pencil', $BL['be_func_struct_edit'] . ' [' . $at . ']');
+            $a .= backend_action('phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;id=' . $article_id, 'pen', $BL['be_func_struct_edit'] . ' [' . $at . ']');
         } else {
-            $a .= backend_action('', 'pencil', $BL['be_func_struct_edit'] . ' [' . $at . ']', 'disabled');
+            $a .= backend_action('', 'pen', $BL['be_func_struct_edit'] . ' [' . $at . ']', 'disabled');
         }
 
         if($cut_article != $article_id && !$cut_article_content) {
-            $a .= backend_action('phpwcms.php?do=articles&amp;acut=' . $article_id, 'cut', $BL['be_func_struct_cut'] . ' [' . $at . ']');
+            $a .= backend_action('phpwcms.php?do=articles&amp;acut=' . $article_id, 'scissors', $BL['be_func_struct_cut'] . ' [' . $at . ']');
         } elseif($cut_article_content) {
-            $a .= backend_action('include/inc_act/act_structure.php?do=7%7C' . intval($cut_article_content) . '%7C' . $article_id . '%7C-10', 'cut', $BL['be_func_content_paste0'] . ' [' . $at . ']', 'active');
+            $a .= backend_action('include/inc_act/act_structure.php?do=7%7C' . intval($cut_article_content) . '%7C' . $article_id . '%7C-10', 'clipboard-plus', $BL['be_func_content_paste0'] . ' [' . $at . ']', 'active');
         } else {
-            $a .= backend_action('phpwcms.php?do=articles', 'cut', $BL['be_func_struct_nocut'], 'disabled');
+            $a .= backend_action('phpwcms.php?do=articles', 'scissors', $BL['be_func_struct_nocut'], 'disabled');
         }
 
         if($copy_article != $article_id && !$copy_article_content) {
             $a .= backend_action('phpwcms.php?do=articles&amp;acopy=' . $article_id, 'copy', $BL['be_func_struct_copy'] . ' [' . $at . ']');
         } elseif($copy_article_content) {
-            $a .= backend_action('include/inc_act/act_structure.php?do=8%7C' . intval($copy_article_content) . '%7C' . $article_id . '%7C-10', 'copy', $BL['be_func_content_paste0'] . ' [' . $at . ']', 'active');
+            $a .= backend_action('include/inc_act/act_structure.php?do=8%7C' . intval($copy_article_content) . '%7C' . $article_id . '%7C-10', 'clipboard-plus', $BL['be_func_content_paste0'] . ' [' . $at . ']', 'active');
         } else {
             $a .= backend_action('phpwcms.php?do=articles', 'copy', $BL['be_func_struct_nocopy'], 'disabled');
         }
 
-        $a .= backend_action('include/inc_act/act_articlecontent.php?do=3,' . $article_id . ',,' . ($article[$akey]["article_aktiv"] ? 0 : 1), $article[$akey]["article_aktiv"] ? 'eye' : 'eye-off', $BL['be_func_struct_svisible'] . ' [' . $at . ']');
+        $a .= backend_action('include/inc_act/act_articlecontent.php?do=3,' . $article_id . ',,' . ($article[$akey]["article_aktiv"] ? 0 : 1), $article[$akey]["article_aktiv"] ? 'eye' : 'eye-slash', $BL['be_func_struct_svisible'] . ' [' . $at . ']', 'normal', '', $article[$akey]["article_aktiv"] ? 'success' : 'danger');
 
         if($may_edit) {
             $onclick = ' onclick="return confirm(\'' . $BL['be_func_struct_del_jsmsg'] . ' \\n[' . js_singlequote($at) . '] \');"';
@@ -358,7 +358,7 @@ function struct_articlecontentlist($article, $akey, $copy_article_content, $cut_
         }
         $rows .= '>' . LF;
 
-        $rows .= '<span class="fg-secondary flex-shrink-0">' . backend_icon('block') . '</span>';
+        $rows .= '<span class="fg-secondary flex-shrink-0">' . backend_icon('postcard-fill') . '</span>';
 
         $rows .= '<div class="flex-grow-1 text-truncate"><span class="fg-secondary">' . html($label) . '</span>';
         $rows .= ' <span class="badge theme-secondary">' . html($block) . '</span>';
@@ -370,28 +370,28 @@ function struct_articlecontentlist($article, $akey, $copy_article_content, $cut_
         $rows .= '<div class="d-flex align-items-center gap-2 flex-shrink-0">';
 
         if($may_edit) {
-            $rows .= backend_action('phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id=' . $article_id . '&amp;acid=' . $acontent_id, 'pencil', $BL['be_func_content_edit']);
+            $rows .= backend_action('phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id=' . $article_id . '&amp;acid=' . $acontent_id, 'pen', $BL['be_func_content_edit']);
         } else {
-            $rows .= backend_action('', 'pencil', $BL['be_func_content_edit'], 'disabled');
+            $rows .= backend_action('', 'pen', $BL['be_func_content_edit'], 'disabled');
         }
 
         if($cut_article_content) {
             if($cut_article_content != $acontent_id) {
-                $rows .= backend_action('include/inc_act/act_structure.php?do=7%7C' . intval($cut_article_content) . '%7C' . $acontent_aid . '%7C' . intval($article_content["acontent_sorting"]), 'cut', $BL['be_func_content_paste'], 'active');
+                $rows .= backend_action('include/inc_act/act_structure.php?do=7%7C' . intval($cut_article_content) . '%7C' . $acontent_aid . '%7C' . intval($article_content["acontent_sorting"]), 'clipboard-plus', $BL['be_func_content_paste'], 'active');
             } else {
-                $rows .= backend_action('phpwcms.php?do=articles', 'cut', $BL['be_func_content_paste_cancel'], 'active');
+                $rows .= backend_action('phpwcms.php?do=articles', 'clipboard-plus', $BL['be_func_content_paste_cancel'], 'active');
             }
         } elseif($acontent_id) {
-            $rows .= backend_action('phpwcms.php?do=articles&amp;accut=' . $acontent_id, 'cut', $BL['be_func_content_cut']);
+            $rows .= backend_action('phpwcms.php?do=articles&amp;accut=' . $acontent_id, 'scissors', $BL['be_func_content_cut']);
         } else {
-            $rows .= backend_action('phpwcms.php?do=articles', 'cut', $BL['be_func_content_no_cut'], 'disabled');
+            $rows .= backend_action('phpwcms.php?do=articles', 'scissors', $BL['be_func_content_no_cut'], 'disabled');
         }
 
         if($copy_article_content) {
             if($copy_article_content != $acontent_id) {
-                $rows .= backend_action('include/inc_act/act_structure.php?do=8%7C' . intval($copy_article_content) . '%7C' . $acontent_aid . '%7C' . intval($article_content["acontent_sorting"]), 'copy', $BL['be_func_content_paste'], 'active');
+                $rows .= backend_action('include/inc_act/act_structure.php?do=8%7C' . intval($copy_article_content) . '%7C' . $acontent_aid . '%7C' . intval($article_content["acontent_sorting"]), 'clipboard-plus', $BL['be_func_content_paste'], 'active');
             } else {
-                $rows .= backend_action('phpwcms.php?do=articles', 'copy', $BL['be_func_content_paste_cancel'], 'active');
+                $rows .= backend_action('phpwcms.php?do=articles', 'clipboard-plus', $BL['be_func_content_paste_cancel'], 'active');
             }
         } elseif($acontent_id) {
             $rows .= backend_action('phpwcms.php?do=articles&amp;accopy=' . $acontent_id, 'copy', $BL['be_func_content_copy']);
@@ -399,7 +399,7 @@ function struct_articlecontentlist($article, $akey, $copy_article_content, $cut_
             $rows .= backend_action('phpwcms.php?do=articles', 'copy', $BL['be_func_content_no_copy'], 'disabled');
         }
 
-        $rows .= backend_action('include/inc_act/act_articlecontent.php?do=2,' . $acontent_aid . ',' . $acontent_id . ',' . ($article_content["acontent_visible"] ? 0 : 1), $article_content["acontent_visible"] ? 'eye' : 'eye-off', $BL['be_func_struct_svisible']);
+        $rows .= backend_action('include/inc_act/act_articlecontent.php?do=2,' . $acontent_aid . ',' . $acontent_id . ',' . ($article_content["acontent_visible"] ? 0 : 1), $article_content["acontent_visible"] ? 'eye' : 'eye-slash', $BL['be_func_struct_svisible'], 'normal', '', $article_content["acontent_visible"] ? 'success' : 'danger');
 
         if($may_edit) {
             $onclick = ' onclick="return confirm(\'' . $BL['be_article_cnt_delpart'] . ' \\n[' . js_singlequote($label) . '] \');"';

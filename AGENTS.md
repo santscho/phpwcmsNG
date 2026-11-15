@@ -110,6 +110,22 @@
   `active` and `disabled` states) and `backend_icon()` from
   `include/inc_lib/backend.functions.inc.php` instead of pixel gifs.
 
+## Backend icon set
+
+Every backend icon is a Bootstrap Icon (<https://icons.getbootstrap.com>, v1.13.2,
+MIT) inlined at 16x16 from `backend_icon()`. The names are fixed:
+
+- **type markers**: site structure `folder-fill`, article `journal-bookmark-fill`,
+  content part `postcard-fill` — shown before the row title
+- **row actions**: edit `pen`, cut `scissors`, copy `copy`, paste
+  `clipboard-plus`, delete `trash`
+- **visibility switch**: `eye` in `theme-success` while the entry is visible,
+  `eye-slash` in `theme-danger` while it is hidden
+- **tree and add**: `chevron-right`, `chevron-down`, `plus`
+
+Do not hand-draw icons or pick replacement glyphs; add the Bootstrap Icon path
+to `backend_icon()` if a new one is needed.
+
 ## Sorting lists
 
 - Reorderable backend lists use plain HTML5 drag and drop from

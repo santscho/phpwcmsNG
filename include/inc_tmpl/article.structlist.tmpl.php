@@ -75,7 +75,7 @@ if($child_count) {
             <div class="d-flex align-items-center gap-2 flex-shrink-0">
 <?php
 echo backend_action('phpwcms.php?do=articles&amp;p=1&amp;struct=0', 'plus', $BL['be_func_struct_new_article'].' ['.$an.']');
-echo backend_action('phpwcms.php?do=articles', 'cut', $BL['be_func_struct_no_cut'], 'disabled');
+echo backend_action('phpwcms.php?do=articles', 'scissors', $BL['be_func_struct_no_cut'], 'disabled');
 echo backend_action('phpwcms.php?do=articles', 'copy', $BL['be_func_struct_no_copy'], 'disabled');
 ?>
             </div>
