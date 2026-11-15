@@ -630,11 +630,12 @@ existing entry already covers the action before adding a second glyph for it.
   footer of the type card and again in the footer of the status card, the two
   places they were in before.
 - The type forms are included into a slot: `$cp_form_bootstrap` lists the types
-  that render their own Bootstrap markup and are included into a `card-body`,
-  every other type form still writes `<tr><td>` rows and is included into a plain
-  `table.w-100` inside the card body. Revamping a type means rewriting its
-  `cnt<type>.inc.php` as `div`-based Bootstrap markup and adding its number to
-  that list; do not remove the table branch before the last type has moved.
+  that render their own Bootstrap markup and are included into a `card-body`
+  (currently the code part `11` and the article menu `15`), every other type form
+  still writes `<tr><td>` rows and is included into a plain `table.w-100` inside
+  the card body. Revamping a type means rewriting its `cnt<type>.inc.php` as
+  `div`-based Bootstrap markup and adding its number to that list; do not remove
+  the table branch before the last type has moved.
 - Names, ids, hidden fields and inline handlers are unchanged — `cblock`, `ctab`,
   `ctid`, `ctitle`, `csubtitle`, `cpaginate_page`/`_title`, `ccb`/`cbefore`,
   `cca`/`cafter`, `ctop`, `canchor`, `cattr_class`/`_id`, `set_livedate`,
@@ -652,6 +653,17 @@ existing entry already covers the action before adding a second glyph for it.
   `confirm_cp_tab_warning`) carry the `\n` escapes of JavaScript themselves and
   are printed as they are — passing them through `js_singlequote()` would double
   those backslashes and the dialog would show a literal `\n`.
+
+## Content part editor: code
+
+- `include/inc_tmpl/content/cnt11.inc.php` is the second type form rebuilt with
+  Bootstrap: the template select (`template`, the files of
+  `template/inc_cntpart/code`) as a `form-control` in a `col-12 md:col-6` cell,
+  then the code textarea (`ccode`, `rows="20"`) full width as
+  `form-control font-monospace autosize`.
+- The textarea keeps the `autosize` class for the jQuery autosize and the rule
+  that prepends a space to code starting with a line break; the legacy `code` and
+  `width440` classes are gone.
 
 ## Content part editor: article menu
 
