@@ -224,71 +224,31 @@ if (!$temp_count) {
 
             </div>
 
-            <div class="list-group list-group-flush">
+            <div class="list-group list-group-flush" data-backend-sortable="1" data-backend-sort-token="<?php echo get_token_get_value() ?>" data-backend-sort-error="<?php echo html($BL['be_sort_drag_error'] ?? 'Reordering failed.') ?>">
 <?php
 
-// Sorting
-$sc = 0;
+// Sorting: the rows are dragged by their handle and saved through the backend_sort
+// action, a content part can only be moved inside its own block
 $scc = 0;
-$sbutton = array();
-$sbutton_string = array();
+$contentpart_block_count = array();
 
-$sql  = "SELECT acontent_id, acontent_sorting, acontent_trash, acontent_block FROM " . DB_PREPEND . "phpwcms_articlecontent ";
-$sql .= "WHERE acontent_aid=" . $article["article_id"] . " ORDER BY acontent_block, acontent_sorting, acontent_id";
-$result = _dbQuery($sql);
-
-if (isset($result[0]['acontent_id'])) {
-
-    foreach ($result as $row) {
-        $scc++;
-        if ($row['acontent_trash'] == 0) {
-            $sc++;
-            $sbutton[$sc]["id"]    = $row['acontent_id'];
-            $sbutton[$sc]["sort"]  = $row['acontent_sorting'];
-            $sbutton[$sc]["block"] = $row['acontent_block'];
-        }
-    }
+$result = _dbQuery(
+    "SELECT COUNT(*) AS contentpart_count FROM " . DB_PREPEND . "phpwcms_articlecontent " .
+    "WHERE acontent_aid=" . $article["article_id"]
+);
+if (isset($result[0]['contentpart_count'])) {
+    $scc = intval($result[0]['contentpart_count']);
 }
-if ($sc) {
-    //Jetzt aufbauen der Sortieranweisung
-    foreach ($sbutton as $key => $value) {
-        if ($key == 1) {
-            // if 1st content part in list
-            $sbutton[$key]["top"] = backend_action('phpwcms.php?do=articles', 'chevron-up', $BL['be_article_cnt_up'], 'disabled');
 
-        } elseif (isset($sbutton[$key-1]["block"]) && $sbutton[$key-1]["block"] != $value["block"]) {
-            // if this content part is selected for different block than previous
-            $sbutton[$key]["top"] = backend_action('phpwcms.php?do=articles', 'chevron-up', $BL['be_article_cnt_up'], 'disabled');
-
-        } else {
-            $sbutton[$key]["top"] = backend_action(
-                'include/inc_act/act_articlecontent.php?sort=' .
-                $value["id"] . ":" . $sbutton[$key-1]["sort"] . "|" .
-                $sbutton[$key-1]["id"] . ":" . $value["sort"],
-                'chevron-up',
-                $BL['be_article_cnt_up']
-            );
-        }
-        if ($key == $sc) {
-            // if this is the last content part in list
-            $sbutton[$key]["bottom"] = backend_action('phpwcms.php?do=articles', 'chevron-down', $BL['be_article_cnt_down'], 'disabled');
-
-        } elseif (isset($sbutton[$key+1]["block"]) && $sbutton[$key+1]["block"] != $sbutton[$key]["block"]) {
-            // if this is the last content part in current block and next is different
-            $sbutton[$key]["bottom"] = backend_action('phpwcms.php?do=articles', 'chevron-down', $BL['be_article_cnt_down'], 'disabled');
-
-        } else {
-            $sbutton[$key]["bottom"] = backend_action(
-                'include/inc_act/act_articlecontent.php?sort=' .
-                $sbutton[$key]["id"] . ":" . $sbutton[$key+1]["sort"] . "|" .
-                $sbutton[$key+1]["id"] . ":" . $sbutton[$key]["sort"],
-                'chevron-down',
-                $BL['be_article_cnt_down']
-            );
-        }
-        $sbutton_string[$sbutton[$key]["id"]] = $sbutton[$key]["top"] . $sbutton[$key]["bottom"];
+$result = _dbQuery(
+    "SELECT acontent_block, COUNT(*) AS contentpart_count FROM " . DB_PREPEND . "phpwcms_articlecontent " .
+    "WHERE acontent_aid=" . $article["article_id"] . " AND acontent_trash=0 " .
+    "GROUP BY acontent_block"
+);
+if (is_array($result)) {
+    foreach ($result as $block_count) {
+        $contentpart_block_count[(string) $block_count['acontent_block']] = intval($block_count['contentpart_count']);
     }
-    unset($sbutton);
 }
 
 //Listing zugehöriger Artikel Content Teile
@@ -412,8 +372,11 @@ if (isset($result[0]['acontent_id'])) {
 
         }
 
+        // only a content part that shares its block with another one is sortable
+        $contentpart_sortable = ($contentpart_block_count[(string) $row['acontent_block']] ?? 0) > 1;
+
         ?>
-                <div class="list-group-item">
+                <div class="list-group-item"<?php if ($contentpart_sortable): ?> data-sort-group="content" data-sort-id="<?php echo intval($row['acontent_id']) ?>" data-sort-parent="<?php echo intval($article['article_id']) ?>" data-sort-block="<?php echo html($row['acontent_block']) ?>"<?php endif; ?>>
 
                     <div class="d-flex align-items-start gap-3">
 
@@ -497,10 +460,6 @@ if (isset($result[0]['acontent_id'])) {
 
                         <div class="d-flex flex-wrap align-items-start justify-content-end gap-2 flex-shrink-0">
 
-                            <div class="d-flex gap-1">
-                                <?php echo $sbutton_string[$row["acontent_id"]]; ?>
-                            </div>
-
                             <?php
                             echo backend_action(
                                 $article_cp_link . '&amp;acid=' . $row["acontent_id"],
@@ -536,6 +495,10 @@ if (isset($result[0]['acontent_id'])) {
                             ?>
 
                         </div>
+
+                        <?php if ($contentpart_sortable): ?>
+                        <?php echo backend_sort_handle() ?>
+                        <?php endif; ?>
 
                     </div>
 

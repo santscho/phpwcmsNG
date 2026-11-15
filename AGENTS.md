@@ -547,10 +547,16 @@ existing entry already covers the action before adding a second glyph for it.
   part with `postcard-fill` (plus `lock`/`person-fill` for the granted states),
   the type as `small fw-bold text-uppercase`, `ID:<id>` badge, its date in the
   user's format, meta badges (paginate page, space before/after, top link,
-  anchor), a visible/inactive badge, the live and kill dates, the type info line
-  and the action group: sort `chevron-up`/`chevron-down`, edit `pen`, copy `copy`,
-  visibility `eye`/`eye-slash`, delete `trash`. The sort URLs
-  (`act_articlecontent.php?sort=<id>:<sort>|<id>:<sort>`), the duplicate
+  anchor), a visible/inactive badge, the live and kill dates,   the type info line and the action group: edit `pen`, copy `copy`,
+  visibility `eye`/`eye-slash`, delete `trash`. The row is reordered by dragging
+  the `backend_sort_handle()` at its end, exactly like the article list: the
+  `list-group` carries `data-backend-sortable`, the token and the error text, a
+  row carries `data-sort-group="content"`, `data-sort-id`, `data-sort-parent`
+  (the article) and `data-sort-block`, and only an article with more than one
+  content part in that block gets them. Block and tab header rows stay plain
+  items, so a part can only be dropped between rows of its own block. The old
+  `act_articlecontent.php?sort=<id>:<sort>|<id>:<sort>` up/down arrows are gone
+  from this screen; the duplicate
   (`act_structure.php?do=8|<cid>|<aid>|<sorting+5>`), the visibility toggle
   (`do=2,<aid>,<cid>,<switch>`) and delete (`do=9,<aid>,<cid>`) calls and the
   confirm texts are unchanged.
