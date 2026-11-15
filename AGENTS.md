@@ -341,6 +341,30 @@ existing entry already covers the action before adding a second glyph for it.
   toggling `d-none` — vanilla JS, no MooTools. The result message is an
   `alert theme-success` (or `theme-danger` when nothing was marked).
 
+## JavaScript libraries
+
+- The backend does not need MooTools any more. Remove it there in small steps, but
+  only after a human confirmed that specific step - it is a legacy dependency with
+  several remaining consumers, not a change to make on the side.
+- Facts to work from when a step is approved: `phpwcms.php` calls `initMootools()`
+  for every backend page, while only `phpwcms.js` (`flush_image_cache()`),
+  `filebrowser.php`, the content part editors (`cnt8`, `cnt13`, `cnt23`, `cnt31`,
+  `cnt32`) and `mod_calendar/backend.editform.php` still use the MooTools API. The
+  MooTools autocompleter (`include/inc_js/mootools/cnet/`) is the only piece
+  without a vanilla equivalent yet.
+- The frontend needs MooTools only as an optional compatibility library. Keep
+  `include/inc_front/lib/js.mootools-1.1.inc.php`, `js.mootools-1.2.inc.php` and
+  `template/lib/mootools/` available for existing templates, but stop shipping
+  anything new that requires it - new frontend code uses the configured library
+  (jQuery) or plain DOM, and shipped templates should move off MooTools
+  (Slimbox/lightbox paths) on their own schedule.
+- Do not replace MooTools with another framework. The target is vanilla DOM plus
+  Bootstrap components; jQuery stays only where a screen already asks for it with
+  `initJQuery()`.
+- While MooTools is still loaded in the backend frame it replaces `window.Event`
+  and `window.Element`, which is why `include/inc_js/backend.bootstrap.js` bridges
+  both. Do not remove those bridges before MooTools is gone.
+
 ## Bootstrap skills
 
 All official Bootstrap agent skills are installed in `skills/` (source
