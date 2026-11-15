@@ -21,31 +21,34 @@ $count_user_files = _dbQuery("SELECT COUNT(f_id) FROM ".DB_PREPEND."phpwcms_file
 
 //Wenn überhaupt Papierkorb-Dateien für User vorhanden, dann Listing
 if($count_user_files) {
-    //Beginn Tabelle für Dateilisting
-    echo "<table width=\"538\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n";
-    echo "<tr><td colspan=\"2\"><img src=\"img/leer.gif\" width=\"1\" height=\"1\"></td></tr>\n";
+
+    $delall_js = " onclick=\"return confirm('".str_replace("\n", "\\n", $BL['be_ftrash_delall'])."');\"";
+
+    echo '<div class="card mb-5">' . LF;
+    echo '<div class="card-header d-flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">' . LF;
+    echo '<h2 class="h6 mb-0">'.$BL['be_ftab_trash'].'</h2>' . LF;
+    echo '<span class="badge theme-secondary">'.$count_user_files.'</span>' . LF;
+    echo '</div>' . LF;
+    echo '<div class="list-group list-group-flush">' . LF;
+
     include_once PHPWCMS_ROOT."/include/inc_lib/files.private-delfilelist.inc.php";
-    echo "</table>\n";
-    ?><table width="538" border="0" cellpadding="0" cellspacing="0" summary="">
-    <tr><td colspan="2" bgcolor="#9BBECA"><img src="img/leer.gif" width="1" height="1" alt=""></td><tr>
-    <tr><td colspan="2"><img src="img/leer.gif" width="1" height="3" alt=""></td><tr>
-    <tr>
-        <td width="19"><img src="img/leer.gif" width="6" height="1" alt=""><img src="img/button/trash_13x13_1.gif" width="13" height="13" alt=""></td>
-        <td width="519" class="msglist">&nbsp;<strong><?php
 
-        echo "<a href=\"include/inc_act/act_file.php?trash=0|9".
-             "\" title=\"".$BL['be_ftrash_delall']."\" onclick=\"return confirm('". str_replace("\n", "\\n", $BL['be_ftrash_delall'])."');\">".
-             $BL['be_ftrash_delallfiles']."</a>";
+    echo '</div>' . LF;
+    echo '<div class="card-footer d-flex flex-wrap gap-2 justify-content-end">' . LF;
+    echo '<a class="btn theme-danger btn-solid btn-styled btn-sm" href="include/inc_act/act_file.php?trash=0%7C9" title="'.$BL['be_ftrash_delallfiles'].'"'.$delall_js.'>'.$BL['be_ftrash_delallfiles'].'</a>' . LF;
+    echo '</div>' . LF;
+    echo '</div>' . LF;
 
-        ?></strong></td>
-    <tr>
-    <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="2"></td><tr>
-    </table>
-<?php
-
-    //Ende Tabelle
 } else { //Wenn keinerlei Datensatz innerhalb Files durchlaufen wurde, dann
-    echo "<img src=\"img/leer.gif\" width=\"1\" height=\"6\"><br />".$BL['be_ftrash_nofiles']."&nbsp;&nbsp;";
-	echo "[<a href=\"phpwcms.php?do=files&amp;f=0\">".$BL['be_ftrash_show']."</a>]";
-    echo "<br /><img src=\"img/leer.gif\" width=\"1\" height=\"6\">";
+
+    echo '<div class="card mb-5">' . LF;
+    echo '<div class="card-header">' . LF;
+    echo '<h2 class="h6 mb-0">'.$BL['be_ftab_trash'].'</h2>' . LF;
+    echo '</div>' . LF;
+    echo '<div class="card-body d-flex flex-column md:flex-row md:align-items-center gap-3">' . LF;
+    echo '<span class="fg-secondary">'.$BL['be_ftrash_nofiles'].'</span>' . LF;
+    echo '<a class="btn btn-outline theme-secondary btn-sm" href="phpwcms.php?do=files&amp;f=0">'.$BL['be_ftrash_show'].'</a>' . LF;
+    echo '</div>' . LF;
+    echo '</div>' . LF;
+
 }

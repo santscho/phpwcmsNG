@@ -240,6 +240,27 @@ existing entry already covers the action before adding a second glyph for it.
   the listing afterwards. The qq FileUploader widget is not used here anymore,
   but `filebrowser.php` still loads it, so its files stay.
 
+## File search and trash
+
+- `FILE > file center > search` is two cards: the search form (title header, the
+  hint as `small fg-secondary`, the `form-control` search field with `autofocus`,
+  the AND/OR and scope selects side by side, `start search` as the primary button
+  in the `card-footer`) and, once a search ran, a results card whose header shows
+  the hit count in a `badge theme-secondary` and whose body is a
+  `list-group list-group-flush` of the same file rows as the listings. A missing
+  search string is an `alert theme-danger`, an empty result an
+  `alert theme-warning`.
+- Search result rows link the name to the file editor (`&editfile=`) when the user
+  owns the file or is admin, and to the `fileinfo.php?public&fid=` popup otherwise;
+  the edit button only appears in the first case, the download button always.
+- `FILE > file center > trash can` (`files.private.trash.tmpl.php`) is a card with
+  the count in its header, the trashed files from
+  `files.private-delfilelist.inc.php` as rows with `restore` and `trash` buttons
+  (both keep their confirm questions, the final delete is outline
+  `theme-danger`), and `delete all files in trash` as a solid `theme-danger`
+  button in the footer. An empty trash is a `card-body` with the
+  `show private files` button.
+
 ## Private file upload
 
 - `FILE > file center > private files > upload file`
