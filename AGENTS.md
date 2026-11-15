@@ -116,11 +116,16 @@
   `include/inc_js/backend.sortable.js` — no jQuery and no third-party sorter.
 - The wrapper needs `data-backend-sortable`, `data-backend-sort-token` and
   `data-backend-sort-error`; the rows need `backend_sort_handle()` as the only
-  drag source plus `data-sort-group`, `data-sort-id` and `data-sort-parent`.
+  drag source plus `data-sort-group`, `data-sort-id` and `data-sort-parent`
+  (content parts also carry `data-sort-block`, they sort inside their block).
 - The drop is saved by the `backend_sort` action in
   `include/inc_act/ajax_connector.php`, which checks the CSRF token, the group
   and that the submitted ids are exactly the sibling set, then rewrites the
   sort values in steps of 10.
+- Sortable trees are `list-group list-group-flush` lists of `list-group-item`
+  rows, never tables; indentation comes from `backend_indent()` (mapped `ms-*`
+  classes) and row actions sit in a `d-flex gap-2` group of `btn-icon`
+  buttons, matching the screen mode buttons in the header.
 
 ## Bootstrap skills
 

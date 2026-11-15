@@ -30,7 +30,7 @@
     var marked = null;
 
     function collectRows() {
-        var all = list.querySelectorAll('tr[data-sort-group]');
+        var all = list.querySelectorAll('[data-sort-group][data-sort-id]');
         rows = [];
         for (var i = 0; i < all.length; i++) {
             rows.push(all[i]);
@@ -39,7 +39,8 @@
 
     function sameGroup(row, other) {
         return row.getAttribute('data-sort-group') === other.getAttribute('data-sort-group') &&
-            row.getAttribute('data-sort-parent') === other.getAttribute('data-sort-parent');
+            row.getAttribute('data-sort-parent') === other.getAttribute('data-sort-parent') &&
+            row.getAttribute('data-sort-block') === other.getAttribute('data-sort-block');
     }
 
     function orderOf(row) {
@@ -77,6 +78,9 @@
         params.set('ids', ids.join(','));
         params.set('group', row.getAttribute('data-sort-group'));
         params.set('parent', row.getAttribute('data-sort-parent'));
+        if (row.getAttribute('data-sort-block') !== null) {
+            params.set('block', row.getAttribute('data-sort-block'));
+        }
         params.set('csrftoken', token);
 
         fetch(endpoint, {
@@ -112,6 +116,13 @@
         handle.addEventListener('touchstart', function () {
             row.draggable = true;
         }, {passive: true});
+
+        // a plain click on the handle must not leave the row draggable
+        document.addEventListener('mouseup', function () {
+            if (!dragged) {
+                row.draggable = false;
+            }
+        });
 
         row.addEventListener('dragstart', function (event) {
             if (!row.draggable) {

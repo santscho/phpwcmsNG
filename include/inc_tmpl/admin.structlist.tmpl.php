@@ -49,39 +49,36 @@ $is_open            = !empty($_SESSION['structure'][0]);
 ?>
 <div class="card">
 
-    <div class="card-header">
-        <h2 class="h6 mb-0"><?php echo $BL['be_admin_struct_title'] ?></h2>
-    </div>
+    <div class="card-header"><?php echo $BL['be_admin_struct_title'] ?></div>
 
-    <table class="table table-hover align-middle mb-0" data-backend-sortable="1" data-backend-sort-token="<?php echo get_token_get_value() ?>" data-backend-sort-error="<?php echo html($BL['be_sort_drag_error'] ?? 'Reordering failed.') ?>">
+    <div class="list-group list-group-flush" data-backend-sortable="1" data-backend-sort-token="<?php echo get_token_get_value() ?>" data-backend-sort-error="<?php echo html($BL['be_sort_drag_error'] ?? 'Reordering failed.') ?>">
 
-
-        <tbody>
-
-            <tr class="align-middle">
-                <td class="text-nowrap" style="width:1%"><?php
-                if($child_count) {
-                    echo '<a href="phpwcms.php?do=admin&amp;p=6&amp;open=0:'.($is_open ? 0 : 1).'" class="text-decoration-none fg-secondary"';
-                    echo ' aria-label="'.html($an).'" title="'.html($an).'">'.backend_icon($is_open ? 'chevron-down' : 'chevron-right').'</a>';
-                } else {
-                    echo '<span style="display:inline-block;width:16px"></span>';
-                }
-                ?></td>
-                <td><strong><?php echo $an ?></strong><?php
-                if(isset($struct_template[0]['template_name'])) {
-                    echo ' <span class="badge theme-secondary">'.html($struct_template[0]["template_name"]).'</span>';
-                    if($struct_template[0]["template_default"]) {
-                        echo ' <span class="badge theme-info">'.$BL['be_admin_tmpl_default'].'</span>';
-                    }
-                }
-                ?></td>
-                <td class="text-end text-nowrap"><?php
-                echo backend_action('phpwcms.php?do=admin&amp;p=6&amp;struct=0&amp;sort='.$child_sort, 'plus', $BL['be_func_struct_insert_level'].' ['.$an.']');
-                echo backend_action('phpwcms.php?do=admin&amp;p=6', 'cut', $BL['be_func_struct_no_cut'], 'disabled');
-                echo backend_action('phpwcms.php?do=admin&amp;p=6', 'copy', $BL['be_func_struct_no_copy'], 'disabled');
-                echo backend_action('phpwcms.php?do=admin&amp;p=6&amp;struct=index', 'pencil', $BL['be_func_struct_sedit'].' ['.$an.']');
-                ?></td>
-            </tr>
+        <div class="list-group-item d-flex align-items-center gap-2">
+<?php
+if($child_count) {
+    echo '<a href="phpwcms.php?do=admin&amp;p=6&amp;open=0:'.($is_open ? 0 : 1).'" class="link-secondary text-decoration-none flex-shrink-0"';
+    echo ' aria-label="'.html($an).'" title="'.html($an).'">'.backend_icon($is_open ? 'chevron-down' : 'chevron-right').'</a>';
+} else {
+    echo '<span class="flex-shrink-0" style="width:16px"></span>';
+}
+?>
+            <div class="flex-grow-1 text-truncate"><strong><?php echo $an ?></strong><?php
+if(isset($struct_template[0]['template_name'])) {
+    echo ' <span class="badge theme-secondary">'.html($struct_template[0]["template_name"]).'</span>';
+    if($struct_template[0]["template_default"]) {
+        echo ' <span class="badge theme-info">'.$BL['be_admin_tmpl_default'].'</span>';
+    }
+}
+?></div>
+            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+<?php
+echo backend_action('phpwcms.php?do=admin&amp;p=6&amp;struct=0&amp;sort='.$child_sort, 'plus', $BL['be_func_struct_insert_level'].' ['.$an.']');
+echo backend_action('phpwcms.php?do=admin&amp;p=6', 'cut', $BL['be_func_struct_no_cut'], 'disabled');
+echo backend_action('phpwcms.php?do=admin&amp;p=6', 'copy', $BL['be_func_struct_no_copy'], 'disabled');
+echo backend_action('phpwcms.php?do=admin&amp;p=6&amp;struct=index', 'pencil', $BL['be_func_struct_sedit'].' ['.$an.']');
+?>
+            </div>
+        </div>
 
 <?php
 if(!empty($_SESSION["structure"][0])) {
@@ -89,8 +86,6 @@ if(!empty($_SESSION["structure"][0])) {
 }
 ?>
 
-        </tbody>
-
-    </table>
+    </div>
 
 </div>

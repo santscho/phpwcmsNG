@@ -119,6 +119,7 @@ switch($action) {
 
         $sort_group     = isset($_POST['group']) ? (string) $_POST['group'] : '';
         $sort_parent    = isset($_POST['parent']) ? intval($_POST['parent']) : 0;
+        $sort_block     = isset($_POST['block']) ? (string) $_POST['block'] : '';
         $sort_ids       = array();
 
         if (isset($_POST['ids'])) {
@@ -130,13 +131,14 @@ switch($action) {
             }
         }
 
-        if (!$sort_ids || !in_array($sort_group, array('struct', 'article'), true)) {
+        if (!$sort_ids || !in_array($sort_group, array('struct', 'article', 'content'), true)) {
             http_response_code(400);
             die();
         }
 
-        $sort_allowed = array();
-        $sort_allowed_uid = true;
+        $sort_allowed       = array();
+        $sort_allowed_uid   = true;
+        $sort_owner         = 0;
 
         if ($sort_group === 'struct' && !empty($_SESSION['wcs_user_admin'])) {
             $sort_result = _dbQuery(
@@ -146,6 +148,15 @@ switch($action) {
             $sort_result = _dbQuery(
                 'SELECT article_id, article_uid FROM ' . DB_PREPEND . 'phpwcms_article WHERE article_deleted=0 AND article_cid=' . $sort_parent
             );
+        } elseif ($sort_group === 'content' && $sort_block !== '') {
+            // content parts are ordered inside one block of one article
+            $sort_article = _dbQuery(
+                'SELECT article_uid FROM ' . DB_PREPEND . 'phpwcms_article WHERE article_id=' . $sort_parent
+            );
+            $sort_owner = isset($sort_article[0]['article_uid']) ? (int) $sort_article[0]['article_uid'] : 0;
+            $sort_result = $sort_owner ? _dbQuery(
+                'SELECT acontent_id FROM ' . DB_PREPEND . 'phpwcms_articlecontent WHERE acontent_trash=0 AND acontent_aid=' . $sort_parent . ' AND acontent_block=' . _dbEscape($sort_block)
+            ) : false;
         } else {
             $sort_result = false;
         }
@@ -154,16 +165,23 @@ switch($action) {
             foreach ($sort_result as $sort_row) {
                 if ($sort_group === 'struct') {
                     $sort_allowed[] = (int) $sort_row['acat_id'];
-                } else {
+                } elseif ($sort_group === 'article') {
                     $sort_allowed[] = (int) $sort_row['article_id'];
                     if ((int) $sort_row['article_uid'] !== (int) $_SESSION['wcs_user_id']) {
                         $sort_allowed_uid = false;
                     }
+                } else {
+                    $sort_allowed[] = (int) $sort_row['acontent_id'];
                 }
             }
         }
 
         if ($sort_group === 'article' && !$sort_allowed_uid && empty($_SESSION['wcs_user_admin'])) {
+            headerRedirect('', 403);
+            die();
+        }
+
+        if ($sort_group === 'content' && $sort_owner !== (int) $_SESSION['wcs_user_id'] && empty($_SESSION['wcs_user_admin'])) {
             headerRedirect('', 403);
             die();
         }
@@ -187,9 +205,14 @@ switch($action) {
                     'UPDATE ' . DB_PREPEND . 'phpwcms_articlecat SET acat_sort=' . $sort_value . ' WHERE acat_id=' . $sort_id,
                     'UPDATE'
                 );
-            } else {
+            } elseif ($sort_group === 'article') {
                 _dbQuery(
                     'UPDATE ' . DB_PREPEND . 'phpwcms_article SET article_sort=' . $sort_value . ' WHERE article_id=' . $sort_id,
+                    'UPDATE'
+                );
+            } else {
+                _dbQuery(
+                    'UPDATE ' . DB_PREPEND . 'phpwcms_articlecontent SET acontent_sorting=' . $sort_value . ' WHERE acontent_id=' . $sort_id,
                     'UPDATE'
                 );
             }

@@ -58,31 +58,28 @@ $is_open     = !empty($_SESSION['structure'][0]);
 ?>
 <div class="card">
 
-    <div class="card-header">
-        <h2 class="h6 mb-0"><?php echo $BL['be_article_title'] ?></h2>
-    </div>
+    <div class="card-header"><?php echo $BL['be_article_title'] ?></div>
 
-    <table class="table table-hover align-middle mb-0" data-backend-sortable="1" data-backend-sort-token="<?php echo get_token_get_value() ?>" data-backend-sort-error="<?php echo html($BL['be_sort_drag_error'] ?? 'Reordering failed.') ?>">
+    <div class="list-group list-group-flush" data-backend-sortable="1" data-backend-sort-token="<?php echo get_token_get_value() ?>" data-backend-sort-error="<?php echo html($BL['be_sort_drag_error'] ?? 'Reordering failed.') ?>">
 
-
-        <tbody>
-
-            <tr class="align-middle">
-                <td class="text-nowrap" style="width:1%"><?php
-                if($child_count) {
-                    echo '<a href="phpwcms.php?do=articles&amp;open=0:'.($is_open ? 0 : 1).'" class="text-decoration-none fg-secondary"';
-                    echo ' aria-label="'.html($an).'" title="'.html($an).'">'.backend_icon($is_open ? 'chevron-down' : 'chevron-right').'</a>';
-                } else {
-                    echo '<span style="display:inline-block;width:16px"></span>';
-                }
-                ?></td>
-                <td><strong><?php echo $an ?></strong></td>
-                <td class="text-end text-nowrap"><?php
-                echo backend_action('phpwcms.php?do=articles&amp;p=1&amp;struct=0', 'plus', $BL['be_func_struct_new_article'].' ['.$an.']');
-                echo backend_action('phpwcms.php?do=articles', 'cut', $BL['be_func_struct_no_cut'], 'disabled');
-                echo backend_action('phpwcms.php?do=articles', 'copy', $BL['be_func_struct_no_copy'], 'disabled');
-                ?></td>
-            </tr>
+        <div class="list-group-item d-flex align-items-center gap-2">
+<?php
+if($child_count) {
+    echo '<a href="phpwcms.php?do=articles&amp;open=0:'.($is_open ? 0 : 1).'" class="link-secondary text-decoration-none flex-shrink-0"';
+    echo ' aria-label="'.html($an).'" title="'.html($an).'">'.backend_icon($is_open ? 'chevron-down' : 'chevron-right').'</a>';
+} else {
+    echo '<span class="flex-shrink-0" style="width:16px"></span>';
+}
+?>
+            <div class="flex-grow-1 text-truncate"><strong><?php echo $an ?></strong></div>
+            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+<?php
+echo backend_action('phpwcms.php?do=articles&amp;p=1&amp;struct=0', 'plus', $BL['be_func_struct_new_article'].' ['.$an.']');
+echo backend_action('phpwcms.php?do=articles', 'cut', $BL['be_func_struct_no_cut'], 'disabled');
+echo backend_action('phpwcms.php?do=articles', 'copy', $BL['be_func_struct_no_copy'], 'disabled');
+?>
+            </div>
+        </div>
 
 <?php
 if(is_array($_SESSION["structure"]) && !empty($_SESSION["structure"][0])) {
@@ -91,8 +88,6 @@ if(is_array($_SESSION["structure"]) && !empty($_SESSION["structure"][0])) {
 }
 ?>
 
-        </tbody>
-
-    </table>
+    </div>
 
 </div>

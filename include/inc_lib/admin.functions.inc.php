@@ -31,6 +31,19 @@ function struct_list($id, $copy_article_content, $cut_article_content, $copy_id,
     }
 }
 
+/*
+ * Indentation class for nested rows, mapped to Bootstrap spacing
+ */
+function backend_indent($depth, $base=0) {
+
+    $steps = array('', 'ms-3', 'ms-5', 'ms-7', 'ms-9');
+
+    $depth = intval($depth) - intval($base);
+
+    return $steps[$depth] ?? 'ms-12';
+
+}
+
 function struct_levellist($struct, $key, $counter, $copy_article_content, $cut_article_content, $copy_id, $copy_article, $cut_id, $forbid_cut, $forbid_copy, $listmode, $cut_article, $count_row) {
 
     global $BL;
@@ -47,41 +60,35 @@ function struct_levellist($struct, $key, $counter, $copy_article_content, $cut_a
     $an             = html($struct[$key]["acat_name"]);
     $is_open        = !empty($_SESSION["structure"][$acat_id]);
     $sortable       = !empty($_SESSION['wcs_user_admin']) && $count_row > 1;
+    $indent         = backend_indent($counter, 1);
 
-    $a  = '<tr class="align-middle"';
+    $a  = '<div class="list-group-item d-flex align-items-center gap-2' . ($indent ? ' ' . $indent : '') . '"';
     if($sortable) {
         $a .= ' data-sort-group="struct" data-sort-id="' . $acat_id . '" data-sort-parent="' . $acat_parent . '"';
     }
     $a .= '>' . LF;
 
-    // drag handle, indentation and the open/close toggle
-    $a .= '<td class="text-nowrap" style="width:1%">';
     if($sortable) {
         $a .= backend_sort_handle();
     }
-    if($counter > 1) {
-        $a .= '<span style="display:inline-block;width:' . (($counter - 1) * 14) . 'px"></span>';
-    }
+
     if($child_count) {
         $a .= '<a href="phpwcms.php?' . $page_val . '&amp;open=' . rawurlencode($acat_id . ':' . ($is_open ? 0 : 1)) . '"';
-        $a .= ' class="text-decoration-none fg-secondary align-text-bottom" aria-label="' . $an . '" title="' . $an . '">';
+        $a .= ' class="link-secondary text-decoration-none flex-shrink-0" aria-label="' . $an . '" title="' . $an . '">';
         $a .= backend_icon($is_open ? 'chevron-down' : 'chevron-right') . '</a>';
     } else {
-        $a .= '<span style="display:inline-block;width:16px"></span>';
+        $a .= '<span class="flex-shrink-0" style="width:16px"></span>';
     }
-    $a .= '</td>' . LF;
 
-    // level name, preview link and state
-    $a .= '<td><a href="';
+    $a .= '<div class="flex-grow-1 text-truncate"><a href="';
     $a .= rel_url(array('phpwcms-preview'=>1), array(), empty($struct[$key]["acat_alias"]) ? 'id=' . $acat_id : $struct[$key]["acat_alias"]);
     $a .= '" target="_blank" title="' . $BL['be_func_struct_preview'] . ': ' . $an . '">' . $an . '</a>';
     if(empty($struct[$key]["acat_aktiv"])) {
         $a .= ' <span class="badge theme-secondary">' . $BL['be_inactive'] . '</span>';
     }
-    $a .= '</td>' . LF;
+    $a .= '</div>' . LF;
 
-    // actions
-    $a .= '<td class="text-end text-nowrap">';
+    $a .= '<div class="d-flex align-items-center gap-2 flex-shrink-0">';
 
     if($listmode) {
 
@@ -136,8 +143,8 @@ function struct_levellist($struct, $key, $counter, $copy_article_content, $cut_a
 
     }
 
-    $a .= '</td>' . LF;
-    $a .= '</tr>' . LF;
+    $a .= '</div>' . LF;
+    $a .= '</div>' . LF;
     echo $a;
 
     if($is_open) {
@@ -181,7 +188,6 @@ function struct_articlelist($struct_id, $counter, $copy_article_content, $cut_ar
     $show_sort          = !$article_order || $article_order == 1 ? 1 : 0;
     $ao                 = get_order_sort($article_order);
     $count_article      = 0;
-    $sbutton_string     = [];
 
     $sql  = "SELECT *, ";
     $sql .= "DATE_FORMAT(article_tstamp, '%Y-%m-%d %H:%i:%s') AS article_date ";
@@ -220,38 +226,36 @@ function struct_articlelist($struct_id, $counter, $copy_article_content, $cut_ar
         $acontent_count = get_article_content_count($article_id);
         $is_open        = !empty($_SESSION["structure"]["article"][$article_id]);
         $sortable       = $show_sort && $max_article_count > 1 && $may_edit;
+        $indent         = backend_indent($counter + 1, 1);
+        $marked         = $cut_article == $article_id || $copy_article == $article_id;
 
-        $mark   = $cut_article == $article_id || $copy_article == $article_id;
-
-        $a  = '<tr class="align-middle' . ($mark ? ' table-active' : '') . '"';
+        $a  = '<div class="list-group-item d-flex align-items-center gap-2' . ($indent ? ' ' . $indent : '') . ($marked ? ' bg-2' : '') . '"';
         if($sortable) {
             $a .= ' data-sort-group="article" data-sort-id="' . $article_id . '" data-sort-parent="' . intval($struct_id) . '"';
         }
         $a .= '>' . LF;
 
-        $a .= '<td class="text-nowrap" style="width:1%">';
         if($sortable) {
             $a .= backend_sort_handle();
         }
-        $a .= '<span style="display:inline-block;width:' . (($counter + 1) * 14) . 'px"></span>';
+
         if($acontent_count && $may_edit) {
             $a .= '<a href="phpwcms.php?do=articles&amp;opena=' . rawurlencode($article_id . ':' . ($is_open ? 0 : 1)) . '"';
-            $a .= ' class="text-decoration-none fg-secondary" aria-label="' . $at . '" title="' . $at . '">';
+            $a .= ' class="link-secondary text-decoration-none flex-shrink-0" aria-label="' . $at . '" title="' . $at . '">';
             $a .= backend_icon($is_open ? 'chevron-down' : 'chevron-right') . '</a>';
         } else {
-            $a .= '<span style="display:inline-block;width:16px"></span>';
+            $a .= '<span class="flex-shrink-0" style="width:16px"></span>';
         }
-        $a .= '</td>' . LF;
 
-        $a .= '<td><a href="';
+        $a .= '<div class="flex-grow-1 text-truncate"><a href="';
         $a .= rel_url(array('phpwcms-preview'=>1), array(), empty($article[$akey]["article_alias"]) ? 'aid=' . $article_id : $article[$akey]["article_alias"]);
         $a .= '" target="_blank" title="' . $BL['be_func_struct_preview'] . ': ' . $at . '">' . $at . '</a>';
         if(empty($article[$akey]["article_aktiv"])) {
             $a .= ' <span class="badge theme-secondary">' . $BL['be_inactive'] . '</span>';
         }
-        $a .= '</td>' . LF;
+        $a .= '</div>' . LF;
 
-        $a .= '<td class="text-end text-nowrap">';
+        $a .= '<div class="d-flex align-items-center gap-2 flex-shrink-0">';
 
         if($may_edit) {
             $a .= backend_action('phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;id=' . $article_id, 'pencil', $BL['be_func_struct_edit'] . ' [' . $at . ']');
@@ -284,60 +288,23 @@ function struct_articlelist($struct_id, $counter, $copy_article_content, $cut_ar
             $a .= backend_action('', 'trash', $BL['be_func_struct_del_article'] . ' [' . $at . ']', 'disabled');
         }
 
-        $a .= '</td>' . LF;
-        $a .= '</tr>' . LF;
+        $a .= '</div>' . LF;
+        $a .= '</div>' . LF;
         echo $a;
 
-        // collect content part sorting buttons
-        $sql  = "SELECT acontent_id, acontent_sorting, acontent_trash, acontent_block FROM ".DB_PREPEND."phpwcms_articlecontent ";
-        $sql .= "WHERE acontent_aid=".$article_id." ORDER BY acontent_block, acontent_sorting, acontent_id";
-
-        $result = _dbQuery($sql);
-        $sc = 0;
-        $scc = 0;
-        $sbutton = array();
-
-        if(isset($result[0]['acontent_id'])) {
-            foreach($result as $row) {
-                $scc++;
-                if($row['acontent_trash'] == 0) {
-                    $sc++;
-                    $sbutton[$sc]["id"]    = $row['acontent_id'];
-                    $sbutton[$sc]["sort"]  = $row['acontent_sorting'];
-                    $sbutton[$sc]["block"] = $row['acontent_block'];
-                }
-            }
-        }
-
-        if($sc) {
-            foreach($sbutton as $skey => $svalue) {
-                if($skey == 1 || (isset($sbutton[$skey-1]["block"]) && $sbutton[$skey-1]["block"] != $svalue["block"])) {
-                    $sbutton[$skey]["top"] = backend_action('', 'arrow-up', $BL['be_article_cnt_up'], 'disabled');
-                } else {
-                    $sbutton[$skey]["top"] = backend_action('include/inc_act/act_articlecontent.php?sort=' . rawurlencode($svalue["id"] . ':' . $sbutton[$skey-1]["sort"] . '|' . $sbutton[$skey-1]["id"] . ':' . $svalue["sort"]), 'arrow-up', $BL['be_article_cnt_up']);
-                }
-                if($skey == $sc || (isset($sbutton[$skey+1]["block"]) && $sbutton[$skey+1]["block"] != $svalue["block"])) {
-                    $sbutton[$skey]["bottom"] = backend_action('', 'arrow-down', $BL['be_article_cnt_down'], 'disabled');
-                } else {
-                    $sbutton[$skey]["bottom"] = backend_action('include/inc_act/act_articlecontent.php?sort=' . rawurlencode($svalue["id"] . ':' . $sbutton[$skey+1]["sort"] . '|' . $sbutton[$skey+1]["id"] . ':' . $svalue["sort"]), 'arrow-down', $BL['be_article_cnt_down']);
-                }
-                $sbutton_string[$sbutton[$skey]["id"]] = $sbutton[$skey]["top"] . $sbutton[$skey]["bottom"];
-            }
-            unset($sbutton);
-        }
-
         if($may_edit && $is_open) {
-            struct_articlecontentlist($article, $akey, $copy_article_content, $cut_article_content, $counter, $sbutton_string);
+            struct_articlecontentlist($article, $akey, $copy_article_content, $cut_article_content, $counter);
         }
 
     }
 }
 
-function struct_articlecontentlist($article, $akey, $copy_article_content, $cut_article_content, $counter, $sbutton_string){
+function struct_articlecontentlist($article, $akey, $copy_article_content, $cut_article_content, $counter){
 
     global $BL;
 
     $article_id = intval($article[$akey]["article_id"]);
+    $may_edit   = $article[$akey]["article_uid"] == $_SESSION["wcs_user_id"] || $_SESSION["wcs_user_admin"];
 
     $sql  = "SELECT * FROM ".DB_PREPEND."phpwcms_articlecontent ";
     $sql .= "WHERE acontent_aid=".$article_id." AND acontent_trash=0 ";
@@ -349,7 +316,18 @@ function struct_articlecontentlist($article, $akey, $copy_article_content, $cut_
         return;
     }
 
-    $rows = '';
+    // content parts are sorted inside their block only
+    $block_count = array();
+    foreach($result as $row) {
+        if(!isset($GLOBALS['wcs_content_type'][ $row["acontent_type"] ])) {
+            continue;
+        }
+        $block = (string) $row['acontent_block'];
+        $block_count[$block] = ($block_count[$block] ?? 0) + 1;
+    }
+
+    $rows   = '';
+    $indent = backend_indent($counter + 2, 1);
 
     foreach($result as $article_content) {
 
@@ -360,30 +338,38 @@ function struct_articlecontentlist($article, $akey, $copy_article_content, $cut_
 
         $acontent_id    = intval($article_content["acontent_id"]);
         $acontent_aid   = intval($article_content["acontent_aid"]);
+        $block          = (string) $article_content['acontent_block'];
         $label          = '[ID:' . $acontent_id . '] ' . $GLOBALS["wcs_content_type"][$article_content["acontent_type"]];
         if($article_content["acontent_type"] == 30) {
             $label .= ': ' . $BL['modules'][$article_content["acontent_module"]]['listing_title'];
         }
 
-        $mark = $cut_article_content == $acontent_id || $copy_article_content == $acontent_id;
+        $sortable = $may_edit && ($block_count[$block] ?? 0) > 1;
+        $marked   = $cut_article_content == $acontent_id || $copy_article_content == $acontent_id;
 
-        $rows .= '<tr class="align-middle' . ($mark ? ' table-active' : '') . '">' . LF;
+        $rows .= '<div class="list-group-item d-flex align-items-center gap-2' . ($indent ? ' ' . $indent : '') . ($marked ? ' bg-2' : '') . '"';
+        if($sortable) {
+            $rows .= ' data-sort-group="content" data-sort-id="' . $acontent_id . '" data-sort-parent="' . $acontent_aid . '"';
+            $rows .= ' data-sort-block="' . html($block) . '"';
+        }
+        $rows .= '>' . LF;
 
-        $rows .= '<td class="text-nowrap fg-secondary small" style="width:1%">';
-        $rows .= '<span style="display:inline-block;width:' . (($counter + 2) * 14) . 'px"></span>';
-        $rows .= backend_icon('file') . '</td>' . LF;
+        if($sortable) {
+            $rows .= backend_sort_handle();
+        }
 
-        $rows .= '<td class="small fg-secondary">' . html($label) . ' <span class="badge theme-secondary">' . html('{' . $article_content['acontent_block'] . '}') . '</span>';
+        $rows .= '<span class="fg-secondary flex-shrink-0">' . backend_icon('file') . '</span>';
+
+        $rows .= '<div class="flex-grow-1 text-truncate"><span class="fg-secondary">' . html($label) . '</span>';
+        $rows .= ' <span class="badge theme-secondary">' . html($block) . '</span>';
         if($article_content["acontent_title"]) {
             $rows .= ' ' . html($article_content["acontent_title"]);
         }
-        $rows .= '</td>' . LF;
+        $rows .= '</div>' . LF;
 
-        $rows .= '<td class="text-end text-nowrap">';
+        $rows .= '<div class="d-flex align-items-center gap-2 flex-shrink-0">';
 
-        $rows .= $sbutton_string[$acontent_id] ?? '';
-
-        if($article[$akey]["article_uid"] == $_SESSION["wcs_user_id"] || $_SESSION["wcs_user_admin"]) {
+        if($may_edit) {
             $rows .= backend_action('phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id=' . $article_id . '&amp;acid=' . $acontent_id, 'pencil', $BL['be_func_content_edit']);
         } else {
             $rows .= backend_action('', 'pencil', $BL['be_func_content_edit'], 'disabled');
@@ -415,21 +401,21 @@ function struct_articlecontentlist($article, $akey, $copy_article_content, $cut_
 
         $rows .= backend_action('include/inc_act/act_articlecontent.php?do=2,' . $acontent_aid . ',' . $acontent_id . ',' . ($article_content["acontent_visible"] ? 0 : 1), $article_content["acontent_visible"] ? 'eye' : 'eye-off', $BL['be_func_struct_svisible']);
 
-        if($article_content["acontent_uid"] == $_SESSION["wcs_user_id"] || $_SESSION["wcs_user_admin"]) {
+        if($may_edit) {
             $onclick = ' onclick="return confirm(\'' . $BL['be_article_cnt_delpart'] . ' \\n[' . js_singlequote($label) . '] \');"';
             $rows .= backend_action('include/inc_act/act_articlecontent.php?do=9,' . $acontent_aid . ',' . $acontent_id, 'trash', $BL['be_article_cnt_delpart'], 'normal', $onclick);
         } else {
             $rows .= backend_action('', 'trash', $BL['be_article_cnt_delpart'], 'disabled');
         }
 
-        $rows .= '</td>' . LF . '</tr>' . LF;
+        $rows .= '</div>' . LF . '</div>' . LF;
     }
 
     if($rows) {
-        echo '<tr><td colspan="3" class="p-0">' . LF;
-        echo '<table class="table table-sm mb-0">' . LF;
+        echo '<div class="list-group-item p-0">' . LF;
+        echo '<div class="list-group list-group-flush">' . LF;
         echo $rows;
-        echo '</table></td></tr>' . LF;
+        echo '</div></div>' . LF;
     }
 }
 
