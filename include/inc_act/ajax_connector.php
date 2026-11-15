@@ -42,7 +42,7 @@ if(isset($_POST['action'])) {
     $value      = '';
 }
 
-if(empty($value)) {
+if(empty($value) && $action !== 'backend_search_clear') {
     $action = 'empty';
 }
 
@@ -104,6 +104,20 @@ switch($action) {
         );
         $_SESSION['wcs_user_theme'] = $value;
         $data = array('theme' => $value, 'status' => $updated === false ? 'failed' : 'ok');
+        break;
+
+    case 'backend_search_clear':
+        if (
+            $_SERVER['REQUEST_METHOD'] !== 'POST'
+            || empty($_POST['csrftoken'])
+            || empty($_SESSION['wcs_user_id'])
+            || $_POST['csrftoken'] !== get_token_get_value()
+        ) {
+            headerRedirect('', 403);
+            die();
+        }
+        $_SESSION['phpwcms_backend_search'] = '';
+        $data = array('status' => 'ok');
         break;
 
     case 'backend_sort':

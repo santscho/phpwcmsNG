@@ -340,6 +340,31 @@ if($BE['LANG'] == 'ar') {
                 </div>
 
             </div>
+<script>
+    (function () {
+        var field = document.getElementById('backend_search_input');
+        if (!field) {
+            return;
+        }
+        var cleared = false;
+        var reset = function () {
+            if (field.value !== '') {
+                cleared = false;
+                return;
+            }
+            if (cleared) {
+                return;
+            }
+            cleared = true;
+            var request = new URLSearchParams();
+            request.set('action', 'backend_search_clear');
+            request.set('csrftoken', '<?php echo get_token_get_value() ?>');
+            fetch('include/inc_act/ajax_connector.php', {method: 'POST', body: request, credentials: 'same-origin', keepalive: true});
+        };
+        field.addEventListener('input', reset);
+        field.addEventListener('search', reset);
+    })();
+</script>
 
             <div class="card">
 

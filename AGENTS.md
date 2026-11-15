@@ -67,6 +67,12 @@ These apply to every backend screen that is modernized:
   (`card-header` title, `list-group list-group-flush` of `list-group-item`
   rows). No table rows, image bullets, `nav-link` entries or `small` text
   scratch lists.
+- The sidebar search field is an `input type="search"`, and the term is kept in
+  `$_SESSION['phpwcms_backend_search']` because the HOME listing filters by it.
+  Emptying the field with its clear button (or by deleting the term) posts the
+  `backend_search_clear` action to `include/inc_act/ajax_connector.php`, which
+  resets the session value, so a cleared term never reappears after navigating to
+  another section.
 - Exceptions are possible, but only when deliberately agreed and kept minimal;
   note the reason in the commit message.
 
