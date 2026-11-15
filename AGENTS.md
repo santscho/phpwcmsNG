@@ -612,6 +612,25 @@ existing entry already covers the action before adding a second glyph for it.
   converted, so the picker fields keep the legacy `width150` class instead of
   `form-control`.
 
+## Content part editor: article menu
+
+- `include/inc_tmpl/content/cnt15.inc.php` is the first content part form
+  rebuilt with Bootstrap. The editor frame keeps its table because all 35 type
+  forms write `<tr><td>` rows into it, so this form is one full width
+  `<td colspan="2">` holding a `row g-4` of `col-12 md:col-6` cells.
+- Every field keeps its name, id, value and the `is_checked()`/`is_selected()`
+  helpers: `calist_cat` with the `calist_catid` structure select (site level),
+  `calist_ul` (display as `<ul>`, `<div>`, `<dl>`, `<span>` or table),
+  `calist_class`, `calist_titlewrap`, `calist_label`, `calist_break`,
+  `calist_maxchar`, `calist_morelink` and the `calist_titleasnumber`,
+  `calist_headertext` and `calist_hideactive` marks.
+- Radio groups and checkboxes are `.form-field` wrappers with `.radio`/`.check`
+  inputs and a `<label for>`; the text fields and both selects are
+  `form-control`, like everywhere else in Bootstrap 6. The nested tables,
+  spacer rows, `chatlist`/`v11` classes and inline widths are gone.
+- The older `be_articlemenu_maxchar` key is not the one in use: the label of the
+  max chars field is `be_cnt_articlemenu_maxchar`.
+
 ## JavaScript libraries
 
 - The backend does not need MooTools any more. Remove it there in small steps, but
