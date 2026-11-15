@@ -21,4 +21,7 @@ $content["file_descr"]		= $row["acontent_text"];
 $content["file_list"]		= explode(":", $row["acontent_files"]);
 $content["file_template"]	= $row["acontent_template"];
 $content['file']			= unserialize($row['acontent_form'], ['allowed_classes' => false]);
+if(!is_array($content['file'])) {
+	$content['file'] = array();
+}
 $content["html"]			= $row["acontent_html"];

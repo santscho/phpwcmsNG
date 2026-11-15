@@ -21,6 +21,9 @@ if (!defined('PHPWCMS_ROOT')) {
 
 // Content Type Images
 $content["image_list"]		= unserialize($row["acontent_form"], ['allowed_classes' => false]);
+if(!is_array($content["image_list"])) {
+	$content["image_list"] = array();
+}
 if(!isset($content["image_list"]['lightbox'])) {
 	$content["image_list"]['lightbox'] = 0;
 }

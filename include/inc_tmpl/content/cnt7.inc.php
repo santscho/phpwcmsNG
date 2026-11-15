@@ -23,18 +23,16 @@ if(empty($content["file_descr"])) $content["file_descr"] = '';
 $content['file']['direct_download'] = empty($content['file']['direct_download']) ? 0 : 1;
 
 ?>
+<div class="row g-4">
 
-<tr><td colspan="2" class="rowspacer0x7"><img src="img/leer.gif" alt="" width="1" height="1"></td></tr>
-
-<tr>
-	<td align="right" class="chatlist"><?php echo $BL['be_admin_struct_template'] ?>:&nbsp;</td>
-	<td><select name="cfile_template" id="cfile_template">
-
+	<div class="col-12 md:col-6">
+		<label class="form-label" for="cfile_template"><?php echo $BL['be_admin_struct_template'] ?></label>
+		<select name="cfile_template" id="cfile_template" class="form-control">
 <?php
 
 echo '<option value="">'.$BL['be_admin_tmpl_default'].'</option>'.LF;
 
-// templates for recipes
+// templates for the file list content part
 $tmpllist = get_tmpl_files(PHPWCMS_TEMPLATE.'inc_cntpart/filelist');
 if(is_array($tmpllist) && count($tmpllist)) {
 	foreach($tmpllist as $val) {
@@ -44,7 +42,7 @@ if(is_array($tmpllist) && count($tmpllist)) {
 			$selected_val = '';
 		}
 		$val = htmlspecialchars($val);
-		echo '	<option value="' . $val . '"' . $selected_val . '>' . $val . '</option>' . LF;
+		echo "  " . '<option value="' . $val . '"' . $selected_val . '>' . $val . '</option>' . LF;
 	}
 }
 
@@ -61,41 +59,35 @@ if(is_file(PHPWCMS_ROOT.'/'.PHPWCMS_FILES.'.htaccess') && ($content['file']['dir
 
 
 ?>
-		</select></td>
-</tr>
+		</select>
+	</div>
 
-<tr><td colspan="2" class="rowspacer7x7"><img src="img/leer.gif" alt="" width="1" height="1"></td></tr>
+	<div class="col-12 md:col-6">
+		<div class="form-label"><?php echo $BL['be_cnt_download'] ?></div>
+		<div class="d-flex flex-wrap gap-4">
+			<div class="form-field">
+				<input class="check" name="cfile_direct" id="cfile_direct" type="checkbox" value="1" <?php
+					is_checked(1, $content['file']['direct_download']);
+					if($content['file']['direct_download_deny'] && !$content['file']['direct_download']) {
+						echo ' disabled="disabled"';
+					}
+				?>>
+				<label for="cfile_direct"><?php echo $BL['be_cnt_download_direct'] ?></label>
+			</div>
+<?php
+	if($content['file']['direct_download_deny']) {
+		echo '<div class="alert theme-warning w-100" role="alert">';
+		printf($BL['be_filedownload_direct_blocked'], PHPWCMS_ROOT.'/'.PHPWCMS_FILES.'.htaccess');
+		echo '</div>';
+	}
+?>
+		</div>
+	</div>
 
-<tr>
-    <td align="right" class="chatlist"><?php echo $BL['be_cnt_download'] ?>:&nbsp;</td>
-    <td><table border="0" cellpadding="0" cellspacing="0" summary="">
-        <tr>
-            <td bgcolor="#E7E8EB"><input name="cfile_direct" id="cfile_direct" type="checkbox" value="1" <?php
-                is_checked(1, $content['file']['direct_download']);
-                if($content['file']['direct_download_deny'] && !$content['file']['direct_download']) {
-                    echo ' disabled="disabled"';
-                }
-            ?> /></td>
-            <td class="v10" bgcolor="#E7E8EB"><label for="cfile_direct">&nbsp;<?php echo $BL['be_cnt_download_direct'] ?></label>&nbsp;&nbsp;</td>
-            <td bgcolor="#E7E8EB"><img src="img/leer.gif" alt="" width="1" height="22"></td>
-            <?php
-                if($content['file']['direct_download_deny']) {
-                    echo '<td class="v10 error">&nbsp;';
-                    printf($BL['be_filedownload_direct_blocked'], PHPWCMS_ROOT.'/'.PHPWCMS_FILES.'.htaccess');
-                    echo '</td>';
-                }
-            ?>
-        </tr>
-    </table></td>
-</tr>
-
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="8"></td></tr>
-
-<tr>
-  <td align="right" valign="top" class="chatlist"><img src="img/leer.gif" alt="" width="1" height="13"><?php echo $BL['be_cnt_files'] ?>:&nbsp;</td>
-  <td valign="top"><table border="0" cellpadding="0" cellspacing="0" summary="">
-	<tr>
-	    <td valign="top"><select name="cfile_list[]" size="8" multiple class="width300" id="cfile_list">
+	<div class="col-12">
+		<label class="form-label" for="cfile_list"><?php echo $BL['be_cnt_files'] ?></label>
+		<div class="d-flex flex-wrap align-items-start gap-3">
+			<select name="cfile_list[]" size="8" multiple class="form-control w-auto" id="cfile_list">
 <?php
 
         if(isset($content["file_list"]) && is_array($content["file_list"]) && count($content["file_list"])) {
@@ -130,21 +122,21 @@ if(is_file(PHPWCMS_ROOT.'/'.PHPWCMS_FILES.'.htaccess') && ($content['file']['dir
 	    }
 
 ?>
-	    </select></td>
-	    <td valign="top"><img src="img/leer.gif" alt="" width="5" height="1"></td>                                           <!-- browser_file.php //-->
-	    <td valign="top"><a href="javascript:;" title="<?php echo $BL['be_cnt_openfilebrowser'] ?>" onclick="openFileBrowser('filebrowser.php?opt=4&amp;target=nolist')"><img src="img/button/open_image_button.gif" alt="" width="20" height="15" border="0"></a><br />
-	        <img src="img/leer.gif" alt="" width="1" height="4"><br />
-            <a href="javascript:;" title="<?php echo $BL['be_cnt_sortup'] ?>" onclick="moveOptionUp(document.articlecontent.cfile_list);"><img src="img/button/image_pos_up.gif" alt="" width="10" height="9" border="0"></a><a href="javascript:;" title="<?php echo $BL['be_cnt_sortdown'] ?>" onclick="moveOptionDown(document.articlecontent.cfile_list);"><img src="img/button/image_pos_down.gif" alt="" width="10" height="9" border="0"></a><br />
-            <img src="img/leer.gif" alt="" width="1" height="4"><br />
-            <a href="javascript:;" onclick="removeSelectedOptions(document.articlecontent.cfile_list);" title="<?php echo $BL['be_cnt_delfile'] ?>"><img src="img/button/del_image_button1.gif" alt="" width="20" height="15" border="0"></a></td>
-    </tr>
-  </table></td>
-  </tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="5"></td></tr>
-<tr>
-  <td align="right" valign="top" class="chatlist"><img src="img/leer.gif" alt="" width="1" height="13"><?php echo $BL['be_cnt_description'] ?>:&nbsp;</td>
-  <td valign="top">
-  	<textarea name="cfile_descr" cols="40" rows="5" class="width440 autosize" id="cfile_descr"><?php
+			</select>
+			<div class="d-flex flex-column gap-2">
+				<a href="javascript:" class="btn btn-outline theme-secondary btn-sm" onclick="openFileBrowser('filebrowser.php?opt=4&amp;target=nolist')"><?php echo $BL['be_cnt_openfilebrowser'] ?></a>
+				<div class="d-flex gap-2">
+<?php echo backend_action('#', 'chevron-up', $BL['be_cnt_sortup'], 'normal', ' onclick="moveOptionUp(document.articlecontent.cfile_list);return false;"') ?>
+<?php echo backend_action('#', 'chevron-down', $BL['be_cnt_sortdown'], 'normal', ' onclick="moveOptionDown(document.articlecontent.cfile_list);return false;"') ?>
+<?php echo backend_action('#', 'trash', $BL['be_cnt_delfile'], 'normal', ' onclick="removeSelectedOptions(document.articlecontent.cfile_list);return false;"', 'danger') ?>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-12">
+		<label class="form-label" for="cfile_descr"><?php echo $BL['be_cnt_description'] ?></label>
+		<textarea name="cfile_descr" cols="40" rows="5" class="form-control autosize" id="cfile_descr"><?php
 
 	if(!empty($content["file_descr"]) && (str_starts_with($content["file_descr"], "\r") || str_starts_with($content["file_descr"], "\n"))) {
 		echo ' ';
@@ -152,25 +144,23 @@ if(is_file(PHPWCMS_ROOT.'/'.PHPWCMS_FILES.'.htaccess') && ($content['file']['dir
 	echo html($content["file_descr"]);
 
   ?></textarea>
-  	<span class="caption width440">
-		<?php echo $BL['be_cnt_description']; ?>
-		|
-		<?php echo $BL['be_fprivedit_filename']; ?>
-		|
-		<?php echo $BL['be_caption_file_title']; ?>
-		|
-		<?php echo $BL['be_admin_page_link']; ?> <em><?php echo $BL['be_cnt_target']; ?></em>
-		|
-		<?php echo $BL['be_caption_file_imagesize']; ?>
-		|
-		<?php echo $BL['be_copyright']; ?>&nbsp;&crarr;&nbsp;&hellip;
-	</span>
-  </td>
-</tr>
+		<div class="small fg-secondary mt-3">
+			<?php echo $BL['be_cnt_description']; ?>
+			|
+			<?php echo $BL['be_fprivedit_filename']; ?>
+			|
+			<?php echo $BL['be_caption_file_title']; ?>
+			|
+			<?php echo $BL['be_admin_page_link']; ?> <em><?php echo $BL['be_cnt_target']; ?></em>
+			|
+			<?php echo $BL['be_caption_file_imagesize']; ?>
+			|
+			<?php echo $BL['be_copyright']; ?>&nbsp;&crarr;&nbsp;&hellip;
+		</div>
+	</div>
 
-<tr><td colspan="2" class="rowspacer7x7"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-
-<tr><td colspan="2" align="center"><?php
+	<div class="col-12">
+<?php
 
 $wysiwyg_editor = array(
 	'value'		=> $content["html"] ?? '',
@@ -185,4 +175,7 @@ $wysiwyg_editor = array(
 include PHPWCMS_ROOT.'/include/inc_lib/wysiwyg.editor.inc.php';
 
 
-?></td></tr>
+?>
+	</div>
+
+</div>

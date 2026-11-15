@@ -687,8 +687,9 @@ existing entry already covers the action before adding a second glyph for it.
   places they were in before.
 - The type forms are included into a slot: `$cp_form_bootstrap` lists the types
   that render their own Bootstrap markup and are included into a `card-body`
-  (currently `0`, `3`, `4`, `5`, `6`, `10`, `11`, `15`, `16`, `19`, `21`, `22`,
-  `24`, `27`, `28`, `52`, `89` and `100`), every other type form
+  (currently `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `10`, `11`, `12`, `14`, `15`,
+  `16`, `19`, `21`, `22`, `24`, `27`, `28`, `52`, `89` and `100`), every other
+  type form
   still writes `<tr><td>` rows and is included into a plain `table.w-100` inside
   the card body. Revamping a type means rewriting its `cnt<type>.inc.php` as
   `div`-based Bootstrap markup and adding its number to that list; do not remove
@@ -780,6 +781,53 @@ existing entry already covers the action before adding a second glyph for it.
 - Verified with one temporary content part per type on article 1: no table
   leftovers, no PHP warnings, all fields rendered. The temporary parts were
   removed again.
+
+## Content part editor: text w/image, images, file list, newsletter and WYSIWYG
+
+- Five more type forms are Bootstrap: text w/image `1`, images `2`, file list
+  `7`, newsletter subscription `12` and WYSIWYG `14`. They are `row g-4` grids
+  in the card body, like the batches above.
+- The image forms (`1`, `2`) and the file list (`7`) keep their `multiple`
+  selects (`cimage_list[]`, `cfile_list[]`) with the up/down/trash
+  `backend_action()` group and the `open image browser` / `open file browser`
+  text button next to them; the thumbnails are a `d-flex flex-wrap` row instead
+  of spacer gifs and `<br>`. The caption and description textareas keep their
+  field names and carry the `caption|alt|link title|copyright` helper as
+  `small fg-secondary` text.
+- **The ten-icon image position picker is gone from `1` and `2`.** It was ten
+  `img/button/image_pos*.gif` buttons plus ten `imgpos*` marker images swapped by
+  `changeImagePos()`, and it only wrote the value the `cimage_pos` select next to
+  it already offers (all ten positions, with their labels). The select is the
+  control now, without its `changeImagePosMenu()` handler; the two functions stay
+  in `phpwcms.js` because the multimedia form `9` still uses them, and they need
+  the `imgpos*` images it still renders.
+- `cimage_pos`, `cimage_usetable`, `cimage_width`, `cimage_height`,
+  `cimage_crop`, `cimage_limit`, `cimage_random`, `cimage_col`, `cimage_space`,
+  `cimage_zoom`, `cimage_lightbox` (still ticks `cimage_zoom`),
+  `cimage_nocaption`, `cimage_caption`, `cfile_direct`, `cfile_list[]`,
+  `cfile_descr`, `cnewsletter_*` and `customfield[<key>]` keep name, id and
+  inline handlers. A blocked direct download of the file list is an
+  `alert theme-warning` instead of the `error` table cell.
+- The newsletter form still embeds `createOptionTransferSelectList()`: that
+  shared helper builds its own table with gif arrows and is used by other
+  screens, so it is not rewritten inside a content part form. It is the one
+  legacy block left in a converted form; revamping it means changing the helper
+  and every caller.
+- The WYSIWYG form's custom field groups are `div` blocks now (`col-12` for
+  wysiwyg and textarea fields, `col-12 md:col-6` otherwise) instead of
+  `tr.tab-collapsable-row` rows. Controls get an id `customfield_<key>` (option
+  radios `customfield_<key>_<8 char md5 of the value>`) so their labels can use
+  `for`; the field names stay `customfield[<key>]`. The `tab-collapsable-row`,
+  `tab-option-radio` and `tab-option-checkbox` classes stay on the new elements,
+  and `toggleTabsTemplate()` plus the hidden `cnt_fieldgroup` are unchanged.
+- The `takeval` includes of these types now turn an empty form value into an
+  array (`image_list`, `file`, `newsletter`): an unserialize of an empty column
+  returns `false`, and writing into it made PHP 8.5 print the "automatic
+  conversion of false to array" deprecation.
+- Verified with one temporary content part per type on article 1: no table rows
+  or spacer gifs, no PHP warnings, all fields rendered. A save round-trip of the
+  text w/image form stored `cimage_crop` (and the lightbox/nocaption marks) in
+  the form data. The temporary parts were removed again.
 
 ## Content part editor: e-card
 
