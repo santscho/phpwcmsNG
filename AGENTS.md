@@ -410,10 +410,11 @@ existing entry already covers the action before adding a second glyph for it.
 - `filebrowser.php` is the picker behind every `open image browser` button
   (`openFileBrowser()` in `include/inc_js/phpwcms.js` opens it as a resizable
   popup, `max(screen.width / 2.5, 900)` wide and `max(screen.height / 2, 575)`
-  high, so the two columns fit next to each other). It is a standalone page, not
-  part of the backend frame, so it links `include/inc_ext/bootstrap/bootstrap.min.css` itself, takes
-  the screen mode from `$_SESSION['wcs_user_theme']` for `data-bs-theme` and
-  loads the same `backend.bootstrap.js` (tooltips), `backend.confirm.js` (with
+  high, so the two columns fit next to each other, and it widens a browser
+  window that is still open to that size instead of only focusing it). It is a
+  standalone page, not part of the backend frame, so it links
+  `include/inc_ext/bootstrap/bootstrap.min.css` itself, takes the screen mode
+  from `$_SESSION['wcs_user_theme']` for `data-bs-theme` and loads the same `backend.bootstrap.js` (tooltips), `backend.confirm.js` (with
   its label JSON) and `backend.tags.js` modules as the frame.
 - The layout is a `bg-primary` navbar carrying the browser title and the file
   type as a `badge theme-secondary`, then a `container-fluid` with the
@@ -445,6 +446,11 @@ existing entry already covers the action before adding a second glyph for it.
 - The popup no longer loads `phpwcms.min.css`, `autoSuggest.css`,
   `fileuploader.css` or the qq FileUploader; `phpwcms.min.js` stays for
   `tmt_winControl()`.
+- The frame and the popup link `phpwcms.min.js` as
+  `include/inc_js/phpwcms.min.js?v=<filemtime>`. Without the stamp, browsers keep
+  a heuristically cached copy of the script (there is no `Cache-Control` on it)
+  and a change like the browser size would not reach an editor who has the
+  backend open.
 
 ## Article new and edit
 

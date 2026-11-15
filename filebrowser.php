@@ -171,7 +171,7 @@ $count_user_files = _dbQuery($sql, 'COUNT');
     <link href="include/inc_ext/bootstrap/bootstrap.min.css" rel="stylesheet">
 
     <script src="include/inc_js/jquery/jquery.min.js"></script>
-    <script src="include/inc_js/phpwcms.min.js"></script>
+    <script src="include/inc_js/phpwcms.min.js?v=<?php echo @filemtime(PHPWCMS_ROOT . '/include/inc_js/phpwcms.min.js') ?>"></script>
     <script src="include/inc_js/jquery/jquery.autoSuggest.min.js"></script>
     <script src="include/inc_js/backend.upload.js"></script>
     <script type="module" src="include/inc_ext/bootstrap/bootstrap.bundle.min.js"></script>

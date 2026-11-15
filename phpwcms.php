@@ -677,7 +677,7 @@ if($body_onload) {
 $BE['HEADER']['bootstrap.bundle.js'] = '<script type="module" src="include/inc_ext/bootstrap/bootstrap.bundle.min.js"></script>';
 $BE['HEADER']['backend.bootstrap.js'] = '<script type="module" src="include/inc_js/backend.bootstrap.js"></script>';
 $BE['HEADER']['textarea.autosize.js'] = getJavaScriptSourceLink('include/inc_js/autosize.min.js');
-$BE['HEADER']['phpwcms.js'] = getJavaScriptSourceLink('include/inc_js/phpwcms.min.js');
+$BE['HEADER']['phpwcms.js'] = getJavaScriptSourceLink('include/inc_js/phpwcms.min.js?v=' . @filemtime(PHPWCMS_ROOT . '/include/inc_js/phpwcms.min.js'));
 if($do === 'articles' || ($do === 'admin' && $p === 6)) {
     $BE['HEADER']['backend.sortable.js'] = getJavaScriptSourceLink('include/inc_js/backend.sortable.js');
 }

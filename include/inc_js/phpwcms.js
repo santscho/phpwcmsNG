@@ -381,6 +381,15 @@ function openFileBrowser(url) {
         if (window.imageBrowser && temp_url !== url) {
             tmt_winControl('imageBrowser', 'close()');
         }
+        // a browser window that is still open only gets focused, so it keeps the
+        // size it was opened with; widen it to the size a new one would get
+        try {
+            if (window.imageBrowser && !window.imageBrowser.closed && window.imageBrowser.outerWidth < fbw) {
+                window.imageBrowser.resizeTo(fbw, Math.max(window.imageBrowser.outerHeight, fbh));
+            }
+        } catch (error) {
+            // not reachable, the window keeps its size
+        }
         tmt_winOpen(url, 'imageBrowser', 'width=' + fbw + ',height=' + fbh + ',left=8,top=8,scrollbars=yes,resizable=yes', 1);
         temp_url = url;
     }
