@@ -547,7 +547,7 @@ $BL['be_cnt_enlarge']                   = 'click&nbsp;enlarge';
 $BL['be_cnt_caption']                   = 'caption';
 $BL['be_cnt_subject']                   = 'subject';
 $BL['be_cnt_recipient']                 = 'recipient';
-$BL['be_cnt_buttontext']                = 'button text';
+$BL['be_cnt_buttontext']                = 'button&nbsp;text';
 $BL['be_cnt_sendas']                    = 'send as';
 $BL['be_cnt_text']                      = 'text';
 $BL['be_cnt_html']                      = 'html';
@@ -564,7 +564,6 @@ $BL['be_cnt_default']                   = 'default';
 $BL['be_cnt_left']                      = 'left';
 $BL['be_cnt_center']                    = 'center';
 $BL['be_cnt_right']                     = 'right';
-$BL['be_cnt_buttontext']                = 'button&nbsp;text';
 $BL['be_cnt_successtext']               = 'success&nbsp;text';
 $BL['be_cnt_regmail']                   = 'regist.email';
 $BL['be_cnt_logoffmail']                = 'logoff.email';
@@ -868,8 +867,6 @@ $BL['be_date_week']                     = 'week';
 $BL['be_date_weeks']                    = 'weeks';
 $BL['be_date_month']                    = 'month';
 $BL['be_date_months']                   = 'months';
-$BL['be_off']                           = 'Off';
-$BL['be_on']                            = 'On';
 $BL['be_cache']                         = 'cache';
 $BL['be_cache_timeout']                 = 'timeout';
 
@@ -1614,12 +1611,12 @@ $BL['be_about_contributors'] = 'and contributors';
 $BL['be_about_and_contributors'] = 'and other contributors (including Marcus Obst, Fernando Batista, KoMa, geckse, phalancs, q23, and others) &ndash; see <a href="https://github.com/slackero/phpwcms" title="Source code on GitHub" target="_blank">source code</a> for detailed copyright and license information.';
 
 // backend screen mode switcher
-$BL['be_theme_switch'] = 'Screen mode';
-$BL['be_theme_auto'] = 'Auto';
-$BL['be_theme_light'] = 'Light';
-$BL['be_theme_dark'] = 'Dark';
+$BL['be_theme_switch']                  = 'Screen mode';
+$BL['be_theme_auto']                    = 'Auto';
+$BL['be_theme_light']                   = 'Light';
+$BL['be_theme_dark']                    = 'Dark';
 
 // backend drag and drop ordering
 $BL['be_article'] = 'article';
-$BL['be_sort_drag'] = 'drag to reorder';
-$BL['be_sort_drag_error'] = 'Reordering failed, please reload the page and try again.';
+$BL['be_sort_drag']                     = 'drag to reorder';
+$BL['be_sort_drag_error']               = 'Reordering failed, please reload the page and try again.';
