@@ -153,6 +153,25 @@ These apply to every backend screen that is modernized:
   `active` and `disabled` states) and `backend_icon()` from
   `include/inc_lib/backend.functions.inc.php` instead of pixel gifs.
 
+## Tooltips
+
+- Every backend tooltip is a Bootstrap tooltip: `data-bs-toggle="tooltip"` next to
+  the `title` that carries the text. Do not leave a bare `title` on a link,
+  button, toggle, badge or other chrome - it renders the browser's own tooltip
+  instead of a Bootstrap one.
+- Bootstrap tooltips are opt-in, so `include/inc_js/backend.bootstrap.js` (an ES
+  module the backend frame loads next to the Bootstrap bundle) initialises every
+  `[data-bs-toggle="tooltip"]` element. A screen only needs the attributes.
+- That module also shims `window.Event`: MooTools 1.1 replaces the constructor
+  with its event wrapper and Bootstrap dispatches custom events with the native
+  `new Event('name', {...})` signature, so without the shim every Bootstrap
+  component that fires an event throws. Keep the shim when touching the module.
+- `backend_action()` and `backend_sort_handle()` emit both attributes. A disabled
+  icon button ignores the pointer, so `backend_action()` puts the tooltip on the
+  `d-inline-flex` wrapper it renders around the disabled button.
+- Legacy screens that still use the old table layout and gif buttons keep their
+  plain `title` attributes until they are revamped.
+
 ## Backend icon set
 
 Every backend icon is a Bootstrap Icon (<https://icons.getbootstrap.com>, v1.13.2,

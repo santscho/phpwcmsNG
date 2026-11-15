@@ -102,7 +102,7 @@ if($count_user_files) { //Wenn überhaupt Public-Dateien vorhanden, dann Listing
             //Zeile mit den Benutzerinfos
             echo '<div class="list-group-item d-flex align-items-center gap-2">';
             echo '<a class="flex-shrink-0 link-secondary text-decoration-none" href="phpwcms.php?do=files&amp;f=1&amp;pklapp=u'.$row["f_uid"].'%7C'.$pklapp_status.'"';
-            echo ' title="'.($pklapp_status ? $BL['be_fprivfunc_opendir'] : $BL['be_fprivfunc_closedir']).': '.$user_naming.'">';
+            echo ' data-bs-toggle="tooltip" title="'.($pklapp_status ? $BL['be_fprivfunc_opendir'] : $BL['be_fprivfunc_closedir']).': '.$user_naming.'">';
             echo backend_icon($pklapp_status ? 'chevron-right' : 'chevron-down');
             echo '</a>';
             echo '<span class="flex-shrink-0 fg-secondary">'.backend_icon('person-fill').'</span>';

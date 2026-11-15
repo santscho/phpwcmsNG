@@ -374,7 +374,7 @@ if(isset($file_error["file"])) { ?>
         <div class="border-top mt-4 pt-4">
 <?php if(count($phpwcms['allowed_lang']) > 1): ?>
             <div class="nav nav-pills flex-wrap mb-4 file-lang-tabs">
-                <a href="#" rel="<?php echo $phpwcms['default_lang'] ?>" class="nav-link active" aria-current="page" title="<?php echo get_language_name($phpwcms['default_lang']) . ' (' . $BL['be_admin_tmpl_default'] . ')' ?>">
+                <a href="#" rel="<?php echo $phpwcms['default_lang'] ?>" class="nav-link active" aria-current="page" data-bs-toggle="tooltip" title="<?php echo get_language_name($phpwcms['default_lang']) . ' (' . $BL['be_admin_tmpl_default'] . ')' ?>">
                     <?php echo strtoupper($phpwcms['default_lang']) ?> <span class="badge theme-secondary"><?php echo $BL['be_admin_tmpl_default'] ?></span>
                 </a>
 <?php   foreach($phpwcms['allowed_lang'] as $lang):
@@ -385,7 +385,7 @@ if(isset($file_error["file"])) { ?>
                 continue;
             }
 ?>
-                <a href="#" rel="<?php echo $lang ?>" class="nav-link" title="<?php echo get_language_name($lang) ?>"><?php echo strtoupper($lang) ?></a>
+                <a href="#" rel="<?php echo $lang ?>" class="nav-link" data-bs-toggle="tooltip" title="<?php echo get_language_name($lang) ?>"><?php echo strtoupper($lang) ?></a>
 <?php   endforeach; ?>
             </div>
 <?php endif; ?>

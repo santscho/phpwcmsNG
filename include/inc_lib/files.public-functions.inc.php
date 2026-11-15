@@ -52,13 +52,13 @@ function backend_public_file_item($file_row, $phpwcms) {
     echo '<span class="flex-shrink-0 fg-secondary">' . backend_icon(backend_file_icon($file_row['f_ext'])) . '</span>';
 
     echo '<div class="flex-grow-1 text-truncate">';
-    echo '<div class="text-truncate"><a href="' . $info_url . '" target="_blank" class="text-decoration-none" title="' . $filename . '"' . $info_js . '>' . $filename . '</a></div>';
+    echo '<div class="text-truncate"><a href="' . $info_url . '" target="_blank" class="text-decoration-none" data-bs-toggle="tooltip" title="' . $filename . '"' . $info_js . '>' . $filename . '</a></div>';
     echo '<div class="small fg-secondary text-truncate">' . $meta . '</div>';
     echo $thumb;
     echo '</div>';
 
     echo '<div class="d-flex align-items-center gap-2 flex-shrink-0">';
-    echo '<a class="btn btn-icon btn-outline theme-secondary btn-sm" href="include/inc_act/act_download.php?pl=1&amp;dl=' . $file_row['f_id'] . '" target="_blank" title="' . $BL['be_fprivfunc_dlfile'] . ': ' . $filename . '" aria-label="' . $BL['be_fprivfunc_dlfile'] . ': ' . $filename . '">' . backend_icon('download') . '</a>';
+    echo '<a class="btn btn-icon btn-outline theme-secondary btn-sm" href="include/inc_act/act_download.php?pl=1&amp;dl=' . $file_row['f_id'] . '" target="_blank" data-bs-toggle="tooltip" title="' . $BL['be_fprivfunc_dlfile'] . ': ' . $filename . '" aria-label="' . $BL['be_fprivfunc_dlfile'] . ': ' . $filename . '">' . backend_icon('download') . '</a>';
     echo '</div>';
 
     echo '</div>' . LF;
@@ -120,7 +120,7 @@ function list_public($pid, $vor, $zieldatei, $userID, $phpwcms) {
         // open/close the directory
         if($count_wert) {
             echo '<a class="flex-shrink-0 link-secondary text-decoration-none" href="' . $zieldatei . '&amp;pklapp=' . $dir_id . '%7C' . $klapp_status . '"';
-            echo ' title="' . ($klapp_status ? $GLOBALS['BL']['be_fprivfunc_opendir'] : $GLOBALS['BL']['be_fprivfunc_closedir']) . ': ' . $dirname . '">';
+            echo ' data-bs-toggle="tooltip" title="' . ($klapp_status ? $GLOBALS['BL']['be_fprivfunc_opendir'] : $GLOBALS['BL']['be_fprivfunc_closedir']) . ': ' . $dirname . '">';
             echo backend_icon($klapp_status ? 'chevron-right' : 'chevron-down');
             echo '</a>';
         } else {

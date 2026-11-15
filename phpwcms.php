@@ -275,7 +275,7 @@ if($BE['LANG'] == 'ar') {
     $theme_label = $BL['be_theme_' . $theme_value] ?? $theme_fallback;
     $theme_active = $backend_theme === $theme_value;
 ?>
-                <button type="button" class="btn btn-icon theme-inverse btn-sm<?php echo $theme_active ? ' btn-solid active' : ' btn-outline' ?>" data-backend-theme="<?php echo $theme_value ?>" aria-pressed="<?php echo $theme_active ? 'true' : 'false' ?>" title="<?php echo html_specialchars($theme_label) ?>" aria-label="<?php echo html_specialchars($theme_label) ?>"><?php echo backend_theme_icon($theme_value); ?></button>
+                <button type="button" class="btn btn-icon theme-inverse btn-sm<?php echo $theme_active ? ' btn-solid active' : ' btn-outline' ?>" data-backend-theme="<?php echo $theme_value ?>" aria-pressed="<?php echo $theme_active ? 'true' : 'false' ?>" data-bs-toggle="tooltip" title="<?php echo html_specialchars($theme_label) ?>" aria-label="<?php echo html_specialchars($theme_label) ?>"><?php echo backend_theme_icon($theme_value); ?></button>
 <?php endforeach; ?>
             </div>
             <a href="<?php echo PHPWCMS_URL ?>" class="nav-link justify-content-start small d-none lg:d-inline-block" target="_blank"><?php echo PHPWCMS_HOST ?></a>
@@ -616,13 +616,13 @@ if($BE['LANG'] == 'ar') {
         <div class="d-flex flex-column md:flex-row md:justify-content-between align-items-start gap-5 small fg-secondary">
 
             <p class="mb-0">
-                <a href="https://www.phpwcms.org" title="phpwcms <?php echo PHPWCMS_VERSION; ?>" target="_blank" rel="noopener">phpwcms</a>
+                <a href="https://www.phpwcms.org" data-bs-toggle="tooltip" title="phpwcms <?php echo PHPWCMS_VERSION; ?>" target="_blank" rel="noopener">phpwcms</a>
                 &copy; 2002&#8212;<?php echo date('Y'); ?>
                 <a href="mailto:og@phpwcms.org?subject=phpwcms+<?php echo rawurlencode(PHPWCMS_VERSION); ?>">Oliver Georgi</a>.
             </p>
 
             <div class="d-flex flex-column md:flex-row gap-3 md:gap-5">
-                <a href="phpwcms.php?do=about" title="<?php echo $BL['be_aboutlink_title'] ?>"><?php echo $BL['be_licensed_under_GPL']; ?></a>
+                <a href="phpwcms.php?do=about" data-bs-toggle="tooltip" title="<?php echo $BL['be_aboutlink_title'] ?>"><?php echo $BL['be_licensed_under_GPL']; ?></a>
                 <span><?php echo $BL['be_extensions_copyright']; ?></span>
             </div>
 
@@ -669,6 +669,7 @@ if($body_onload) {
 }
 
 $BE['HEADER']['bootstrap.bundle.js'] = '<script type="module" src="include/inc_ext/bootstrap/bootstrap.bundle.min.js"></script>';
+$BE['HEADER']['backend.bootstrap.js'] = '<script type="module" src="include/inc_js/backend.bootstrap.js"></script>';
 $BE['HEADER']['textarea.autosize.js'] = getJavaScriptSourceLink('include/inc_js/autosize.min.js');
 $BE['HEADER']['phpwcms.js'] = getJavaScriptSourceLink('include/inc_js/phpwcms.min.js');
 if($do === 'articles' || ($do === 'admin' && $p === 6)) {

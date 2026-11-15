@@ -56,7 +56,7 @@ function backend_file_item($file_row, $zieldatei, $cutID, $phpwcms) {
     echo '<span class="flex-shrink-0 fg-secondary">' . backend_icon(backend_file_icon($file_row['f_ext'])) . '</span>';
 
     echo '<div class="flex-grow-1 text-truncate">';
-    echo '<div class="text-truncate"><a href="' . $edit_url . '" class="text-decoration-none" title="' . $BL['be_fprivfunc_editfile'] . ': ' . $filename . '">' . $filename . '</a></div>';
+    echo '<div class="text-truncate"><a href="' . $edit_url . '" class="text-decoration-none" data-bs-toggle="tooltip" title="' . $BL['be_fprivfunc_editfile'] . ': ' . $filename . '">' . $filename . '</a></div>';
     echo '<div class="small fg-secondary text-truncate">' . $meta . '</div>';
     echo $thumb;
     echo '</div>';
@@ -125,14 +125,14 @@ function backend_dir_item($row, $zieldatei, $cutID, $child_count, $open) {
     if($child_count) {
         $klapp_status = $open ? 0 : 1;
         echo '<a class="flex-shrink-0 link-secondary text-decoration-none" href="' . $zieldatei . '&amp;klapp=' . $row['f_id'] . '%7C' . $klapp_status . '"';
-        echo ' title="' . ($klapp_status ? $BL['be_fprivfunc_opendir'] : $BL['be_fprivfunc_closedir']) . ': ' . $dirname . '">';
+        echo ' data-bs-toggle="tooltip" title="' . ($klapp_status ? $BL['be_fprivfunc_opendir'] : $BL['be_fprivfunc_closedir']) . ': ' . $dirname . '">';
         echo backend_icon($klapp_status ? 'chevron-right' : 'chevron-down');
         echo '</a>';
     } else {
         echo '<span class="flex-shrink-0 invisible">' . backend_icon('chevron-right') . '</span>';
     }
 
-    echo '<span class="flex-shrink-0 fg-secondary" title="' . html($label) . '">' . backend_icon($icon) . '</span>';
+    echo '<span class="flex-shrink-0 fg-secondary" data-bs-toggle="tooltip" title="' . html($label) . '">' . backend_icon($icon) . '</span>';
 
     echo '<div class="flex-grow-1 text-truncate"><span class="fw-semibold">' . $dirname . '</span></div>';
 

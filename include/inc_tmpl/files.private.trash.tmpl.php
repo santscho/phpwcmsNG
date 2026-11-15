@@ -35,7 +35,7 @@ if($count_user_files) {
 
     echo '</div>' . LF;
     echo '<div class="card-footer d-flex flex-wrap gap-2 justify-content-end">' . LF;
-    echo '<a class="btn theme-danger btn-solid btn-styled btn-sm" href="include/inc_act/act_file.php?trash=0%7C9" title="'.$BL['be_ftrash_delallfiles'].'"'.$delall_js.'>'.$BL['be_ftrash_delallfiles'].'</a>' . LF;
+    echo '<a class="btn theme-danger btn-solid btn-styled btn-sm" href="include/inc_act/act_file.php?trash=0%7C9" data-bs-toggle="tooltip" title="'.$BL['be_ftrash_delallfiles'].'"'.$delall_js.'>'.$BL['be_ftrash_delallfiles'].'</a>' . LF;
     echo '</div>' . LF;
     echo '</div>' . LF;
 

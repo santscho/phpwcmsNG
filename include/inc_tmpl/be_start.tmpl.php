@@ -102,7 +102,7 @@ $_last10_article = _dbQuery($_asql_1);
             $_article_link = 'phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;id='.$value['article_id'];
 
             echo '<div class="list-group-item list-group-item-action d-flex align-items-center gap-2" role="link"';
-            echo ' title="'.html($BL['be_func_struct_edit']).'"';
+            echo ' data-bs-toggle="tooltip" title="'.html($BL['be_func_struct_edit']).'"';
             echo ' onclick="document.location.href=\''.$_article_link.'\'">'.LF;
 
             echo '<span class="flex-shrink-0 fg-secondary">'.backend_icon('journal-bookmark-fill').'</span>';
@@ -186,7 +186,7 @@ $_last10_article = _dbQuery($_asql_1);
             $_content_link = 'phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id='.$value['acontent_aid'].'&amp;acid='.$value['acontent_id'];
 
             echo '<div class="list-group-item list-group-item-action d-flex align-items-center gap-2" role="link"';
-            echo ' title="'.html($value['notice_long'], false).'"';
+            echo ' data-bs-toggle="tooltip" title="'.html($value['notice_long'], false).'"';
             echo ' onclick="document.location.href=\''.$_content_link.'\'">'.LF;
 
             echo '<span class="flex-shrink-0 fg-secondary">'.backend_icon('postcard-fill').'</span>';

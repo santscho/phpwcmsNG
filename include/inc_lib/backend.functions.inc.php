@@ -728,10 +728,11 @@ function backend_action($href, $icon, $label, $state = 'normal', $onclick = '', 
             $class = 'btn btn-icon theme-' . $theme . ' btn-solid btn-sm';
             break;
         case 'disabled':
-            return '<span class="' . $class . ' disabled" aria-disabled="true" title="' . $label_attr . '">' . $inner . '</span>';
+            // a disabled button ignores the pointer, so the tooltip sits on a wrapper
+            return '<span class="d-inline-flex" data-bs-toggle="tooltip" title="' . $label_attr . '"><span class="' . $class . ' disabled" aria-disabled="true">' . $inner . '</span></span>';
     }
 
-    return '<a class="' . $class . '" href="' . $href . '" title="' . $label_attr . '" aria-label="' . $label_attr . '"' . $onclick . '>' . $inner . '</a>';
+    return '<a class="' . $class . '" href="' . $href . '" data-bs-toggle="tooltip" title="' . $label_attr . '" aria-label="' . $label_attr . '"' . $onclick . '>' . $inner . '</a>';
 
 }
 
@@ -745,7 +746,7 @@ function backend_sort_handle($label='') {
     $label = $label ?: ($BL['be_sort_drag'] ?? 'drag to reorder');
 
     $handle  = '<span class="backend-sort-handle d-inline-flex align-items-center justify-content-center flex-shrink-0 rounded" data-sort-handle="1" role="button"';
-    $handle .= ' aria-label="' . html($label) . '" title="' . html($label) . '"';
+    $handle .= ' aria-label="' . html($label) . '" data-bs-toggle="tooltip" title="' . html($label) . '"';
     $handle .= ' style="cursor:grab;width:26px;height:26px">';
     $handle .= '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="24" fill="currentColor" viewBox="0 0 16 24" aria-hidden="true">';
     foreach (array(4, 9, 14, 19) as $handle_y) {

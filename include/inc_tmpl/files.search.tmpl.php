@@ -190,9 +190,9 @@ if(isset($search["result"])) {
             $info_js  = " onclick=\"flevPopupLink(this.href,'filedetail','scrollbars=yes,resizable=yes,width=500,height=400',1);return document.MM_returnValue;\"";
 
             if($can_edit) {
-                $file_link = '<a href="'.$edit_url.'" class="text-decoration-none" title="'.$BL['be_fprivfunc_editfile'].': '.$filename.'">';
+                $file_link = '<a href="'.$edit_url.'" class="text-decoration-none" data-bs-toggle="tooltip" title="'.$BL['be_fprivfunc_editfile'].': '.$filename.'">';
             } else {
-                $file_link = '<a href="'.$info_url.'" target="_blank" class="text-decoration-none" title="'.$filename.'"'.$info_js.'>';
+                $file_link = '<a href="'.$info_url.'" target="_blank" class="text-decoration-none" data-bs-toggle="tooltip" title="'.$filename.'"'.$info_js.'>';
             }
 
             $meta = strtoupper(html($file_row["f_ext"]));
@@ -234,7 +234,7 @@ if(isset($search["result"])) {
             if($can_edit) {
                 echo backend_action($edit_url, 'pen', $BL['be_fprivfunc_editfile'].': '.$filename);
             }
-            echo '<a class="btn btn-icon btn-outline theme-secondary btn-sm" href="include/inc_act/act_download.php?pl=1&amp;dl='.$file_row["f_id"].'" target="_blank" title="'.$BL['be_fprivfunc_dlfile'].': '.$filename.'" aria-label="'.$BL['be_fprivfunc_dlfile'].': '.$filename.'">'.backend_icon('download').'</a>';
+            echo '<a class="btn btn-icon btn-outline theme-secondary btn-sm" href="include/inc_act/act_download.php?pl=1&amp;dl='.$file_row["f_id"].'" target="_blank" data-bs-toggle="tooltip" title="'.$BL['be_fprivfunc_dlfile'].': '.$filename.'" aria-label="'.$BL['be_fprivfunc_dlfile'].': '.$filename.'">'.backend_icon('download').'</a>';
             echo '</div>';
 
             echo '</div>' . LF;

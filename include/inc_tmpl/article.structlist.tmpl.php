@@ -66,7 +66,7 @@ $is_open     = !empty($_SESSION['structure'][0]);
 <?php
 if($child_count) {
     echo '<a href="phpwcms.php?do=articles&amp;open=0:'.($is_open ? 0 : 1).'" class="link-secondary text-decoration-none flex-shrink-0"';
-    echo ' aria-label="'.html($an).'" title="'.html($an).'">'.backend_icon($is_open ? 'chevron-down' : 'chevron-right').'</a>';
+    echo ' aria-label="'.html($an).'" data-bs-toggle="tooltip" title="'.html($an).'">'.backend_icon($is_open ? 'chevron-down' : 'chevron-right').'</a>';
 } else {
     echo '<span class="flex-shrink-0" style="width:16px"></span>';
 }

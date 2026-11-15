@@ -123,10 +123,10 @@ if(isset($file_result[0]['f_id'])) {
 }
 
 $_files_action_status = array(
-    'active'    => '<span class="badge theme-success" title="' . html($BL['be_ftptakeover_active']) . '">' . backend_icon('toggle-on') . '</span>',
-    'inactive'  => '<span class="badge theme-secondary" title="' . html($BL['be_inactive']) . '">' . backend_icon('toggle-off') . '</span>',
-    'public'    => '<span class="badge theme-success" title="' . html($BL['be_ftptakeover_public']) . '">' . backend_icon('globe') . '</span>',
-    'private'   => '<span class="badge theme-secondary" title="' . html($BL['be_fsearch_personal']) . '">' . backend_icon('lock') . '</span>',
+    'active'    => '<span class="badge theme-success" data-bs-toggle="tooltip" title="' . html($BL['be_ftptakeover_active']) . '">' . backend_icon('toggle-on') . '</span>',
+    'inactive'  => '<span class="badge theme-secondary" data-bs-toggle="tooltip" title="' . html($BL['be_inactive']) . '">' . backend_icon('toggle-off') . '</span>',
+    'public'    => '<span class="badge theme-success" data-bs-toggle="tooltip" title="' . html($BL['be_ftptakeover_public']) . '">' . backend_icon('globe') . '</span>',
+    'private'   => '<span class="badge theme-secondary" data-bs-toggle="tooltip" title="' . html($BL['be_fsearch_personal']) . '">' . backend_icon('lock') . '</span>',
 );
 ?>
 <script type="text/javascript">

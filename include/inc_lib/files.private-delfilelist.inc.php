@@ -43,7 +43,7 @@ if(isset($file_result[0]['f_id'])) {
         echo '<span class="flex-shrink-0 fg-secondary">'.backend_icon(backend_file_icon($file_row["f_ext"])).'</span>';
 
         echo '<div class="flex-grow-1 text-truncate">';
-        echo '<div class="text-truncate"><a href="'.$info_url.'" target="_blank" class="text-decoration-none" title="'.$filename.'"'.$info_js.'>'.$filename.'</a></div>';
+        echo '<div class="text-truncate"><a href="'.$info_url.'" target="_blank" class="text-decoration-none" data-bs-toggle="tooltip" title="'.$filename.'"'.$info_js.'>'.$filename.'</a></div>';
         echo '<div class="small fg-secondary text-truncate">'.$meta.'</div>';
         echo '</div>';
 
