@@ -631,8 +631,8 @@ existing entry already covers the action before adding a second glyph for it.
   places they were in before.
 - The type forms are included into a slot: `$cp_form_bootstrap` lists the types
   that render their own Bootstrap markup and are included into a `card-body`
-  (currently the code part `11`, the article menu `15` and the content part alias
-  `24`), every other type form
+  (currently the code part `11`, the article menu `15`, the e-card `16` and the
+  content part alias `24`), every other type form
   still writes `<tr><td>` rows and is included into a plain `table.w-100` inside
   the card body. Revamping a type means rewriting its `cnt<type>.inc.php` as
   `div`-based Bootstrap markup and adding its number to that list; do not remove
@@ -654,6 +654,38 @@ existing entry already covers the action before adding a second glyph for it.
   `confirm_cp_tab_warning`) carry the `\n` escapes of JavaScript themselves and
   are printed as they are — passing them through `js_singlequote()` would double
   those backslashes and the dialog would show a literal `\n`.
+
+## Content part editor: e-card
+
+- `include/inc_tmpl/content/cnt16.inc.php` is the fourth type form in Bootstrap:
+  a `row g-4` of `col-12` and `col-12 md:col-6` cells and no wrapper element of
+  its own, because the frame puts it into the `card-body` of the type card.
+- The fields keep their names, ids and values: `cecard_subject`, the selector
+  radios `cecard_selector` (`0` radio button, `1` JavaScript functionality),
+  `cecard_onover`/`cecard_onclick`/`cecard_onout` (the first one has the id
+  `cecard_over`), the image list `cimage_list[]`, `cecard_pos`, the
+  `cecard_width`/`cecard_height` pair, `cecard_col`, `cecard_space`, the
+  `cecard_zoom` mark, `cecard_caption` and the three template textareas
+  `cecard_form`, `cecard_send`, `cecard_mail`.
+- The image list stays a `multiple` select named `cimage_list[]` with the id
+  `cimage_list`, because the inline handlers address it as
+  `document.articlecontent.cimage_list`: `moveOptionUp()`,
+  `moveOptionDown()`, `removeSelectedOptions()` and the form's own
+  `selectAllOptions(this.cimage_list)` are unchanged. Its three actions are
+  `backend_action()` buttons (`chevron-up`, `chevron-down`, and `trash` in
+  `theme-danger`) next to the one `btn-outline theme-secondary` that opens
+  `openFileBrowser('filebrowser.php?opt=3&amp;target=nolist')`; the spacer gifs
+  around the thumbnails are gone and the thumbnails are one `d-flex flex-wrap`
+  row.
+- The default sender form template is data, not markup: the HTML table the code
+  builds into `cecard_form` while the field is empty is kept verbatim, the
+  textarea prints it through `html()`, and it round-trips byte for byte through
+  a save. All three template textareas are monospace through
+  `style="font-family: var(--bs-font-mono)"` and keep the `autosize` class.
+- The `###TAG###` lines above the templates are `small fg-secondary` hints, the
+  `onKeyUp` guards of the numeric fields are untouched, and the `px` suffixes of
+  width, height and image space sit in `input-group-text` spans instead of table
+  cells.
 
 ## Content part editor: content part alias
 

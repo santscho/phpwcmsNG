@@ -19,7 +19,6 @@ if (!defined('PHPWCMS_ROOT')) {
 
 //ecard
 
-$imgx = 0;
 $img_thumbs = '';
 $caption_box = '';
 
@@ -49,50 +48,39 @@ if(!isset($content["ecard"])) {
 }
 
 ?>
+<div class="row g-4">
 
-<tr><td colspan="2" class="rowspacer0x7"><img src="img/leer.gif" alt="" width="1" height="1"></td></tr>
+    <div class="col-12">
+        <label class="form-label" for="cecard_subject"><?php echo $BL['be_cnt_subject'] ?></label>
+        <input name="cecard_subject" type="text" id="cecard_subject" class="form-control" value="<?php echo html($content["ecard"]["subject"]) ?>" size="40" maxlength="250">
+    </div>
 
-<tr>
-    <td align="right" class="chatlist"><?php echo $BL['be_cnt_subject'] ?>:&nbsp;</td>
-    <td><input name="cecard_subject" type="text" id="cecard_subject" class="f11b" style="width: 440px" value="<?php echo html($content["ecard"]["subject"]) ?>" size="40" maxlength="250"></td>
-</tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="6"></td></tr>
-<tr><td colspan="2"><img src="img/lines/l538_70.gif" alt="" width="538" height="1"></td></tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="6"></td></tr>
-<tr>
-  <td align="right" class="chatlist"><?php echo $BL['be_cnt_ecardform_selector'] ?>:&nbsp;</td>
-  <td valign="top"><table border="0" cellpadding="0" cellspacing="0" bgcolor="#E7E8EB" summary="">
-      <tr>
-        <td><input name="cecard_selector" type="radio" value="0" <?php is_checked(0, $content["ecard"]["selector"]); ?>></td>
-        <td class="v10"><?php echo $BL['be_cnt_ecardform_radiobutton'] ?>&nbsp;</td>
-        <td><input name="cecard_selector" type="radio" value="1" <?php is_checked(1, $content["ecard"]["selector"]); ?>></td>
-        <td class="v10"><?php echo $BL['be_cnt_ecardform_javascript'] ?>&nbsp;&nbsp;&nbsp;</td>
-      </tr>
-    </table></td>
-</tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="4"></td></tr>
-<tr>
-    <td align="right" class="chatlist"><?php echo $BL['be_cnt_ecardform_over'] ?>:&nbsp;</td>
-    <td><input name="cecard_onover" type="text" id="cecard_over" class="f11" style="width: 440px" value="<?php echo html($content["ecard"]["onover"]) ?>" size="40" /></td>
-</tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="2"></td></tr>
-<tr>
-    <td align="right" class="chatlist"><?php echo $BL['be_cnt_ecardform_click'] ?>:&nbsp;</td>
-    <td><input name="cecard_onclick" type="text" id="cecard_onclick" class="f11" style="width: 440px" value="<?php echo html($content["ecard"]["onclick"]) ?>" size="40" /></td>
-</tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="2"></td></tr>
-<tr>
-    <td align="right" class="chatlist"><?php echo $BL['be_cnt_ecardform_out'] ?>:&nbsp;</td>
-    <td><input name="cecard_onout" type="text" id="cecard_onout" class="f11" style="width: 440px" value="<?php echo html($content["ecard"]["onout"]) ?>" size="40" /></td>
-</tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="6"></td></tr>
-<tr><td colspan="2"><img src="img/lines/l538_70.gif" alt="" width="538" height="1"></td></tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="6"></td></tr>
-<tr>
-  <td align="right" valign="top" class="chatlist"><img src="img/leer.gif" alt="" width="1" height="13"><?php echo $BL['be_cnt_image'] ?>:&nbsp;</td>
-  <td valign="top"><table border="0" cellpadding="0" cellspacing="0" summary="">
-      <tr>
-        <td valign="top"><select name="cimage_list[]" size="<?php echo isset($content["ecard"]["select"]) && count($content["ecard"]["select"]) ? count($content["ecard"]["select"])+5 : 5 ?>" multiple="multiple" class="width200" id="cimage_list">
+    <div class="col-12 md:col-6">
+        <div class="form-label"><?php echo $BL['be_cnt_ecardform_selector'] ?></div>
+        <div class="form-field">
+            <input class="radio" name="cecard_selector" id="cecard_selector0" type="radio" value="0"<?php is_checked(0, $content["ecard"]["selector"]); ?>>
+            <label for="cecard_selector0"><?php echo $BL['be_cnt_ecardform_radiobutton'] ?></label>
+        </div>
+        <div class="form-field mt-3">
+            <input class="radio" name="cecard_selector" id="cecard_selector1" type="radio" value="1"<?php is_checked(1, $content["ecard"]["selector"]); ?>>
+            <label for="cecard_selector1"><?php echo $BL['be_cnt_ecardform_javascript'] ?></label>
+        </div>
+    </div>
+
+    <div class="col-12 md:col-6">
+        <label class="form-label" for="cecard_over"><?php echo $BL['be_cnt_ecardform_over'] ?></label>
+        <input name="cecard_onover" type="text" id="cecard_over" class="form-control" value="<?php echo html($content["ecard"]["onover"]) ?>" size="40">
+        <label class="form-label mt-3" for="cecard_onclick"><?php echo $BL['be_cnt_ecardform_click'] ?></label>
+        <input name="cecard_onclick" type="text" id="cecard_onclick" class="form-control" value="<?php echo html($content["ecard"]["onclick"]) ?>" size="40">
+        <label class="form-label mt-3" for="cecard_onout"><?php echo $BL['be_cnt_ecardform_out'] ?></label>
+        <input name="cecard_onout" type="text" id="cecard_onout" class="form-control" value="<?php echo html($content["ecard"]["onout"]) ?>" size="40">
+    </div>
+
+    <div class="col-12 border-top pt-4">
+        <div class="row g-3">
+            <div class="col-12 md:col-6">
+                <label class="form-label" for="cimage_list"><?php echo $BL['be_cnt_image'] ?></label>
+                <select name="cimage_list[]" size="<?php echo isset($content["ecard"]["select"]) && count($content["ecard"]["select"]) ? count($content["ecard"]["select"])+5 : 5 ?>" multiple="multiple" class="form-control" id="cimage_list">
 <?php
 if(is_array($content['ecard']['images']) && count($content['ecard']['images'])) {
 
@@ -115,16 +103,8 @@ if(is_array($content['ecard']['images']) && count($content['ecard']['images'])) 
             $img_name = html($content['ecard']['images'][$key][1]);
             echo $img_name . "</option>\n";
 
-            if($imgx == 4) {
-                $img_thumbs .= '<br><img src="img/leer.gif" alt="" width="1" height="2"><br>';
-                $imgx = 0;
-            }
-            if($imgx) {
-                $img_thumbs .= '<img src="img/leer.gif" alt="" width="2" height="1">';
-            }
             $img_thumbs .= '<img src="' . $thumb_image['src'] .'" '.$thumb_image[3].' alt="'.$img_name.'" title="'.$img_name.'">';
 
-            $imgx++;
         }
 
     }
@@ -132,57 +112,59 @@ if(is_array($content['ecard']['images']) && count($content['ecard']['images'])) 
 }
 
 ?>
-          </select></td>
-        <td valign="top"><img src="img/leer.gif" alt="" width="5" height="1"></td>                                           <!-- browser_image.php //-->
-        <td valign="top"><a href="javascript:" title="<?php echo $BL['be_cnt_openimagebrowser'] ?>" onclick="openFileBrowser('filebrowser.php?opt=3&amp;target=nolist')"><img src="img/button/open_image_button.gif" alt="" width="20" height="15" border="0"></a><br />
-          <img src="img/leer.gif" alt="" width="1" height="4"><br />
-          <a href="javascript:" title="<?php echo $BL['be_cnt_sortup'] ?>" onclick="moveOptionUp(document.articlecontent.cimage_list);"><img src="img/button/image_pos_up.gif" alt="" width="10" height="9" border="0"></a><a href="javascript:;" title="<?php echo $BL['be_cnt_sortdown'] ?>" onclick="moveOptionDown(document.articlecontent.cimage_list);"><img src="img/button/image_pos_down.gif" alt="" width="10" height="9" border="0"></a><br />
-          <img src="img/leer.gif" alt="" width="1" height="4"><br />
-          <a href="javascript:" onclick="removeSelectedOptions(document.articlecontent.cimage_list);" title="<?php echo $BL['be_cnt_delimage'] ?>"><img src="img/button/del_image_button1.gif" alt="" width="20" height="15" border="0"></a></td>
-      </tr>
-    </table><?php
+                </select>
+            </div>
+            <div class="col-12 md:col-6">
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <a href="javascript:" class="btn btn-outline theme-secondary btn-sm" onclick="openFileBrowser('filebrowser.php?opt=3&amp;target=nolist')"><?php echo $BL['be_cnt_openimagebrowser'] ?></a>
+<?php echo backend_action('#', 'chevron-up', $BL['be_cnt_sortup'], 'normal', ' onclick="moveOptionUp(document.articlecontent.cimage_list);return false;"') ?>
+<?php echo backend_action('#', 'chevron-down', $BL['be_cnt_sortdown'], 'normal', ' onclick="moveOptionDown(document.articlecontent.cimage_list);return false;"') ?>
+<?php echo backend_action('#', 'trash', $BL['be_cnt_delimage'], 'normal', ' onclick="removeSelectedOptions(document.articlecontent.cimage_list);return false;"', 'danger') ?>
+                </div>
+<?php
 
-if(isset($img_thumbs) && $img_thumbs) {
-    echo '<table border="0" cellspacing="0" cellpadding="0">
-        <tr><td style="padding-bottom:3px;"><img src="img/leer.gif" width="1" height="5"><br>'.$img_thumbs.'</td></tr>
-        </table>';
+if($img_thumbs) {
+    echo '<div class="d-flex flex-wrap align-items-start gap-2">' . $img_thumbs . '</div>';
 }
 
-?></td>
-</tr>
-<tr>
-  <td colspan="2"><img src="img/leer.gif" alt="" width="1" height="5"></td>
-</tr>
-<tr>
-  <td align="right" class="chatlist"><?php echo $BL['be_cnt_alignment'] ?>:&nbsp;</td>
-  <td><select name="cecard_pos" id="cecard_pos">
-                <option value="0" <?php is_selected(0, $content["ecard"]["pos"]) ?>><?php echo $BL['be_cnt_left'].' ('.$BL['be_cnt_default'].')' ?></option>
-                <option value="1" <?php is_selected(1, $content["ecard"]["pos"]) ?>><?php echo $BL['be_cnt_center'] ?></option>
-                <option value="2" <?php is_selected(2, $content["ecard"]["pos"]) ?>><?php echo $BL['be_cnt_right'] ?></option>
-              </select></td>
-</tr>
-<tr>
-  <td colspan="2"><img src="img/leer.gif" alt="" width="1" height="5"></td>
-</tr>
-<tr>
-  <td align="right" class="chatlist"><?php echo $BL['be_cnt_maxw'] ?>:&nbsp;</td>
-  <td valign="top"><table border="0" cellpadding="0" cellspacing="0" summary="">
-      <tr>
-        <td><input name="cecard_width" type="text" class="f11b" id="cecard_width" style="width: 50px;" size="3" maxlength="4" onKeyUp="if(!parseInt(this.value,10)) this.value='';" value="<?php echo $content["ecard"]["width"] ?>"></td>
-        <td class="chatlist">&nbsp;&nbsp;<?php echo $BL['be_cnt_maxh'] ?>:&nbsp;</td>
-        <td><input name="cecard_height" type="text" class="f11b" id="cecard_height" style="width: 50px;" size="3" maxlength="4" onKeyUp="if(!parseInt(this.value,10)) this.value='';" value="<?php echo $content["ecard"]["height"] ?>"></td>
-        <td class="chatlist">&nbsp;&nbsp;px</td>
-      </tr>
-    </table></td>
-</tr>
-<tr>
-  <td colspan="2"><img src="img/leer.gif" alt="" width="1" height="5"></td>
-</tr>
-<tr>
-  <td align="right" class="chatlist"><?php echo $BL['be_cnt_column'] ?>:&nbsp;</td>
-  <td valign="top"><table border="0" cellpadding="0" cellspacing="0" summary="">
-      <tr>
-        <td><select name="cecard_col" id="cecard_col">
+?>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 md:col-6">
+        <label class="form-label" for="cecard_pos"><?php echo $BL['be_cnt_alignment'] ?></label>
+        <select name="cecard_pos" id="cecard_pos" class="form-control">
+            <option value="0" <?php is_selected(0, $content["ecard"]["pos"]) ?>><?php echo $BL['be_cnt_left'].' ('.$BL['be_cnt_default'].')' ?></option>
+            <option value="1" <?php is_selected(1, $content["ecard"]["pos"]) ?>><?php echo $BL['be_cnt_center'] ?></option>
+            <option value="2" <?php is_selected(2, $content["ecard"]["pos"]) ?>><?php echo $BL['be_cnt_right'] ?></option>
+        </select>
+    </div>
+
+    <div class="col-12 md:col-6">
+        <div class="row g-3">
+            <div class="col-6">
+                <label class="form-label" for="cecard_width"><?php echo $BL['be_cnt_maxw'] ?></label>
+                <div class="input-group">
+                    <input name="cecard_width" type="text" id="cecard_width" class="form-control" size="3" maxlength="4" onKeyUp="if(!parseInt(this.value,10)) this.value='';" value="<?php echo $content["ecard"]["width"] ?>">
+                    <span class="input-group-text">px</span>
+                </div>
+            </div>
+            <div class="col-6">
+                <label class="form-label" for="cecard_height"><?php echo $BL['be_cnt_maxh'] ?></label>
+                <div class="input-group">
+                    <input name="cecard_height" type="text" id="cecard_height" class="form-control" size="3" maxlength="4" onKeyUp="if(!parseInt(this.value,10)) this.value='';" value="<?php echo $content["ecard"]["height"] ?>">
+                    <span class="input-group-text">px</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 md:col-6">
+        <div class="row g-3">
+            <div class="col-6">
+                <label class="form-label" for="cecard_col"><?php echo $BL['be_cnt_column'] ?></label>
+                <select name="cecard_col" id="cecard_col" class="form-control">
 <?php
 // list select menu for max image columns
 for($max_image_col = 1; $max_image_col <= 25; $max_image_col++) {
@@ -194,38 +176,34 @@ for($max_image_col = 1; $max_image_col <= 25; $max_image_col++) {
 }
 
 ?>
-          </select></td>
-        <td class="chatlist">&nbsp;&nbsp;<?php echo $BL['be_cnt_imagespace'] ?>:&nbsp;</td>
-        <td><input name="cecard_space" type="text" class="f11b" id="cecard_space" style="width: 40px;" size="2" maxlength="2" onKeyUp="if(!parseInt(this.value,10)) this.value='';" value="<?php echo $content["ecard"]["space"] ?>"></td>
-        <td class="chatlist">&nbsp;&nbsp;px&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-        <td bgcolor="#E7E8EB">&nbsp;</td>
-        <td bgcolor="#E7E8EB"><input name="cecard_zoom" type="checkbox" id="cecard_zoom" value="1" <?php is_checked(1, $content["ecard"]["zoom"]); ?>></td>
-        <td bgcolor="#E7E8EB" class="v10">&nbsp;<?php echo $BL['be_cnt_enlarge'] ?>&nbsp;</td>
-        <td bgcolor="#E7E8EB"><img src="img/leer.gif" alt="" width="6" height="15"></td>
-      </tr>
-    </table></td>
-</tr>
-<tr>
-  <td colspan="2"><img src="img/leer.gif" alt="" width="1" height="5"></td>
-</tr>
-<tr>
-  <td align="right" valign="top" class="chatlist"><img src="img/leer.gif" alt="" width="1" height="13"><?php echo $BL['be_cnt_ecardtext'] ?>:&nbsp;</td>
-  <td valign="top"><textarea name="cecard_caption" cols="40" rows="3" wrap="off" class="width440" id="cecard_caption"><?php echo $caption_box ?? '' ?></textarea></td>
-</tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="6"></td></tr>
-<tr><td colspan="2"><img src="img/lines/l538_70.gif" alt="" width="538" height="1"></td></tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="4"></td></tr>
-<tr>
-  <td align="right" valign="top" class="chatlist">&nbsp;</td>
-  <td valign="top" class="chatlist">
-    HTML: ###ECARD_SUBJECT###, ###SENDER_NAME###,  ###SENDER_EMAIL###,<br>
-    ###RECIPIENT_NAME###, ###RECIPIENT_EMAIL###, ###SENDER_MESSAGE###, <br />###ECARD_CHOOSER###,
-    &lt;!--FORM_ERROR_START--&gt; &lt;!--FORM_ERROR_END--&gt;
-  </td>
-</tr>
-<tr>
-  <td colspan="2"><img src="img/leer.gif" alt="" width="1" height="2"></td>
-</tr>
+                </select>
+            </div>
+            <div class="col-6">
+                <label class="form-label" for="cecard_space"><?php echo $BL['be_cnt_imagespace'] ?></label>
+                <div class="input-group">
+                    <input name="cecard_space" type="text" id="cecard_space" class="form-control" size="2" maxlength="2" onKeyUp="if(!parseInt(this.value,10)) this.value='';" value="<?php echo $content["ecard"]["space"] ?>">
+                    <span class="input-group-text">px</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-field mt-3">
+            <input class="check" name="cecard_zoom" type="checkbox" id="cecard_zoom" value="1"<?php is_checked(1, $content["ecard"]["zoom"]); ?>>
+            <label for="cecard_zoom"><?php echo $BL['be_cnt_enlarge'] ?></label>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <label class="form-label" for="cecard_caption"><?php echo $BL['be_cnt_ecardtext'] ?></label>
+        <textarea name="cecard_caption" cols="40" rows="3" wrap="off" class="form-control" id="cecard_caption"><?php echo $caption_box ?? '' ?></textarea>
+    </div>
+
+    <div class="col-12 border-top pt-4">
+        <div class="small fg-secondary mb-2">
+            HTML: ###ECARD_SUBJECT###, ###SENDER_NAME###, ###SENDER_EMAIL###,
+            ###RECIPIENT_NAME###, ###RECIPIENT_EMAIL###, ###SENDER_MESSAGE###,
+            ###ECARD_CHOOSER###,
+            &lt;!--FORM_ERROR_START--&gt; &lt;!--FORM_ERROR_END--&gt;
+        </div>
 <?php
 
 // fill in the default template if form value is empty
@@ -277,40 +255,27 @@ if(!$content["ecard"]["form"]) {
 }
 
 ?>
-<tr>
-  <td align="right" valign="top" class="chatlist"><img src="img/leer.gif" alt="" width="1" height="13"><?php echo $BL['be_cnt_ecardform'] ?>:&nbsp;</td>
-  <td valign="top"><textarea name="cecard_form" rows="15" wrap="VIRTUAL" class="code width440 autosize" id="cecard_form"><?php echo html($content["ecard"]["form"]); ?></textarea></td>
-</tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="6"></td></tr>
-<tr><td colspan="2"><img src="img/lines/l538_70.gif" alt="" width="538" height="1"></td></tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="4"></td></tr>
-<tr>
-  <td align="right" valign="top" class="chatlist">&nbsp;</td>
-  <td valign="top" class="chatlist">HTML: ###ECARD_SUBJECT###, ###RECIPIENT_NAME###,
-        ###RECIPIENT_EMAIL###,<br /> ###SENDER_MESSAGE###,
-        ###ECARD_TITLE###, ###ECARD_IMAGE###</td>
-</tr>
-<tr>
-  <td colspan="2"><img src="img/leer.gif" alt="" width="1" height="2"></td>
-</tr>
-<tr>
-  <td align="right" valign="top" class="chatlist"><img src="img/leer.gif" alt="" width="1" height="13"><?php echo $BL['be_cnt_ecardsend'] ?>:&nbsp;</td>
-  <td valign="top"><textarea name="cecard_send" rows="5" wrap="VIRTUAL" class="code width440 autosize" id="cecard_send"><?php echo html($content["ecard"]["send"]); ?></textarea></td>
-</tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="6"></td></tr>
-<tr><td colspan="2"><img src="img/lines/l538_70.gif" alt="" width="538" height="1"></td></tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="4"></td></tr>
-<tr>
-  <td align="right" valign="top" class="chatlist">&nbsp;</td>
-  <td valign="top" class="chatlist">HTML: ###ECARD_SUBJECT###, ###SENDER_NAME###,
-    ###SENDER_EMAIL###, <br />###RECIPIENT_NAME###,
-    ###RECIPIENT_EMAIL###, ###SENDER_MESSAGE###, <br />
-    ###ECARD_IMAGE###, ###ECARD_TITLE###</td>
-</tr>
-<tr>
-  <td colspan="2"><img src="img/leer.gif" alt="" width="1" height="2"></td>
-</tr>
-<tr>
-  <td align="right" valign="top" class="chatlist"><img src="img/leer.gif" alt="" width="1" height="13"><?php echo $BL['be_cnt_ecardtmpl'] ?>:&nbsp;</td>
-  <td valign="top"><textarea name="cecard_mail" rows="15" wrap="VIRTUAL" class="code width440 autosize" id="cecard_mail"><?php echo  html($content["ecard"]["mail"]) ?></textarea></td>
-</tr>
+        <label class="form-label" for="cecard_form"><?php echo $BL['be_cnt_ecardform'] ?></label>
+        <textarea name="cecard_form" rows="15" wrap="VIRTUAL" class="form-control autosize" id="cecard_form" style="font-family: var(--bs-font-mono)"><?php echo html($content["ecard"]["form"]); ?></textarea>
+    </div>
+
+    <div class="col-12">
+        <div class="small fg-secondary mb-2">
+            HTML: ###ECARD_SUBJECT###, ###RECIPIENT_NAME###, ###RECIPIENT_EMAIL###,
+            ###SENDER_MESSAGE###, ###ECARD_TITLE###, ###ECARD_IMAGE###
+        </div>
+        <label class="form-label" for="cecard_send"><?php echo $BL['be_cnt_ecardsend'] ?></label>
+        <textarea name="cecard_send" rows="5" wrap="VIRTUAL" class="form-control autosize" id="cecard_send" style="font-family: var(--bs-font-mono)"><?php echo html($content["ecard"]["send"]); ?></textarea>
+    </div>
+
+    <div class="col-12">
+        <div class="small fg-secondary mb-2">
+            HTML: ###ECARD_SUBJECT###, ###SENDER_NAME###, ###SENDER_EMAIL###,
+            ###RECIPIENT_NAME###, ###RECIPIENT_EMAIL###, ###SENDER_MESSAGE###,
+            ###ECARD_IMAGE###, ###ECARD_TITLE###
+        </div>
+        <label class="form-label" for="cecard_mail"><?php echo $BL['be_cnt_ecardtmpl'] ?></label>
+        <textarea name="cecard_mail" rows="15" wrap="VIRTUAL" class="form-control autosize" id="cecard_mail" style="font-family: var(--bs-font-mono)"><?php echo  html($content["ecard"]["mail"]) ?></textarea>
+    </div>
+
+</div>
