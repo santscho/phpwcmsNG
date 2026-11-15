@@ -41,11 +41,11 @@ $content['news'] = $content['id'] > 0 && is_array($content['news']) ? array_merg
 initJsAutocompleter();
 
 ?>
-<tr><td colspan="2" class="rowspacer0x7"><img src="img/leer.gif" alt="" width="1" height="1"></td></tr>
+<div class="row g-4">
 
-<tr>
-	<td align="right" class="chatlist"><?php echo $BL['be_admin_struct_template'] ?>:&nbsp;</td>
-	<td><select name="template" id="template">
+	<div class="col-12 md:col-6">
+		<label class="form-label" for="template"><?php echo $BL['be_admin_struct_template'] ?></label>
+		<select name="template" id="template" class="form-control">
 <?php
 
 	echo '<option value="">'.$BL['be_admin_tmpl_default'].'</option>'.LF;
@@ -55,176 +55,151 @@ initJsAutocompleter();
 		foreach($tmpllist as $val) {
 			$selected_val = (isset($content["template"]) && $val == $content["template"]) ? ' selected="selected"' : '';
 			$val = html($val);
-			echo '	<option value="' . $val . '"' . $selected_val . '>' . $val . '</option>' . LF;
+			echo '<option value="' . $val . '"' . $selected_val . '>' . $val . '</option>' . LF;
 		}
 	}
 
 ?>
-			</select></td>
-</tr>
+		</select>
+	</div>
 
-<tr><td colspan="2" class="rowspacer7x7"><img src="img/leer.gif" alt="" width="1" height="1"></td></tr>
+	<div class="col-12 md:col-6">
+		<div class="d-flex flex-wrap align-items-end gap-3">
+			<div class="flex-grow-1">
+				<label class="form-label" for="news_sort"><?php echo $BL['be_cnt_sorting'] ?></label>
+				<select name="news_sort" id="news_sort" class="form-control">
+					<option value="9"<?php is_selected(9, $content['news']['news_sort']) ?>><?php echo $BL['be_sort_date'].', '.$BL['be_admin_struct_orderdesc'] ?></option>
+					<option value="10"<?php is_selected(10, $content['news']['news_sort']) ?>><?php echo $BL['be_sort_date'].', '.$BL['be_admin_struct_orderasc'] ?></option>
+					<option value="1"<?php is_selected(1, $content['news']['news_sort']) ?>><?php echo $BL['be_admin_struct_orderdate'].', '.$BL['be_admin_struct_orderdesc'] ?></option>
+					<option value="2"<?php is_selected(2, $content['news']['news_sort']) ?>><?php echo $BL['be_admin_struct_orderdate'].', '.$BL['be_admin_struct_orderasc'] ?></option>
+					<option value="3"<?php is_selected(3, $content['news']['news_sort']) ?>><?php echo $BL['be_admin_struct_orderchangedate'].', '.$BL['be_admin_struct_orderdesc'] ?></option>
+					<option value="4"<?php is_selected(4, $content['news']['news_sort']) ?>><?php echo $BL['be_admin_struct_orderchangedate'].', '.$BL['be_admin_struct_orderasc'] ?></option>
+					<option value="5"<?php is_selected(5, $content['news']['news_sort']) ?>><?php echo $BL['be_article_cnt_start'].', '.$BL['be_admin_struct_orderdesc'] ?></option>
+					<option value="6"<?php is_selected(6, $content['news']['news_sort']) ?>><?php echo $BL['be_article_cnt_start'].', '.$BL['be_admin_struct_orderasc'] ?></option>
+					<option value="7"<?php is_selected(7, $content['news']['news_sort']) ?>><?php echo $BL['be_article_cnt_end'].', '.$BL['be_admin_struct_orderdesc'] ?></option>
+					<option value="8"<?php is_selected(8, $content['news']['news_sort']) ?>><?php echo $BL['be_article_cnt_end'].', '.$BL['be_admin_struct_orderasc'] ?></option>
+					<option value="17"<?php is_selected(17, $content['news']['news_sort']) ?>><?php echo $BL['be_article_cnt_ctitle'].', '.$BL['be_admin_struct_orderdesc'] ?></option>
+					<option value="18"<?php is_selected(18, $content['news']['news_sort']) ?>><?php echo $BL['be_article_cnt_ctitle'].', '.$BL['be_admin_struct_orderasc'] ?></option>
+					<option value="11"<?php is_selected(11, $content['news']['news_sort']) ?>><?php echo $BL['be_article_username'].'/'.$BL['be_sort_date'].', '.$BL['be_admin_struct_orderdesc'] ?></option>
+					<option value="12"<?php is_selected(12, $content['news']['news_sort']) ?>><?php echo $BL['be_article_username'].'/'.$BL['be_sort_date'].', '.$BL['be_admin_struct_orderasc'] ?></option>
+					<option value="13"<?php is_selected(13, $content['news']['news_sort']) ?>><?php echo $BL['be_title'].', '.$BL['be_admin_struct_orderdesc'] ?></option>
+					<option value="14"<?php is_selected(14, $content['news']['news_sort']) ?>><?php echo $BL['be_title'].', '.$BL['be_admin_struct_orderasc'] ?></option>
+					<option value="15"<?php is_selected(15, $content['news']['news_sort']) ?>><?php echo $BL['be_place'].'/'.$BL['be_sort_date'].', '.$BL['be_admin_struct_orderdesc'] ?></option>
+					<option value="16"<?php is_selected(16, $content['news']['news_sort']) ?>><?php echo $BL['be_place'].'/'.$BL['be_sort_date'].', '.$BL['be_admin_struct_orderasc'] ?></option>
+				</select>
+			</div>
+			<div class="form-field">
+				<input class="check" type="checkbox" name="news_prio" id="news_prio" value="1"<?php is_checked(1, $content['news']['news_prio']) ?>>
+				<label for="news_prio"><?php echo $BL['be_use_prio'] ?></label>
+			</div>
+		</div>
+	</div>
 
-<tr>
-	<td align="right" class="chatlist"><?php echo $BL['be_cnt_sorting'] ?>:&nbsp;</td>
-	<td><table cellpadding="0" cellspacing="0" border="0" summary="">
-		<tr>
-			<td>
-                <select name="news_sort" id="calink_type">
-                    <option value="9"<?php is_selected(9, $content['news']['news_sort']) ?>><?php echo $BL['be_sort_date'].', '.$BL['be_admin_struct_orderdesc'] ?></option>
-                    <option value="10"<?php is_selected(10, $content['news']['news_sort']) ?>><?php echo $BL['be_sort_date'].', '.$BL['be_admin_struct_orderasc'] ?></option>
-                    <option value="1"<?php is_selected(1, $content['news']['news_sort']) ?>><?php echo $BL['be_admin_struct_orderdate'].', '.$BL['be_admin_struct_orderdesc'] ?></option>
-                    <option value="2"<?php is_selected(2, $content['news']['news_sort']) ?>><?php echo $BL['be_admin_struct_orderdate'].', '.$BL['be_admin_struct_orderasc'] ?></option>
-                    <option value="3"<?php is_selected(3, $content['news']['news_sort']) ?>><?php echo $BL['be_admin_struct_orderchangedate'].', '.$BL['be_admin_struct_orderdesc'] ?></option>
-                    <option value="4"<?php is_selected(4, $content['news']['news_sort']) ?>><?php echo $BL['be_admin_struct_orderchangedate'].', '.$BL['be_admin_struct_orderasc'] ?></option>
-                    <option value="5"<?php is_selected(5, $content['news']['news_sort']) ?>><?php echo $BL['be_article_cnt_start'].', '.$BL['be_admin_struct_orderdesc'] ?></option>
-                    <option value="6"<?php is_selected(6, $content['news']['news_sort']) ?>><?php echo $BL['be_article_cnt_start'].', '.$BL['be_admin_struct_orderasc'] ?></option>
-                    <option value="7"<?php is_selected(7, $content['news']['news_sort']) ?>><?php echo $BL['be_article_cnt_end'].', '.$BL['be_admin_struct_orderdesc'] ?></option>
-                    <option value="8"<?php is_selected(8, $content['news']['news_sort']) ?>><?php echo $BL['be_article_cnt_end'].', '.$BL['be_admin_struct_orderasc'] ?></option>
-                    <option value="17"<?php is_selected(17, $content['news']['news_sort']) ?>><?php echo $BL['be_article_cnt_ctitle'].', '.$BL['be_admin_struct_orderdesc'] ?></option>
-                    <option value="18"<?php is_selected(18, $content['news']['news_sort']) ?>><?php echo $BL['be_article_cnt_ctitle'].', '.$BL['be_admin_struct_orderasc'] ?></option>
-                    <option value="11"<?php is_selected(11, $content['news']['news_sort']) ?>><?php echo $BL['be_article_username'].'/'.$BL['be_sort_date'].', '.$BL['be_admin_struct_orderdesc'] ?></option>
-                    <option value="12"<?php is_selected(12, $content['news']['news_sort']) ?>><?php echo $BL['be_article_username'].'/'.$BL['be_sort_date'].', '.$BL['be_admin_struct_orderasc'] ?></option>
-                    <option value="13"<?php is_selected(13, $content['news']['news_sort']) ?>><?php echo $BL['be_title'].', '.$BL['be_admin_struct_orderdesc'] ?></option>
-                    <option value="14"<?php is_selected(14, $content['news']['news_sort']) ?>><?php echo $BL['be_title'].', '.$BL['be_admin_struct_orderasc'] ?></option>
-                    <option value="15"<?php is_selected(15, $content['news']['news_sort']) ?>><?php echo $BL['be_place'].'/'.$BL['be_sort_date'].', '.$BL['be_admin_struct_orderdesc'] ?></option>
-                    <option value="16"<?php is_selected(16, $content['news']['news_sort']) ?>><?php echo $BL['be_place'].'/'.$BL['be_sort_date'].', '.$BL['be_admin_struct_orderasc'] ?></option>
-                </select>
-            </td>
-			<td>&nbsp;&nbsp;</td>
-			<td bgcolor="#e7e8eb"><input type="checkbox" name="news_prio" id="news_prio" value="1"<?php is_checked(1, $content['news']['news_prio']) ?> /></td>
-			<td bgcolor="#e7e8eb"><label for="news_prio">&nbsp;<?php echo $BL['be_use_prio'] ?>&nbsp;&nbsp;</label></td>
-		</tr>
-		</table></td>
-</tr>
-
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="5" /></td></tr>
-
-<tr>
-	<td align="right" class="chatlist"><?php echo $BL['be_tags'] ?>:&nbsp;</td>
-	<td><table cellpadding="0" cellspacing="0" border="0" summary="" width="100%">
-		<tr>
-			<td width="95%"><input type="text" id="news_keyword_autosuggest" /><input type="hidden" name="news_category" id="news_category" value="<?php echo html(implode(', ', $content['news']['news_category'])) ?>" /></td>
-			<td style="padding-right:4px"><select name="news_andor" id="news_andor">
-
+	<div class="col-12">
+		<label class="form-label" for="news_keyword_autosuggest"><?php echo $BL['be_tags'] ?></label>
+		<div class="d-flex flex-wrap align-items-center gap-2">
+			<input type="text" id="news_keyword_autosuggest" class="form-control">
+			<input type="hidden" name="news_category" id="news_category" value="<?php echo html(implode(', ', $content['news']['news_category'])) ?>">
+			<select name="news_andor" id="news_andor" class="form-control w-auto">
 				<option value="OR"<?php is_selected('OR', $content['news']['news_andor']) ?>><?php echo $BL['be_fsearch_or'] ?></option>
 				<option value="AND"<?php is_selected('AND', $content['news']['news_andor']) ?>><?php echo $BL['be_fsearch_and'] ?></option>
 				<option value="NOT"<?php is_selected('NOT', $content['news']['news_andor']) ?>><?php echo $BL['be_fsearch_not'] ?></option>
+			</select>
+		</div>
+	</div>
 
-			</select></td>
-		</tr>
-		</table></td>
-</tr>
+<?php	if(count($phpwcms['allowed_lang']) > 1): ?>
 
-<?php	if(count($phpwcms['allowed_lang']) > 1):	?>
-
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="5" /></td></tr>
-
-<tr>
-	<td align="right" class="chatlist"><?php echo $BL['be_profile_label_lang'] ?>:&nbsp;</td>
-	<td class="v11">
-			<label title="<?php echo $BL['be_admin_tmpl_default'] ?>">
-				<input type="checkbox" name="news_lang[]" class="lang-default" id="langAll" value=""<?php
+	<div class="col-12">
+		<div class="form-label"><?php echo $BL['be_profile_label_lang'] ?></div>
+		<div class="d-flex flex-wrap gap-4">
+			<div class="form-field">
+				<input class="check" type="checkbox" name="news_lang[]" id="langAll" value=""<?php
 					if(empty($content['news']['news_lang']) || (isset($content['news']['news_lang'][0]) && $content['news']['news_lang'][0] == '')) {
 						echo ' checked="checked"';
 					}
-				?> />
-				<img src="img/famfamfam/lang/all.png" /><?php echo ' '.$BL['be_admin_tmpl_default'] ?>&nbsp;
-			</label>
-
+				?>>
+				<label for="langAll"><?php echo $BL['be_admin_tmpl_default'] ?></label>
+			</div>
 			<?php foreach($phpwcms['allowed_lang'] as $key => $lang):
 
 				$lang = strtolower($lang);
 
-			?>
-			<label title="<?php echo get_language_name($lang) ?>">
-				<input type="checkbox" name="news_lang[]" class="allowedLang" value="<?php echo $lang ?>"<?php if(in_array($lang, $content['news']['news_lang'])): ?> checked="checked"<?php endif; ?> class="lang-opt" />
-				<img src="img/famfamfam/lang/<?php echo $lang ?>.png" />&nbsp;
-			</label>
+				?>
+			<div class="form-field">
+				<input class="check allowedLang" type="checkbox" name="news_lang[]" id="lang_<?php echo $lang ?>" value="<?php echo $lang ?>"<?php if(in_array($lang, $content['news']['news_lang'])): ?> checked="checked"<?php endif; ?>>
+				<label for="lang_<?php echo $lang ?>"><?php echo get_language_name($lang) ?></label>
+			</div>
 
 			<?php endforeach; ?>
-	</td>
-</tr>
+		</div>
+	</div>
 
 <?php	endif; ?>
 
-<tr><td colspan="2" class="rowspacer7x7"><img src="img/leer.gif" alt="" width="1" height="1"></td></tr>
-
-<tr>
-	<td align="right" class="chatlist"><?php echo $BL['be_show_content'] ?>:&nbsp;</td>
-	<td><select name="news_archive" id="news_archive">
-
+	<div class="col-12 md:col-6">
+		<label class="form-label" for="news_archive"><?php echo $BL['be_show_content'] ?></label>
+		<select name="news_archive" id="news_archive" class="form-control">
 			<option value="0"<?php is_selected(0, $content['news']['news_archive']) ?>><?php echo $BL['be_archived_items'].': '.$BL['be_include'] ?></option>
 			<option value="1"<?php is_selected(1, $content['news']['news_archive']) ?>><?php echo $BL['be_archived_items'].': '.$BL['be_exclude'] ?></option>
 			<option value="2"<?php is_selected(2, $content['news']['news_archive']) ?>><?php echo $BL['be_archived_items'].': '.$BL['be_solely'] ?></option>
 			<option value="3"<?php is_selected(3, $content['news']['news_archive']) ?>><?php echo $BL['be_cnt_guestbook_listing_all'].' &gt; ' . $BL['be_article_cnt_start'] ?></option>
+		</select>
+	</div>
 
-		</select></td>
-</tr>
+	<div class="col-12 md:col-6">
+		<div class="d-flex flex-wrap align-items-end gap-3">
+			<div>
+				<label class="form-label" for="news_limit"><?php echo $BL['be_cnt_rssfeed_item'] ?></label>
+				<input type="text" name="news_limit" id="news_limit" value="<?php echo html($content['news']['news_limit']) ?>" class="form-control" size="4">
+			</div>
+			<div>
+				<label class="form-label" for="news_skip"><?php echo $BL['be_skip_first_items'] ?></label>
+				<input type="text" name="news_skip" id="news_skip" value="<?php echo html($content['news']['news_skip']) ?>" class="form-control" size="4">
+			</div>
+		</div>
+	</div>
 
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="6" /></td></tr>
+	<div class="col-12 md:col-6">
+		<div class="d-flex flex-wrap align-items-end gap-3">
+			<div class="form-field">
+				<input class="check" type="checkbox" name="news_paginate" id="news_paginate" value="1"<?php is_checked(1, $content['news']['news_paginate']) ?>>
+				<label for="news_paginate"><?php echo $BL['be_pagination'] ?></label>
+			</div>
+			<div>
+				<label class="form-label" for="news_paginate_basis"><?php echo $BL['be_pagniate_count'] ?></label>
+				<select name="news_paginate_basis" id="news_paginate_basis" class="form-control w-auto" onchange="setPaginateBasis();">
+					<option value="0"<?php is_selected(0, $content['news']['news_paginate_basis']) ?>><?php echo $BL['be_pagniate_count'] ?></option>
+					<option value="1"<?php is_selected(1, $content['news']['news_paginate_basis']) ?> disabled="disabled"><?php echo $BL['be_date_day'] ?></option>
+					<option value="2"<?php is_selected(2, $content['news']['news_paginate_basis']) ?> disabled="disabled"><?php echo $BL['be_date_week'] ?></option>
+					<option value="3"<?php is_selected(3, $content['news']['news_paginate_basis']) ?> disabled="disabled"><?php echo $BL['be_date_month'] ?></option>
+					<option value="4"<?php is_selected(4, $content['news']['news_paginate_basis']) ?> disabled="disabled"><?php echo $BL['be_date_year'] ?></option>
+				</select>
+			</div>
+			<div>
+				<label class="form-label" for="news_paginate_count">&nbsp;</label>
+				<input type="text" name="news_paginate_count" id="news_paginate_count" value="<?php echo html($content['news']['news_paginate_count']) ?>" class="form-control" size="4">
+			</div>
+		</div>
+	</div>
 
-<tr>
-	<td align="right" class="chatlist"><?php echo $BL['be_cnt_rssfeed_item'] ?>:&nbsp;</td>
-	<td><table cellpadding="0" cellspacing="0" border="0" summary="">
-		<tr>
-			<td><input type="text" name="news_limit" id="news_limit" value="<?php echo html($content['news']['news_limit']) ?>" class="width50" /></td>
-			<td>&nbsp;<?php echo $BL['be_cnt_rssfeed_max'] ?>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-			<td><input type="text" name="news_skip" id="news_skip" value="<?php echo html($content['news']['news_skip']) ?>" class="width50" />
-			<td>&nbsp;<?php echo $BL['be_skip_first_items'] ?></td>
-		</tr>
-		</table></td>
-</tr>
+	<div class="col-12 md:col-6">
+		<label class="form-label" for="news_archive_link"><?php echo $BL['be_archive'] ?></label>
+		<div class="d-flex flex-wrap align-items-center gap-2">
+			<input type="text" name="news_archive_link" id="news_archive_link" value="<?php echo html($content['news']['news_archive_link']) ?>" class="form-control">
+			<span class="small fg-secondary"><?php echo $BL['be_article_urlalias'].'/'.$BL['be_func_struct_articleID'] ?></span>
+		</div>
+	</div>
 
+	<div class="col-12 md:col-6">
+		<label class="form-label" for="news_detail_link"><?php echo $BL['be_news_detail_link'] ?></label>
+		<div class="d-flex flex-wrap align-items-center gap-2">
+			<input type="text" name="news_detail_link" id="news_detail_link" value="<?php echo html($content['news']['news_detail_link']) ?>" class="form-control">
+			<span class="small fg-secondary"><?php echo $BL['be_article_urlalias'].'/'.$BL['be_func_struct_articleID'] ?></span>
+		</div>
+	</div>
 
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="6" /></td></tr>
-
-<tr>
-	<td>&nbsp;</td>
-	<td><table cellpadding="0" cellspacing="0" border="0" summary="">
-		<tr>
-			<td bgcolor="#e7e8eb"><input type="checkbox" name="news_paginate" id="news_paginate" value="1"<?php is_checked(1, $content['news']['news_paginate']) ?> /></td>
-			<td bgcolor="#e7e8eb"><label for="news_paginate">&nbsp;<?php echo $BL['be_pagination'] ?>&nbsp;&nbsp;</label></td>
-			<td>&nbsp;&nbsp;</td>
-			<td><select name="news_paginate_basis" id="news_paginate_basis" onchange="setPaginateBasis();">
-
-				<option value="0"<?php is_selected(0, $content['news']['news_paginate_basis']) ?>><?php echo $BL['be_pagniate_count'] ?></option>
-				<option value="1"<?php is_selected(1, $content['news']['news_paginate_basis']) ?> disabled="disabled"><?php echo $BL['be_date_day'] ?></option>
-				<option value="2"<?php is_selected(2, $content['news']['news_paginate_basis']) ?> disabled="disabled"><?php echo $BL['be_date_week'] ?></option>
-				<option value="3"<?php is_selected(3, $content['news']['news_paginate_basis']) ?> disabled="disabled"><?php echo $BL['be_date_month'] ?></option>
-				<option value="4"<?php is_selected(4, $content['news']['news_paginate_basis']) ?> disabled="disabled"><?php echo $BL['be_date_year'] ?></option>
-
-			</select></td>
-			<td>&nbsp;&nbsp;</td>
-			<td><input type="text" name="news_paginate_count" id="news_paginate_count" value="<?php echo html($content['news']['news_paginate_count']) ?>" class="width25" /></td>
-		</tr>
-		</table></td>
-</tr>
-
-<tr><td colspan="2" class="rowspacer7x7"><img src="img/leer.gif" alt="" width="1" height="1"></td></tr>
-
-<tr>
-	<td align="right" class="chatlist"><?php echo $BL['be_archive'] ?>:&nbsp;</td>
-	<td><table cellpadding="0" cellspacing="0" border="0" summary="">
-		<tr>
-			<td><input type="text" name="news_archive_link" id="news_archive_link" value="<?php echo html($content['news']['news_archive_link']) ?>" class="width250" /></td>
-			<td>&nbsp;<?php echo $BL['be_article_urlalias'].'/'.$BL['be_func_struct_articleID'] ?></td>
-		</tr>
-		</table>
-	</td>
-</tr>
-
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="6" /></td></tr>
-
-<tr>
-	<td align="right" class="chatlist"><?php echo $BL['be_news_detail_link'] ?>:&nbsp;</td>
-	<td><table cellpadding="0" cellspacing="0" border="0" summary="">
-		<tr>
-			<td><input type="text" name="news_detail_link" id="news_detail_link" value="<?php echo html($content['news']['news_detail_link']) ?>" class="width250" /></td>
-			<td>&nbsp;<?php echo $BL['be_article_urlalias'].'/'.$BL['be_func_struct_articleID'] ?></td>
-		</tr>
-		</table>
-
+</div>
 <script type="text/javascript">
 
 	function setPaginateBasis() {
@@ -268,6 +243,3 @@ initJsAutocompleter();
 	});
 
 </script>
-
-	</td>
-</tr>

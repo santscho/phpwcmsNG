@@ -21,6 +21,10 @@ if (!defined('PHPWCMS_ROOT')) {
 
 unset($_SESSION['filebrowser_image_target']);
 
+if(!isset($content['recipe']) || !is_array($content['recipe'])) {
+	$content['recipe'] = array();
+}
+
 // base values
 if(empty($content['recipe']['calorificvalue_add']))		$content['recipe']['calorificvalue_add']	= '';
 if(empty($content['recipe']['preparation']))			$content['recipe']['preparation']			= '';
@@ -44,40 +48,38 @@ if($content['recipe']['get_keywords']) {
 $content['recipe']['all_keywords'] = convertStringToArray($content['recipe']['all_keywords']);
 
 ?>
+<div class="row g-4">
 
-<tr><td colspan="2" class="rowspacer0x7"><img src="img/leer.gif" alt="" width="1" height="1"></td></tr>
-
+	<div class="col-12">
+		<label class="form-label" for="recipe_category"><?php echo $BL['be_ftptakeover_keywords'] ?></label>
+		<div class="d-flex flex-wrap align-items-start gap-2">
+			<textarea name="recipe_category" id="recipe_category" cols="40" rows="2" class="form-control autosize"><?php echo html($content['recipe']['category']) ?></textarea>
 <?php
 
 if(count($content['recipe']['all_keywords'])) {
 
-	echo '<tr><td>&nbsp;</td><td>';
-	echo '<table cellpadding="0" cellspacing="0" border="0" bgcolor="#E7E8EB"><tr><td style="padding:2px;">';
-	echo '<select name="ph1" id="ph1" class="v10" ';
-	echo 'onChange="insertAtCursorPos(document.articlecontent.recipe_category, ';
+	echo '<div class="d-flex align-items-center gap-2">';
+	echo '<select name="ph1" id="ph1" class="form-control w-auto" aria-label="' . html($BL['be_ftptakeover_keywords']) . '" ';
+	echo 'onchange="insertAtCursorPos(document.articlecontent.recipe_category, ';
 	echo '\', \'+document.articlecontent.ph1.options[document.articlecontent.ph1.selectedIndex].value);">';
 
 	foreach($content['recipe']['all_keywords'] as $temp_val) {
 		$temp_val = html($temp_val);
-		echo '	<option value="'.$temp_val.'">'.$temp_val.'</option>'.LF;
+		echo '<option value="'.$temp_val.'">'.$temp_val.'</option>'.LF;
 	}
 
-	echo '</select></td>';
-	echo '<td><img src="img/button/go04.gif" width="15" height="15" title="Insert" border="0" ';
-	echo 'onclick="insertAtCursorPos(document.articlecontent.recipe_category, ';
-	echo '\', \'+document.articlecontent.ph1.options[document.articlecontent.ph1.selectedIndex].value);" style="margin:3px;">';
-	echo '</td></tr></table></td></tr>'.LF;
+	echo '</select>';
+	echo backend_action('#', 'plus', $BL['be_ftptakeover_keywords'], 'normal', ' onclick="insertAtCursorPos(document.articlecontent.recipe_category, \', \'+document.articlecontent.ph1.options[document.articlecontent.ph1.selectedIndex].value);return false;"');
+	echo '</div>';
 
 }
 ?>
-<tr>
-  <td align="right" valign="top" class="chatlist"><img src="img/leer.gif" alt="" width="1" height="13"><?php echo $BL['be_ftptakeover_keywords'] ?>:&nbsp;</td>
-  <td valign="top"><textarea name="recipe_category" id="recipe_category" cols="40" rows="2" class="width440 autosize"><?php echo html($content['recipe']['category']) ?></textarea></td>
-</tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="6"></td></tr>
-<tr>
-	<td align="right" class="chatlist"><?php echo $BL['be_admin_struct_template'] ?>:&nbsp;</td>
-	<td><select name="recipe_template" id="recipe_template">
+		</div>
+	</div>
+
+	<div class="col-12 md:col-6">
+		<label class="form-label" for="recipe_template"><?php echo $BL['be_admin_struct_template'] ?></label>
+		<select name="recipe_template" id="recipe_template" class="form-control">
 <?php
 
 // templates for recipes
@@ -90,69 +92,66 @@ if(is_array($tmpllist) && count($tmpllist)) {
 			$selected_val = '';
 		}
 		$val = htmlspecialchars($val);
-		echo '	<option value="' . $val . '"' . $selected_val . '>' . $val . '</option>' . LF;
+		echo '<option value="' . $val . '"' . $selected_val . '>' . $val . '</option>' . LF;
 	}
 }
 
 ?>
-		</select></td>
-</tr>
+		</select>
+	</div>
 
-<tr><td colspan="2" class="rowspacer7x7"><img src="img/leer.gif" alt="" width="1" height="1"></td></tr>
+	<div class="col-12">
+		<label class="form-label" for="recipe_ingredients">Zutaten</label>
+		<textarea name="recipe_ingredients" id="recipe_ingredients" cols="40" rows="6" class="form-control autosize"><?php echo html($content['recipe']['ingredients']) ?></textarea>
+	</div>
 
-<tr>
-  <td align="right" valign="top" class="chatlist"><img src="img/leer.gif" alt="" width="1" height="13">Zutaten:&nbsp;</td>
-  <td valign="top"><textarea name="recipe_ingredients" id="recipe_ingredients" cols="40" rows="6" class="width440 autosize"><?php echo html($content['recipe']['ingredients']) ?></textarea></td>
-</tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="4"></td></tr>
-<tr>
-    <td align="right" class="chatlist">Zuber.Zeit:&nbsp;</td>
-	<td><table border="0" cellpadding="0" cellspacing="0" summary="">
-		<tr>
-			<td><input name="recipe_time" type="text" id="recipe_time" class="f11" style="width:35px;" value="<?php echo empty($content['recipe']['time']) ? '' : intval($content['recipe']['time']) ?>" onkeyup="this.value=int_only(this.value);" size="5" /></td>
-			<td class="chatlist" style="width:60px;">&nbsp;<?php echo $BL['be_date_minutes'] ?>&nbsp;</td>
-			<td align="right" class="chatlist" style="width:75px;"><?php echo $BL['be_cnt_additional'] ?>:&nbsp;</td>
-			<td><input name="recipe_time_add" type="text" id="recipe_time_add" class="f11" style="width:250px;" value="<?php echo html($content['recipe']['time_add']) ?>" size="40" /></td>
-		</tr>
-	</table></td>
-</tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="4"></td></tr>
-<tr>
-    <td align="right" class="chatlist">N&auml;hrwert:&nbsp;</td>
-	<td><table border="0" cellpadding="0" cellspacing="0" summary="">
-		<tr>
-			<td><input name="recipe_calorificvalue" type="text" id="recipe_calorificvalue" class="f11" style="width:35px;" value="<?php echo empty($content['recipe']['calorificvalue']) ? '' : intval($content['recipe']['calorificvalue']) ?>" size="5" onkeyup="this.value=int_only(this.value);" /></td>
-			<td class="chatlist" style="width:60px;">&nbsp;kJ&nbsp;</td>
-			<td align="right" class="chatlist" style="width:75px;"><?php echo $BL['be_cnt_additional'] ?>:&nbsp;</td>
-			<td><input name="recipe_calorificvalue_add" type="text" id="recipe_calorificvalue_add" class="f11" style="width:250px;" value="<?php echo html($content['recipe']['calorificvalue_add']) ?>" size="40" /></td>
-		</tr>
-	</table></td>
-</tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="4"></td></tr>
-<tr>
-  <td align="right" class="chatlist">Schwierigkeit:&nbsp;</td>
-  <td valign="top"><table border="0" cellpadding="0" cellspacing="0" bgcolor="#E7E8EB" summary="">
-      <tr>
-        <td><input name="recipe_severity" id="recipe_severity_1" type="radio" value="1" <?php is_checked(1, $content['recipe']['severity']); ?>></td>
-        <td class="v10"><label for="recipe_severity_1">1</label>&nbsp;&nbsp;</td>
-		<td><input name="recipe_severity" id="recipe_severity_2" type="radio" value="2" <?php is_checked(2, $content['recipe']['severity']); ?>></td>
-        <td class="v10"><label for="recipe_severity_2">2</label>&nbsp;&nbsp;</td>
-		<td><input name="recipe_severity" id="recipe_severity_3" type="radio" value="3" <?php is_checked(3, $content['recipe']['severity']); ?>></td>
-        <td class="v10"><label for="recipe_severity_3">3</label>&nbsp;&nbsp;</td>
-		<td><input name="recipe_severity" id="recipe_severity_4" type="radio" value="4" <?php is_checked(4, $content['recipe']['severity']); ?>></td>
-        <td class="v10"><label for="recipe_severity_4">4</label>&nbsp;&nbsp;</td>
-		<td><input name="recipe_severity" id="recipe_severity_5" type="radio" value="5" <?php is_checked(5, $content['recipe']['severity']); ?>></td>
-        <td class="v10"><label for="recipe_severity_5">5</label>&nbsp;</td>
-		<td style="height: 22px;">&nbsp;</td>
-      </tr>
-    </table></td>
-</tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="8"></td></tr>
-<tr><td colspan="2"><img src="img/lines/l538_70.gif" alt=""></td></tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="4"></td></tr>
-<tr><td colspan="2" class="chatlist">Zubereitung:&nbsp;</td></tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="2"></td></tr>
-<tr><td colspan="2" align="center"><?php
+	<div class="col-12 md:col-6">
+		<label class="form-label" for="recipe_time">Zuber.Zeit</label>
+		<div class="d-flex flex-wrap align-items-center gap-3">
+			<div class="d-flex align-items-center gap-2">
+				<input name="recipe_time" type="text" id="recipe_time" class="form-control w-auto" value="<?php echo empty($content['recipe']['time']) ? '' : intval($content['recipe']['time']) ?>" onkeyup="this.value=int_only(this.value);" size="5">
+				<span class="small fg-secondary"><?php echo $BL['be_date_minutes'] ?></span>
+			</div>
+			<div class="d-flex align-items-center gap-2 flex-grow-1">
+				<span class="small fg-secondary"><?php echo $BL['be_cnt_additional'] ?></span>
+				<input name="recipe_time_add" type="text" id="recipe_time_add" class="form-control" value="<?php echo html($content['recipe']['time_add']) ?>" size="40">
+			</div>
+		</div>
+	</div>
+
+	<div class="col-12 md:col-6">
+		<label class="form-label" for="recipe_calorificvalue">N&auml;hrwert</label>
+		<div class="d-flex flex-wrap align-items-center gap-3">
+			<div class="d-flex align-items-center gap-2">
+				<input name="recipe_calorificvalue" type="text" id="recipe_calorificvalue" class="form-control w-auto" value="<?php echo empty($content['recipe']['calorificvalue']) ? '' : intval($content['recipe']['calorificvalue']) ?>" size="5" onkeyup="this.value=int_only(this.value);">
+				<span class="small fg-secondary">kJ</span>
+			</div>
+			<div class="d-flex align-items-center gap-2 flex-grow-1">
+				<span class="small fg-secondary"><?php echo $BL['be_cnt_additional'] ?></span>
+				<input name="recipe_calorificvalue_add" type="text" id="recipe_calorificvalue_add" class="form-control" value="<?php echo html($content['recipe']['calorificvalue_add']) ?>" size="40">
+			</div>
+		</div>
+	</div>
+
+	<div class="col-12 md:col-6">
+		<div class="form-label">Schwierigkeit</div>
+		<div class="d-flex flex-wrap gap-4">
+<?php
+for($recipe_severity = 1; $recipe_severity <= 5; $recipe_severity++) {
+	echo '<div class="form-field">';
+	echo '<input class="radio" name="recipe_severity" id="recipe_severity_' . $recipe_severity . '" type="radio" value="' . $recipe_severity . '" ';
+	is_checked($recipe_severity, $content['recipe']['severity']);
+	echo '>';
+	echo '<label for="recipe_severity_' . $recipe_severity . '">' . $recipe_severity . '</label>';
+	echo '</div>';
+}
+?>
+		</div>
+	</div>
+
+	<div class="col-12">
+		<div class="form-label">Zubereitung</div>
+<?php
 
 $wysiwyg_editor = array(
 	'value'		=> $content['recipe']['preparation'],
@@ -166,4 +165,7 @@ $wysiwyg_editor = array(
 
 include PHPWCMS_ROOT.'/include/inc_lib/wysiwyg.editor.inc.php';
 
-?></td></tr>
+?>
+	</div>
+
+</div>

@@ -688,8 +688,8 @@ existing entry already covers the action before adding a second glyph for it.
 - The type forms are included into a slot: `$cp_form_bootstrap` lists the types
   that render their own Bootstrap markup and are included into a `card-body`
   (currently `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `10`, `11`, `12`, `14`, `15`,
-  `16`, `19`, `21`, `22`, `24`, `27`, `28`, `52`, `89` and `100`), every other
-  type form
+  `16`, `18`, `19`, `21`, `22`, `24`, `26`, `27`, `28`, `29`, `33`, `50`, `51`,
+  `52`, `89` and `100`), every other type form
   still writes `<tr><td>` rows and is included into a plain `table.w-100` inside
   the card body. Revamping a type means rewriting its `cnt<type>.inc.php` as
   `div`-based Bootstrap markup and adding its number to that list; do not remove
@@ -781,6 +781,59 @@ existing entry already covers the action before adding a second glyph for it.
 - Verified with one temporary content part per type on article 1: no table
   leftovers, no PHP warnings, all fields rendered. The temporary parts were
   removed again.
+
+## Content part editor: guestbook, recipe, images div, news, rollover images, map
+
+- Six more type forms are Bootstrap grids in the card body: guestbook `18`,
+  recipe `26`, images `<div>` `29`, news `33`, rollover images (`reference`)
+  `50` and map `51`. Field names, ids and inline handlers are unchanged, and the
+  forms start by turning an empty `acontent_form` (`false` after unserializing)
+  into an array so PHP 8.5 does not warn about writing into `false`.
+- Guestbook: the alias ID input keeps the select of other guestbook content
+  parts that still have no alias; listing/all, per-page count, login marks, image
+  upload with its maximum size in bytes, date sorting, captcha length, URL check,
+  banned words, flooding cookie and interval, e-mail notification and the entry
+  editor iframe all sit in one grid. The iframe keeps its `CSRF_GET_TOKEN` src and
+  is `width="100%"` now instead of 440 pixels.
+- Recipe: the keyword select keeps `insertAtCursorPos()` and gets the `plus`
+  action button that inserts the picked keyword into the keywords textarea. The
+  section labels (Zutaten, Zuber.Zeit, Nährwert, Schwierigkeit, Zubereitung) are
+  hardcoded in the file — there are no language keys for them — and stay as they
+  are; severity is a loop over the five radios.
+- Images `<div>`: the header keeps the template select, the alignment select
+  `cimage_center`, width/height with the crop mark and columns, space, random and
+  the limit for the list. `setCimageCenterInactive()` still disables alignment
+  and crop while no size is typed; its script moved below the grid because the
+  card body no longer has table rows to hang it on.
+- News: the sorting select had copied the `calink_type` id of the teaser form,
+  which nothing uses, so it is `news_sort` now. Tags keep the jQuery
+  `autoSuggest` field (`news_keyword_autosuggest` plus the hidden
+  `news_category`), the language marks are checkboxes with language names instead
+  of the famfamfam flag gifs (classes `allowedLang` and id `langAll` unchanged),
+  and the pagination, archive and link fields keep their script untouched.
+- Rollover images: text, the `cimage_list[]` image list (`opt=3` browser) with
+  actions and thumbnails, the caption with its helper, the zoom mark, the large
+  image size and border, the alignment basis with the position select and the
+  block width/height, space and border share two section labels from the
+  language file instead of bold table headers.
+- Map: map images are radios with a thumbnail and their file name; the wz_tooltip
+  `Tip('<img …>')` preview is gone because the thumbnail shows the same image.
+  Choosing one shows the location editor (X/Y with `doMapChange()`, the `open map`
+  popup, title, zip, city, entry editor, hidden id and its own save button) and
+  the location list, now a `list-group` with `pen` and `trash` actions instead of
+  a zebra table row per location. The delete confirmation has to survive quotes
+  and the newline inside `be_btn_delete`: its text goes through `json_encode()`
+  and then `html()` into the `onclick` attribute, and the tooltip uses the same
+  text with the newline collapsed. The empty map folder is a `fg-danger small`
+  note instead of the `error` table cell.
+- No new icons were needed: the batch uses `plus`, `chevron-up`, `chevron-down`,
+  `trash` and `pen` from the existing set.
+- Verified with one temporary content part per type on article 1: no table rows,
+  no spacer gifs, no PHP warnings and the expected field names. The map branch
+  needed a temporary map image and three temporary `phpwcms_map` rows to render
+  its editor and list; image, rows and content parts were removed afterwards. A
+  save round-trip of the news form stored all thirteen values, including the
+  language mark, the split tag list, sort, pagination and both link fields.
 
 ## Content part editor: text w/image, images, file list, newsletter and WYSIWYG
 

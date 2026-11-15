@@ -56,7 +56,7 @@ initJsDatePicker();
  *  their own Bootstrap markup, every other one still writes the rows of the
  *  legacy two column table and keeps that table
  */
-$cp_form_bootstrap = array(0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 14, 15, 16, 19, 21, 22, 24, 27, 28, 52, 89, 100);
+$cp_form_bootstrap = array(0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 14, 15, 16, 18, 19, 21, 22, 24, 26, 27, 28, 29, 33, 50, 51, 52, 89, 100);
 
 ?>
 <script type="text/javascript">
