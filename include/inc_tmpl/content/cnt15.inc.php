@@ -61,9 +61,7 @@ if(empty($content["alist"]["label"])) {
 
 
 ?>
-<tr>
-    <td colspan="2" class="pt-7">
-        <div class="row g-4">
+<div class="row g-4">
 
             <div class="col-12 md:col-6">
                 <div class="form-label"><?php echo $BL['be_cnt_sitelevel'] ?></div>
@@ -176,6 +174,4 @@ if(empty($content["alist"]["label"])) {
                 </div>
             </div>
 
-        </div>
-    </td>
-</tr>
+</div>

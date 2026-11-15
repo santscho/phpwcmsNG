@@ -277,6 +277,27 @@ function runConfirmed(element, attribute) {
 
 }
 
+/*
+ *  A declined question still runs the handler once with `confirm` answering no,
+ *  because the handlers of the selects restore their own state there. Clicks
+ *  are not replayed: their default action would follow the link.
+ */
+function runDeclined(element) {
+
+    const nativeConfirm = window.confirm;
+
+    element.setAttribute(RUNNING, '1');
+    window.confirm = () => false;
+
+    try {
+        element.dispatchEvent(new Event('change', { bubbles: true }));
+    } finally {
+        window.confirm = nativeConfirm;
+        element.removeAttribute(RUNNING);
+    }
+
+}
+
 function intercept(event) {
 
     const target = event.target;
@@ -311,6 +332,8 @@ function intercept(event) {
     ask(question).then(confirmed => {
         if (confirmed) {
             afterClose(() => runConfirmed(element, handler.attribute));
+        } else if (handler.attribute === 'onchange') {
+            afterClose(() => runDeclined(element));
         }
     });
 

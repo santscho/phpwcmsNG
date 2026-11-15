@@ -51,6 +51,13 @@ $backend_weekstart   = backend_weekstart($_SESSION['wcs_user_weekstart'] ?? '');
 
 initJsDatePicker();
 
+/*
+ *  The type forms are included into the screen: the ones listed here render
+ *  their own Bootstrap markup, every other one still writes the rows of the
+ *  legacy two column table and keeps that table
+ */
+$cp_form_bootstrap = array(15);
+
 ?>
 <script type="text/javascript">
     function validate_before_after(elem, checkElem) {
@@ -151,12 +158,18 @@ initJsDatePicker();
 
     ?>>
 <input type="hidden" name="ctype_module" value="<?php echo html($content["module"]) ?>" />
-<table summary="" width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom:13px;">
 
-    <tr><td colspan="2" class="title"><?php
+<div class="row g-4">
 
-    echo $BL['be_article_cnt_title'].' &#8212; <span style="text-transform: uppercase;">';
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="h6 mb-0 d-flex flex-wrap align-items-center gap-2">
+                    <?php echo $BL['be_article_cnt_title'] ?>
+                    <span class="badge theme-secondary text-uppercase"><?php
+
     echo $wcs_content_type[$content["type"]];
+
     if(!empty($content["module"])) {
 
         echo ': '.$BL['modules'][$content["module"]]['listing_title'];
@@ -167,69 +180,51 @@ initJsDatePicker();
         }
 
     }
-    echo '</span>';
 
-    ?></td></tr>
-    <tr><td colspan="2" class="rowspacer5x0"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-    <tr bgcolor="#D9DEE3"><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="4" /></td></tr>
+    ?></span>
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
 
-    <tr bgcolor="#D9DEE3">
-        <td align="right" class="chatlist nowrap" nowrap="nowrap"><a href="phpwcms.php?do=admin&amp;p=6&amp;struct=<?php
+                    <div class="col-12 md:col-6">
+                        <div class="form-label"><?php echo $BL['be_article_cat'] ?></div>
+                        <a href="phpwcms.php?do=admin&amp;p=6&amp;struct=<?php
 
-        if(empty($content['article']['acat_id'])) {
-            echo 'index';
-        } else {
-            echo $content['article']['acat_struct'], '&amp;cat=', $content['article']['acat_id'];
-        }
+                        if(empty($content['article']['acat_id'])) {
+                            echo 'index';
+                        } else {
+                            echo $content['article']['acat_struct'], '&amp;cat=', $content['article']['acat_id'];
+                        }
 
-        ?>" onclick="return confirm('<?php echo $BL['be_dialog_warn_nosave'];
-        ?>');"><?php echo $BL['be_article_cat'];
+                        ?>" class="link d-inline-flex align-items-center gap-2" onclick="return confirm('<?php echo $BL['be_dialog_warn_nosave']; ?>');">
+                            <?php echo html($content["article"]['acat_name']).' [ID:'.$content['article']['acat_id'].']' ?>
+                            <?php echo backend_icon('arrow-up-right') ?>
+                        </a>
+                    </div>
 
-        ?><img src="img/symbole/redirect.gif" alt="" border="0" style="margin:0 0 0 2px;position:relative;top:1px;" /></a>:&nbsp;</td>
-        <td><strong><?php echo html($content["article"]['acat_name']).' [ID:'.$content['article']['acat_id'].']' ?></strong></td>
-    </tr>
-    <tr bgcolor="#D9DEE3"><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="2" /></td>
-    </tr>
-    <tr bgcolor="#D9DEE3">
-        <td align="right" class="chatlist nowrap" nowrap="nowrap"><a href="phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=1&amp;id=<?php
-
-        echo $content["aid"];
-        ?>" onclick="return confirm('<?php echo $BL['be_dialog_warn_nosave'];
-        ?>');"><?php echo $BL['be_article_atitle'];
-
-        ?><img src="img/symbole/redirect.gif" alt="" border="0" style="margin:0 0 0 2px;position:relative;top:1px;" /></a>:&nbsp;</td>
-        <td onclick="showEditArticleID(this);" onmouseover="this.ttOffsetY=0;Tip('<?php echo $BL['be_change_articleID'].'<br />'.$BL['be_cnt_default'].': '.$content["aid"] ?>')" class="linkcursor"><strong><?php echo html($content["article"]['article_title']) ?></strong></td>
-    </tr>
-
-
-    <tr bgcolor="#D9DEE3"><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="4" /><script type="text/javascript">
+                    <div class="col-12 md:col-6">
+                        <div class="form-label"><?php echo $BL['be_article_atitle'] ?></div>
+                        <a href="#" class="link" id="article-title-link" data-bs-toggle="tooltip" title="<?php echo html($BL['be_change_articleID'].' - '.$BL['be_cnt_default'].': '.$content["aid"]) ?>" onclick="showEditArticleID(this);return false;"><?php echo html($content["article"]['article_title']) ?></a>
+                        <script type="text/javascript">
 
     var istuff_done = false;
     function showEditArticleID(istuff) {
         if(istuff_done) return false;
-        istuff.innerHTML += '&nbsp; <'+'span class="chatlist"'+'><?php echo $BL['be_func_struct_articleID'] ?>:&nbsp;<'+'/span><'+'input type="text" name="ctype_change_aid" value="<?php echo $content["aid"] ?>" class="v11 width35" /'+'>';
+        istuff.innerHTML += '&nbsp; <'+'span class="small fg-secondary"'+'><?php echo $BL['be_func_struct_articleID'] ?>:&nbsp;<'+'/span><'+'input type="text" name="ctype_change_aid" value="<?php echo $content["aid"] ?>" class="form-control" /'+'>';
         istuff_done = true;
     }
 
-    </script></td></tr>
-    <tr><td colspan="2" class="rowspacer"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-    <tr bgcolor="#F3F5F8"><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="6" /></td></tr>
+                        </script>
+                    </div>
 
-    <tr bgcolor="#F3F5F8">
-      <td align="right" class="chatlist"><?php
-
-        echo $BL['be_article_cnt_type'];
-        $enable_disable = '';
-
-    ?>:&nbsp;</td>
-      <td><table summary="" border="0" cellspacing="0" cellpadding="0">
-          <tr>
-            <td><select name="target_ctype" id="target_ctype" onchange="if(confirm('<?php
+                    <div class="col-12 md:col-6">
+                        <label class="form-label" for="target_ctype"><?php echo $BL['be_article_cnt_type'] ?></label>
+                        <select name="target_ctype" id="target_ctype" class="form-control" onchange="if(confirm('<?php
 
     // echo Message for JS dialog
     echo $BL['be_func_switch_contentpart'];
 
-    // Menü mit Content Typen erstellen
     // build select box options and remember the "old" value for javascript
     $temp_select                = '';
     $temp_count                 = 0;
@@ -277,25 +272,25 @@ initJsDatePicker();
 ?>')){ this.form.submit(); } else { this.form.target_ctype.selectedIndex = <?php echo $contentpart_temp_selected; ?>; return false; }">
 <?php
 
-    //Menü mit Content Typen erstellen
+    // menue with content types
     echo $temp_select
 
 ?>
-                      </select>
-                    </td>
-            <?php echo $enable_disable; ?>
+                        </select>
+                    </div>
 
-                  </tr>
-                </table></td>
-     </tr>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <tr bgcolor="#F3F5F8"><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="6" /><?php
+<?php
 
-// Content Part Setting Mode — hide all settings related to article and content part rendering
+// Content Part Setting Mode - hide all settings related to article and content part rendering
 if($content['cp_setting_mode']):
-        // some hidden fields with default content
 
 ?>
+    <div class="col-12">
         <input type="hidden" name="cblock" value="CPSET" />
         <input type="hidden" name="csorting" value="0" />
         <input type="hidden" name="cbefore" value="" />
@@ -305,7 +300,7 @@ if($content['cp_setting_mode']):
         <input type="hidden" name="csubtitle" value="" />
         <input type="hidden" name="cpaginate_title" value="" />
         <input type="hidden" name="cpaginate_page" value="" />
-
+    </div>
 <?php
 
     // normal contentpart edit mode
@@ -348,15 +343,9 @@ if($content['cp_setting_mode']):
             $content['template_name'] = $BL['be_admin_tmpl_default'];
         }
 
-        $content['blocks'] = implode(LF.'                       ', $content['blocks']);
+        $content['blocks'] = implode(LF, $content['blocks']);
 
-    ?></td></tr>
-
-    <tr><td colspan="2" class="rowspacer0x7"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-
-<?php
-
-    $anchor_title = empty($content["id"]) ? '' : ' title="cpid'.$content["id"].'"';
+    $anchor_title = empty($content["id"]) ? '' : ' data-bs-toggle="tooltip" title="cpid'.$content["id"].'"';
 
     // handle tab settings
     $content["tab_style"] = ' style="display:none"';
@@ -384,155 +373,84 @@ if($content['cp_setting_mode']):
     }
 
 ?>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row g-4">
 
-    <tr>
-        <td align="right" class="chatlist"><?php echo $BL['be_show_content'] ?>:&nbsp;</td>
-        <td><table summary="" border="0" cellspacing="0" cellpadding="0" width="440">
-            <tr>
-                <td>
-                    <select name="cblock" id="cblock" onchange="checkCntBlockPaginate(this);">
-                        <optgroup label="<?php echo $BL['be_admin_struct_template'].': '.$content['template_name'] ?>">
-                            <option value="CONTENT"<?php echo is_selected('CONTENT', $content["block"]) ?>><?php echo $BL['be_main_content'] ?> (CONTENT)</option>
-                            <option value="LEFT"<?php echo is_selected('LEFT', $content["block"]) ?>><?php echo $BL['be_cnt_left'] ?> (LEFT)</option>
-                            <option value="RIGHT"<?php echo is_selected('RIGHT', $content["block"]) ?>><?php echo $BL['be_cnt_right'] ?> (RIGHT)</option>
-                            <option value="HEADER"<?php echo is_selected('HEADER', $content["block"]) ?>><?php echo $BL['be_admin_page_header'] ?> (HEADER)</option>
-                            <option value="FOOTER"<?php echo is_selected('FOOTER', $content["block"]) ?>><?php echo $BL['be_admin_page_footer'] ?> (FOOTER)</option>
-                            <option value="SYSTEM"<?php echo is_selected('SYSTEM', $content["block"]) ?>><?php echo $BL['be_system_container'] ?> (SYSTEM)</option>
-                        </optgroup>
-                        <?php echo $content['blocks'] ?>
+                    <div class="col-12 md:col-6">
+                        <label class="form-label" for="cblock"><?php echo $BL['be_show_content'] ?></label>
+                        <select name="cblock" id="cblock" class="form-control" onchange="checkCntBlockPaginate(this);">
+                            <optgroup label="<?php echo $BL['be_admin_struct_template'].': '.$content['template_name'] ?>">
+                                <option value="CONTENT"<?php echo is_selected('CONTENT', $content["block"]) ?>><?php echo $BL['be_main_content'] ?> (CONTENT)</option>
+                                <option value="LEFT"<?php echo is_selected('LEFT', $content["block"]) ?>><?php echo $BL['be_cnt_left'] ?> (LEFT)</option>
+                                <option value="RIGHT"<?php echo is_selected('RIGHT', $content["block"]) ?>><?php echo $BL['be_cnt_right'] ?> (RIGHT)</option>
+                                <option value="HEADER"<?php echo is_selected('HEADER', $content["block"]) ?>><?php echo $BL['be_admin_page_header'] ?> (HEADER)</option>
+                                <option value="FOOTER"<?php echo is_selected('FOOTER', $content["block"]) ?>><?php echo $BL['be_admin_page_footer'] ?> (FOOTER)</option>
+                                <option value="SYSTEM"<?php echo is_selected('SYSTEM', $content["block"]) ?>><?php echo $BL['be_system_container'] ?> (SYSTEM)</option>
+                            </optgroup>
+                            <?php echo $content['blocks'] ?>
+                        </select>
+                    </div>
 
-                    </select>
-                </td>
-
-                <td class="chatlist">&nbsp;&nbsp;<?php echo $BL['be_cnt_paginate_subsection']; ?>:&nbsp;</td>
-                <td>
-                    <select name="ctab" id="ctab" class="v11 width150" onchange="checkTabStatus(this);"<?php if($content["block"] == 'SYSTEM'): ?> disabled="disabled"<?php endif; ?> >
-                        <option value="0"<?php is_selected(0, $content["tab_type"]); ?>><?php echo $BL['be_off'] ?></option>
-                        <option value="1"<?php is_selected(1, $content["tab_type"]); ?>><?php echo $BL['be_ctype_tabs'] ?></option>
-                        <option value="2"<?php is_selected(2, $content["tab_type"]); ?>><?php echo $BL['be_ctype_accordion'] ?></option>
+                    <div class="col-12 md:col-6">
+                        <label class="form-label" for="ctab"><?php echo $BL['be_cnt_paginate_subsection'] ?></label>
+                        <select name="ctab" id="ctab" class="form-control" onchange="checkTabStatus(this);"<?php if($content["block"] == 'SYSTEM'): ?> disabled="disabled"<?php endif; ?>>
+                            <option value="0"<?php is_selected(0, $content["tab_type"]); ?>><?php echo $BL['be_off'] ?></option>
+                            <option value="1"<?php is_selected(1, $content["tab_type"]); ?>><?php echo $BL['be_ctype_tabs'] ?></option>
+                            <option value="2"<?php is_selected(2, $content["tab_type"]); ?>><?php echo $BL['be_ctype_accordion'] ?></option>
 <?php
     if(isset($template_default['attributes']['cpgroup_custom']) && is_array($template_default['attributes']['cpgroup_custom']) && count($template_default['attributes']['cpgroup_custom'])):
         foreach($template_default['attributes']['cpgroup_custom'] as $tab_type_value => $value):
 ?>
-            <option value="<?php echo $tab_type_value ?>"<?php is_selected($tab_type_value, $content["tab_type"]); ?>><?php echo html($value['title']) ?></option>
+                            <option value="<?php echo $tab_type_value ?>"<?php is_selected($tab_type_value, $content["tab_type"]); ?>><?php echo html($value['title']) ?></option>
 <?php
         endforeach;
     endif;
 ?>
-                    </select>
-                    <script>
+                        </select>
+                    </div>
 
-                        var cTabStatus = <?php echo $content["tab_type"] ? 'true' : 'false' ?>,
-                            loadblock = true;
+                    <div class="col-12" id="system1"<?php if($content["block"] !== 'SYSTEM'): ?> style="display:none;"<?php endif; ?>>
+                        <label class="form-label" for="ctid"><?php echo $BL['be_article_rendering'] ?></label>
+                        <select name="ctid" id="ctid" class="form-control">
+                            <option value="0"<?php echo is_selected(0, $content['tid']) ?>><?php echo $BL['be_custom_scriptlogic'] ?></option>
+                            <option value="1"<?php echo is_selected(1, $content['tid']) ?>><?php echo $BL['be_article_forlist'] ?></option>
+                            <option value="2"<?php echo is_selected(2, $content['tid']) ?>><?php echo $BL['be_article_forfull'] ?></option>
+                            <option value="3"<?php echo is_selected(3, $content['tid']) ?>><?php echo $BL['be_article_forlist'].' + '.$BL['be_article_forfull'] ?></option>
+                        </select>
+                    </div>
 
-                        function checkTabStatus(tabVal) {
+                    <!-- ctab section -->
+                    <div class="col-12" id="ctab2"<?php echo $content["tab_style"] ?>>
+                        <label class="form-label" for="ctab_title"><?php echo $BL['be_cnt_paginate_subsection'] ?></label>
+                        <div class="row g-3">
+                            <div class="col">
+                                <input name="ctab_title" type="text" id="ctab_title" class="form-control" value="<?php echo html($content["tab_title"]) ?>" size="40" maxlength="1500" />
+                            </div>
+                            <div class="col-6 md:col-3">
+                                <div class="input-group">
+                                    <span class="input-group-text"><?php echo $BL['be_ctype_number'] ?></span>
+                                    <input name="ctab_number" type="text" id="ctab_number" class="form-control" value="<?php echo $content["tab_number"] ?>" size="3" maxlength="4" onkeyup="if(!parseInt(this.value,10))this.value='';" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ctab section end -->
 
-                            cTabStatus = tabVal.options[tabVal.selectedIndex].value !== '0';
+                </div>
+            </div>
+        </div>
+    </div>
 
-                            if(!cTabStatus) {
-                                document.getElementById('ctab1').style.display = 'none';
-                                document.getElementById('ctab2').style.display = 'none';
-                            } else {
-                                document.getElementById('ctab1').style.display = '';
-                                document.getElementById('ctab2').style.display = '';
-                            }
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
 
-                            tabVal.blur();
-                        }
-
-                        function setTabStatus(enabled) {
-                            document.getElementById('ctab').disabled = !enabled;
-                        }
-
-                        function checkCntBlockPaginate(obj) {
-                            var paginate = document.getElementById("cpaginate_page"),
-                                block = obj.options[obj.selectedIndex].value,
-                                system1 = document.getElementById('system1'),
-                                ctab = document.getElementById('ctab');
-
-                            if(block === 'SYSTEM') {
-                                system1.style.display = 'table-row';
-                                ctab.value = '0';
-                                ctab.disabled = true;
-                                cTabStatus = false;
-
-                                document.getElementById('ctab1').style.display = 'none';
-                                document.getElementById('ctab2').style.display = 'none';
-
-                            } else {
-
-                                system1.style.display = 'none';
-                                ctab.disabled = false;
-
-                            }
-
-                            if(block !== 'CONTENT') {
-                                if(paginate.value !== "0" && !loadblock) {
-                                    if(!confirm("<?php echo $BL['be_cnt_subsection_warning'] ?>")) {
-                                        obj.selectedIndex = 0;
-                                        return false;
-                                    }
-                                }
-                                paginate.disabled = true;
-                            } else {
-                                paginate.disabled = false;
-                            }
-                        }
-
-                        function checkCp() {
-
-                            var ctab = document.getElementById('ctab'),
-                                ctab_title = document.getElementById('ctab_title'),
-                                ctab_number = document.getElementById('ctab_number');
-
-                            if(ctab.selectedIndex > 0 && ctab_title.value === '' && ctab_number.value === '') {
-                                return confirm('<?php echo PHPWCMS_CHARSET === 'utf-8' ? $BL['confirm_cp_tab_warning'] : mb_convert_encoding($BL['confirm_cp_tab_warning'], PHPWCMS_CHARSET); ?>');
-                            }
-
-                            return true;
-                        }
-
-                    </script>
-                </td>
-
-            </tr>
-        </table></td>
-    </tr>
-
-    <tr id="system1"<?php if($content["block"] !== 'SYSTEM'): ?> style="display:none;"<?php endif; ?>>
-        <td align="right" class="chatlist"><?php echo $BL['be_article_rendering'] ?>:&nbsp;</td>
-        <td class="tdtop5 tdbottom5">
-            <select name="ctid" id="ctid">
-                <option value="0"<?php echo is_selected(0, $content['tid']) ?>><?php echo $BL['be_custom_scriptlogic'] ?></option>
-                <option value="1"<?php echo is_selected(1, $content['tid']) ?>><?php echo $BL['be_article_forlist'] ?></option>
-                <option value="2"<?php echo is_selected(2, $content['tid']) ?>><?php echo $BL['be_article_forfull'] ?></option>
-                <option value="3"<?php echo is_selected(3, $content['tid']) ?>><?php echo $BL['be_article_forlist'].' + '.$BL['be_article_forfull'] ?></option>
-            </select>
-        </td>
-    </tr>
-
-    <!-- ctab section -->
-    <tr id="ctab1"<?php echo $content["tab_style"] ?>><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="5" /></td></tr>
-    <tr id="ctab2"<?php echo $content["tab_style"] ?>>
-      <td align="right" class="chatlist"><?php echo $BL['be_cnt_paginate_subsection'] ?>:&nbsp;</td>
-      <td><table summary="" border="0" cellspacing="0" cellpadding="0">
-          <tr>
-            <td><input name="ctab_title" type="text" id="ctab_title" class="f11b width325" value="<?php echo html($content["tab_title"]) ?>" size="40" maxlength="1500" /></td>
-            <td class="chatlist">&nbsp;&nbsp;<?php echo $BL['be_ctype_number'] ?>:&nbsp;</td>
-            <td><input name="ctab_number" type="text" id="ctab_number" class="v11 width25" value="<?php echo $content["tab_number"] ?>" size="3" maxlength="4" onkeyup="if(!parseInt(this.value,10))this.value='';" /></td>
-          </tr>
-        </table></td>
-    </tr>
-    <!-- ctab section end -->
-
-    <tr><td colspan="2" class="rowspacer7x0"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-    <tr bgcolor="#F3F5F8"><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="6" /></td></tr>
-        <?php
+<?php
           if(isset($content["error"])) {
-        ?>
-    <tr bgcolor="#F3F5F8">
-        <td align="right" valign="top" bgcolor="#FFE9D2"><strong style="color:#FF6600"><?php echo $BL['be_admin_usr_err'] ?>:&nbsp;</strong></td>
-        <td valign="top" bgcolor="#FFE9D2"><strong style="color:#FF6600"><?php
+?>
+                <div class="alert theme-danger mb-4"><?php
             //Fehlerdarstellung
             $content["error_result"]="";
             foreach($content["error"] as $value) {
@@ -541,21 +459,22 @@ if($content['cp_setting_mode']):
             echo nl2br(html(chop($content["error_result"])));
             unset($content["error_result"]);
 
-        ?></strong></td>
-    </tr>
-    <tr bgcolor="#F3F5F8"><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="6" /></td></tr>
-          <?php
+                ?></div>
+<?php
           }
-          ?>
-    <tr bgcolor="#F3F5F8">
-      <td align="right" class="chatlist"><?php echo $BL['be_article_cnt_ctitle'] ?>:&nbsp;</td>
-      <td><input name="ctitle" type="text" id="ctitle" class="width440p5" value="<?php echo html($content["title"]) ?>" size="40" maxlength="2000" /></td>
-    </tr>
-    <tr bgcolor="#F3F5F8"><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="2" /></td></tr>
-    <tr bgcolor="#F3F5F8">
-      <td align="right" class="chatlist"><?php echo $BL['be_article_asubtitle'] ?>:&nbsp;</td>
-      <td><input name="csubtitle" type="text" id="csubtitle" class="width440p5" value="<?php echo html($content["subtitle"]) ?>" size="40" maxlength="2000" /></td>
-    </tr>
+?>
+
+                <div class="row g-4">
+
+                    <div class="col-12 md:col-6">
+                        <label class="form-label" for="ctitle"><?php echo $BL['be_article_cnt_ctitle'] ?></label>
+                        <input name="ctitle" type="text" id="ctitle" class="form-control" value="<?php echo html($content["title"]) ?>" size="40" maxlength="2000" />
+                    </div>
+
+                    <div class="col-12 md:col-6">
+                        <label class="form-label" for="csubtitle"><?php echo $BL['be_article_asubtitle'] ?></label>
+                        <input name="csubtitle" type="text" id="csubtitle" class="form-control" value="<?php echo html($content["subtitle"]) ?>" size="40" maxlength="2000" />
+                    </div>
 
 <?php
 
@@ -566,220 +485,303 @@ if($content['cp_setting_mode']):
 
     if(empty($content['article']['article_paginate']) || $content["block"] === 'SYSTEM') {
 
-        echo '<tr bgcolor="#F3F5F8"><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="7" />';
         echo '<input name="cpaginate_title" type="hidden" id="cpaginate_title" value="'.html($content["paginate_title"]).'" />';
         echo '<input name="cpaginate_page" type="hidden" id="cpaginate_page" value="'.$content["paginate_page"].'" />';
-        echo '</td></tr>';
 
     } else {
 
 ?>
 
-    <tr bgcolor="#F3F5F8"><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="6" /></td></tr>
-    <tr><td colspan="2" class="rowspacer0x7"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
+                    <div class="col-6 md:col-3">
+                        <label class="form-label" for="cpaginate_page"><?php echo $BL['be_cnt_paginate_subsection'] ?></label>
+                        <input name="cpaginate_page" type="text" id="cpaginate_page" class="form-control" value="<?php echo $content["paginate_page"] ?>" size="3" maxlength="3" onkeyup="if(!parseInt(this.value,10))this.value='0';" />
+                    </div>
 
-    <tr>
-      <td align="right" class="chatlist"><?php echo $BL['be_cnt_paginate_subsection'] ?>:&nbsp;</td>
-      <td><table summary="" border="0" cellspacing="0" cellpadding="0" width="444">
-          <tr>
-            <td><input name="cpaginate_page" type="text" id="cpaginate_page" class="v11 width25" value="<?php echo $content["paginate_page"] ?>" size="3" maxlength="3" onkeyup="if(!parseInt(this.value,10))this.value='0';" /></td>
-            <td align="right" class="chatlist">&nbsp;&nbsp;<?php echo $BL['be_cnt_subsection_tite'].' ('.$BL['be_pagination'].')' ?>:&nbsp;</td>
-            <td width="200"><input name="cpaginate_title" type="text" id="cpaginate_title" class="f11b width225" value="<?php echo html($content["paginate_title"]) ?>" size="40" maxlength="2000" /></td>
-          </tr>
-        </table><script type="text/javascript">
-
-            checkCntBlockPaginate(getObjectById("cblock"));
-            loadblock = false;
-
-        </script></td>
-    </tr>
-
-    <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="7" /></td></tr>
+                    <div class="col-12 md:col-6">
+                        <label class="form-label" for="cpaginate_title"><?php echo $BL['be_cnt_subsection_tite'].' ('.$BL['be_pagination'].')' ?></label>
+                        <input name="cpaginate_title" type="text" id="cpaginate_title" class="form-control" value="<?php echo html($content["paginate_title"]) ?>" size="40" maxlength="2000" />
+                    </div>
 
 <?php
 
     }
     // end paginate check
 
+?>
 
-// end non content part setting mode
-endif;
+                </div>
+            </div>
+        </div>
+    </div>
+
+<?php
+
+    // end non content part setting mode
+    endif;
 
 ?>
 
-    <tr><td colspan="2" class="rowspacer"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-
-    <tr bgcolor="#F3F5F8">
-        <td>&nbsp;</td>
-        <td style="padding:7px 0 7px 0;">
 <?php
 
 // render buttons only once and save the buffer
 if(!empty($content["id"])) {
     $buttonActionLink = rel_url(array('phpwcms-preview'=>1), array(), empty($content['article']["article_alias"]) ? (empty($content["aid"]) ? 'id='.$content["id"] : 'aid='.$content["aid"]) : $content['article']["article_alias"]);
-    $buttonAction  = '<button type="button" value="'.$BL['be_func_struct_preview'].'" class="button" title="'.$BL['be_func_struct_preview'].'" style="margin-left:50px;" ';
+    $buttonAction  = '<button type="button" value="'.$BL['be_func_struct_preview'].'" class="btn btn-outline theme-secondary btn-sm" data-bs-toggle="tooltip" title="'.$BL['be_func_struct_preview'].'" ';
     $buttonAction .= 'onclick="window.open(\''.$buttonActionLink."', 'articlePreviewWindows');return false;\">";
     $buttonAction .= $BL['be_func_struct_preview']."</button>" . LF;
 } else {
     $buttonAction  = '';
 }
 
-
 ob_start();
 
 ?>
-    <input name="Submit" type="submit" class="button" value="<?php echo  $sendbutton ?>" />
-    <input name="SubmitClose" type="submit" class="button" value="<?php echo $BL['be_article_cnt_button3'] ?>" />
-    &nbsp; &nbsp;
-    <input name="donotsubmit" type="button" class="button" value="<?php echo  $BL['be_newsletter_button_cancel'] ?>" onclick="location.href='phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;id=<?php echo $content["aid"] ?>'" />
-    &nbsp; &nbsp;
+    <input name="Submit" type="submit" class="btn theme-primary btn-solid btn-styled btn-sm" value="<?php echo  $sendbutton ?>" />
+    <input name="SubmitClose" type="submit" class="btn btn-outline theme-secondary btn-sm" value="<?php echo $BL['be_article_cnt_button3'] ?>" />
+    <input name="donotsubmit" type="button" class="btn btn-outline theme-secondary btn-sm" value="<?php echo  $BL['be_newsletter_button_cancel'] ?>" onclick="location.href='phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;id=<?php echo $content["aid"] ?>'" />
     <?php echo $buttonAction; ?>
 <?php
 
 $_save_close_buttons = ob_get_clean();
 
-echo $_save_close_buttons;
-
 ?>
-        </td>
-    </tr>
 
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="h6 mb-0"><?php echo $wcs_content_type[$content["type"]] ?></h2>
+            </div>
 <?php
 
     // show content part specific form elements
     if($content['type'] != 30 && file_exists(PHPWCMS_ROOT.'/include/inc_tmpl/content/cnt'.$content['type'].'.inc.php')) {
 
-        include_once PHPWCMS_ROOT.'/include/inc_tmpl/content/cnt'.$content['type'].'.inc.php';
+        $cp_form_file = PHPWCMS_ROOT.'/include/inc_tmpl/content/cnt'.$content['type'].'.inc.php';
 
     } elseif($content['type'] == 30 && file_exists($phpwcms['modules'][$content["module"]]['path'].'inc/cnt.form.php')) {
 
-        include_once $phpwcms['modules'][$content["module"]]['path'].'inc/cnt.form.php';
+        $cp_form_file = $phpwcms['modules'][$content["module"]]['path'].'inc/cnt.form.php';
 
     } else {
 
-        include_once PHPWCMS_ROOT.'/include/inc_tmpl/content/cnt0.inc.php';
+        $cp_form_file = PHPWCMS_ROOT.'/include/inc_tmpl/content/cnt0.inc.php';
 
     }
 
-    if($content['type'] == 32):
+    if(in_array((int) $content['type'], $cp_form_bootstrap, true)) {
+
+        echo '<div class="card-body">';
+        include_once $cp_form_file;
+        echo '</div>';
+
+    } else {
+
+        // the type forms of the screens not revamped yet write the rows of a two
+        // column table
+        echo '<div class="card-body"><table class="w-100" summary="">';
+        include_once $cp_form_file;
+        echo '</table></div>';
+
+    }
+
 ?>
-    <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="3" /></td></tr>
-<?php
-    else:
-?>
-    <tr><td colspan="2" class="rowspacer7x7"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-<?php
-    endif;
-?>
+            <div class="card-footer d-flex flex-wrap gap-2 justify-content-end">
+                <?php echo $_save_close_buttons ?>
+            </div>
+        </div>
+    </div>
 
-    <tr>
-      <td align="right" class="chatlist"><?php echo $BL['be_article_cnt_space'] ?>:&nbsp;</td>
-      <td>
-        <table summary="" border="0" cellspacing="0" cellpadding="0" bgcolor="#E7E8EB">
-            <tr>
-                <td class="v10"><label for="ccb">&nbsp;<?php echo $BL['be_article_cnt_before'] ?></label></td>
-                <td><input name="ccb" type="checkbox" id="ccb" value="1" <?php if($content["before"] !== '') echo "checked"; ?> onclick="if(!this.checked){this.form.cbefore.value='';}else if(this.form.cbefore.value===''){this.checked=false;}" /></td>
-                <td><input name="cbefore" type="text" id="cbefore" class="width40" value="<?php echo $content["before"] ?>" size="5" maxlength="5" onkeyup="validate_before_after(this, 'ccb');" /></td>
-                <td class="chatlist">&nbsp;<?php echo empty($template_default['article']['div_spacer_unit']) ? 'px' : $template_default['article']['div_spacer_unit']; ?>&nbsp;&nbsp;</td>
-                <td class="v10"><label for="cca">&nbsp;<?php echo $BL['be_article_cnt_after'] ?></label></td>
-                <td><input name="cca" type="checkbox" id="cca" value="1" <?php if($content["after"] !== '') echo "checked"; ?> onclick="if(!this.checked){this.form.cafter.value='';}else if(this.form.cafter.value===''){this.checked=false;}" /></td>
-                <td class="tdtop1 tdbottom1"><input name="cafter" type="text" id="cafter" class="width40" value="<?php echo $content["after"] ?>" size="5" maxlength="5" onkeyup="validate_before_after(this, 'cca');" /></td>
-                <td class="chatlist">&nbsp;<?php echo empty($template_default['article']['div_spacer_unit']) ? 'px' : $template_default['article']['div_spacer_unit']; ?>&nbsp;</td>
-                <td bgcolor="#ffffff">&nbsp;</td>
-                <td><label for="ctop">&nbsp;&nbsp;<?php echo $BL['be_article_cnt_toplink'] ?></label></td>
-                <td><input name="ctop" type="checkbox" id="ctop" value="1"<?php is_checked(1, $content["top"]); ?> /></td>
-                <td>&nbsp;</td>
-                <td bgcolor="#ffffff">&nbsp;</td>
-                <td><label for="canchor"<?php echo $anchor_title ?>>&nbsp;&nbsp;<?php echo $BL['be_article_cnt_anchor'] ?></label></td>
-                <td><input name="canchor" type="checkbox" id="canchor" value="1"<?php is_checked(1, $content["anchor"]); echo $anchor_title ?> /></td>
-                <td>&nbsp;&nbsp;</td>
-            </tr>
-        </table></td>
-    </tr>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="h6 mb-0"><?php echo $BL['be_article_cnt_space'] ?></h2>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
 
-    <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="6" /></td></tr>
+                    <div class="col-12 md:col-6">
+                        <div class="form-field mb-2">
+                            <input class="check" name="ccb" type="checkbox" id="ccb" value="1" <?php if($content["before"] !== '') echo "checked"; ?> onclick="if(!this.checked){this.form.cbefore.value='';}else if(this.form.cbefore.value===''){this.checked=false;}" />
+                            <label for="ccb"><?php echo $BL['be_article_cnt_before'] ?></label>
+                        </div>
+                        <div class="input-group">
+                            <input name="cbefore" type="text" id="cbefore" class="form-control" value="<?php echo $content["before"] ?>" size="5" maxlength="5" onkeyup="validate_before_after(this, 'ccb');" />
+                            <span class="input-group-text"><?php echo empty($template_default['article']['div_spacer_unit']) ? 'px' : $template_default['article']['div_spacer_unit']; ?></span>
+                        </div>
+                    </div>
 
-    <tr>
-      <td align="right" class="chatlist"><?php echo $BL['be_cnt_attribute_class']; ?>:&nbsp;</td>
-      <td>
-        <table summary="" border="0" cellspacing="0" cellpadding="0">
-            <tr>
-                <td><input name="cattr_class" type="text" value="<?php echo html($content["attr_class"]); ?>" class="width175" maxlength="255" /></td>
-                <td class="chatlist">&nbsp;&nbsp;<?php echo $BL['be_cnt_attribute_id']; ?>:&nbsp;</td>
-                <td><input name="cattr_id" type="text" value="<?php echo html($content["attr_id"]); ?>" class="width175" maxlength="255" /></td>
-            </tr>
-        </table></td>
-    </tr>
+                    <div class="col-12 md:col-6">
+                        <div class="form-field mb-2">
+                            <input class="check" name="cca" type="checkbox" id="cca" value="1" <?php if($content["after"] !== '') echo "checked"; ?> onclick="if(!this.checked){this.form.cafter.value='';}else if(this.form.cafter.value===''){this.checked=false;}" />
+                            <label for="cca"><?php echo $BL['be_article_cnt_after'] ?></label>
+                        </div>
+                        <div class="input-group">
+                            <input name="cafter" type="text" id="cafter" class="form-control" value="<?php echo $content["after"] ?>" size="5" maxlength="5" onkeyup="validate_before_after(this, 'cca');" />
+                            <span class="input-group-text"><?php echo empty($template_default['article']['div_spacer_unit']) ? 'px' : $template_default['article']['div_spacer_unit']; ?></span>
+                        </div>
+                    </div>
 
-    <tr><td colspan="2" class="rowspacer7x0"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
+                    <div class="col-12 md:col-6">
+                        <div class="form-field">
+                            <input class="check" name="ctop" type="checkbox" id="ctop" value="1"<?php is_checked(1, $content["top"]); ?> />
+                            <label for="ctop"><?php echo $BL['be_article_cnt_toplink'] ?></label>
+                        </div>
+                        <div class="form-field mt-3">
+                            <input class="check" name="canchor" type="checkbox" id="canchor" value="1"<?php is_checked(1, $content["anchor"]); echo $anchor_title ?> />
+                            <label for="canchor"><?php echo $BL['be_article_cnt_anchor'] ?></label>
+                        </div>
+                    </div>
 
-    <tr bgcolor="#F3F5F8"><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="7" /></td></tr>
+                    <div class="col-12 md:col-6">
+                        <label class="form-label" for="cattr_class"><?php echo $BL['be_cnt_attribute_class'] ?></label>
+                        <input name="cattr_class" type="text" id="cattr_class" value="<?php echo html($content["attr_class"]); ?>" class="form-control" maxlength="255" />
+                        <label class="form-label mt-3" for="cattr_id"><?php echo $BL['be_cnt_attribute_id'] ?></label>
+                        <input name="cattr_id" type="text" id="cattr_id" value="<?php echo html($content["attr_id"]); ?>" class="form-control" maxlength="255" />
+                    </div>
 
-    <tr bgcolor="#F3F5F8">
-        <td align="right" class="chatlist">&nbsp;<br /><?php echo $BL['be_article_abegin'] ?>:&nbsp;</td>
-        <td>
-            <table border="0" cellpadding="2" cellspacing="0" summary="" bgcolor="#E7E8EB">
-                <tr>
-                    <td class="chatlist">&nbsp;<br />
-                        <input name="set_livedate" type="checkbox" id="set_livedate" value="1"<?php is_checked(1, $set_livedate) ?> onclick="content_date_set('live', this.checked ? '<?php echo $content["livedate"]; ?>' : '');" />
-                    </td>
-                    <td class="chatlist tdbottom3 nowrap" nowrap="nowrap">
-                        <input name="clivedate" type="text" id="clivedate" class="width150" value="<?php echo $content["livedate"]; ?>" data-datepicker="1" data-datepicker-alt-format="<?php echo html($backend_date_format['flatpickr']) ?>" data-datepicker-24h="<?php echo $backend_date_format['time_24hr'] ? '1' : '0' ?>" data-datepicker-weekstart="<?php echo $backend_weekstart ?>" data-datepicker-defaulthour="0" data-datepicker-defaultminute="0" data-datepicker-defaultseconds="0" data-datepicker-label="<?php echo html($BL['be_article_abegin']) ?>" onchange="content_date_changed('live');" />
-                    </td>
-                    <td align="right" class="chatlist" bgcolor="#F3F5F8">&nbsp;<br />&nbsp;&nbsp;<?php echo $BL['be_article_aend'] ?>:</td>
-                    <td class="chatlist">&nbsp;<br />
-                        <input name="set_killdate" type="checkbox" id="set_killdate" value="1"<?php is_checked(1, $set_killdate) ?> onclick="content_date_set('kill', this.checked ? '<?php echo $content["killdate"] ?>' : '');" />
-                    </td>
-                    <td class="chatlist tdbottom3 nowrap" nowrap="nowrap">
-                        <input name="ckilldate" type="text" id="ckilldate" class="width150" value="<?php echo $content["killdate"]; ?>" data-datepicker="1" data-datepicker-alt-format="<?php echo html($backend_date_format['flatpickr']) ?>" data-datepicker-24h="<?php echo $backend_date_format['time_24hr'] ? '1' : '0' ?>" data-datepicker-weekstart="<?php echo $backend_weekstart ?>" data-datepicker-defaulthour="23" data-datepicker-defaultminute="59" data-datepicker-defaultseconds="59" data-datepicker-label="<?php echo html($BL['be_article_aend']) ?>" onchange="content_date_changed('kill');" />
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <tr bgcolor="#F3F5F8"><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="8" /></td></tr>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="h6 mb-0"><?php echo $BL['be_ftptakeover_status'] ?></h2>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
 
-    <tr bgcolor="#F3F5F8">
-        <td align="right" class="chatlist"><?php echo $BL['be_ftptakeover_status'] ?>:&nbsp;</td>
-        <td><table summary="" border="0" cellpadding="1" cellspacing="0" bgcolor="#E7E8EB">
-            <tr>
+                    <div class="col-12 md:col-6">
+                        <div class="form-field mb-2">
+                            <input class="check" name="set_livedate" type="checkbox" id="set_livedate" value="1"<?php is_checked(1, $set_livedate) ?> onclick="content_date_set('live', this.checked ? '<?php echo $content["livedate"]; ?>' : '');" />
+                            <label for="set_livedate"><?php echo $BL['be_article_abegin'] ?></label>
+                        </div>
+                        <input name="clivedate" type="text" id="clivedate" class="form-control" value="<?php echo $content["livedate"]; ?>" data-datepicker="1" data-datepicker-alt-format="<?php echo html($backend_date_format['flatpickr']) ?>" data-datepicker-24h="<?php echo $backend_date_format['time_24hr'] ? '1' : '0' ?>" data-datepicker-weekstart="<?php echo $backend_weekstart ?>" data-datepicker-defaulthour="0" data-datepicker-defaultminute="0" data-datepicker-defaultseconds="0" data-datepicker-label="<?php echo html($BL['be_article_abegin']) ?>" onchange="content_date_changed('live');" />
+                    </div>
 
-                <td><input name="cvisible" type="checkbox" id="cvisible" value="1"<?php is_checked(1, $content["visible"]); ?> /></td>
-                <td><label for="cvisible"><?php echo $BL['be_admin_struct_visible'] ?>&nbsp;&nbsp;</label>&nbsp;</td>
+                    <div class="col-12 md:col-6">
+                        <div class="form-field mb-2">
+                            <input class="check" name="set_killdate" type="checkbox" id="set_killdate" value="1"<?php is_checked(1, $set_killdate) ?> onclick="content_date_set('kill', this.checked ? '<?php echo $content["killdate"] ?>' : '');" />
+                            <label for="set_killdate"><?php echo $BL['be_article_aend'] ?></label>
+                        </div>
+                        <input name="ckilldate" type="text" id="ckilldate" class="form-control" value="<?php echo $content["killdate"]; ?>" data-datepicker="1" data-datepicker-alt-format="<?php echo html($backend_date_format['flatpickr']) ?>" data-datepicker-24h="<?php echo $backend_date_format['time_24hr'] ? '1' : '0' ?>" data-datepicker-weekstart="<?php echo $backend_weekstart ?>" data-datepicker-defaulthour="23" data-datepicker-defaultminute="59" data-datepicker-defaultseconds="59" data-datepicker-label="<?php echo html($BL['be_article_aend']) ?>" onchange="content_date_changed('kill');" />
+                    </div>
 
-                <td>
-                    <select name="cgranted" id="cgranted" class="v11">
-                        <option value="0"<?php is_selected(0, $content["granted"]); ?>><?php echo $BL['be_visible_for_everybody'] ?></option>
-                        <option value="1"<?php is_selected(1, $content["granted"]); ?>><?php echo $BL['be_granted_feuser'] ?></option>
-                        <option value="2"<?php is_selected(2, $content["granted"]); ?>><?php echo $BL['be_hidden_for_feuser'] ?></option>
-                    </select>
-                </td>
+                    <div class="col-12">
+                        <div class="d-flex flex-wrap align-items-end gap-4">
+                            <div class="form-field">
+                                <input class="check" name="cvisible" type="checkbox" id="cvisible" value="1"<?php is_checked(1, $content["visible"]); ?> />
+                                <label for="cvisible"><?php echo $BL['be_admin_struct_visible'] ?></label>
+                            </div>
+                            <div>
+                                <label class="form-label visually-hidden" for="cgranted"><?php echo $BL['be_ftptakeover_status'] ?></label>
+                                <select name="cgranted" id="cgranted" class="form-control">
+                                    <option value="0"<?php is_selected(0, $content["granted"]); ?>><?php echo $BL['be_visible_for_everybody'] ?></option>
+                                    <option value="1"<?php is_selected(1, $content["granted"]); ?>><?php echo $BL['be_granted_feuser'] ?></option>
+                                    <option value="2"<?php is_selected(2, $content["granted"]); ?>><?php echo $BL['be_hidden_for_feuser'] ?></option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label" for="csorting"><?php echo $BL['be_cnt_sortvalue'] ?></label>
+                                <input name="csorting" type="text" id="csorting" value="<?php echo $content["sorting"] ?>" class="form-control" maxlength="10" onkeyup="if(!parseInt(this.value,10))this.value='0';" />
+                            </div>
+                        </div>
+                    </div>
 
-                <td class="chatlist" align="right">&nbsp;&nbsp;<?php echo $BL['be_cnt_sortvalue'] ?>:&nbsp;</td>
-                <td><input name="csorting" type="text" id="csorting" value="<?php echo $content["sorting"] ?>" class="width40" maxlength="10" onkeyup="if(!parseInt(this.value,10))this.value='0';" /></td>
+                </div>
 
-            </tr>
-        </table></td>
-    </tr>
+                <input name="caktion" type="hidden" id="caktion" value="1" />
+                <input name="caid" type="hidden" id="caid" value="<?php echo $article["article_id"] ?>" />
+                <input name="cid" type="hidden" id="cid" value="<?php echo  $content["id"] ?>" />
+                <input name="ctype" type="hidden" id="ctype" value="<?php echo  $content["type"] ?>" />
 
-    <tr bgcolor="#F3F5F8">
-        <td>&nbsp;</td>
-        <td class="tdtop10 tdbottom10">
-            <input name="caktion" type="hidden" id="caktion" value="1" />
-            <input name="caid" type="hidden" id="caid" value="<?php echo $article["article_id"] ?>" />
-            <input name="cid" type="hidden" id="cid" value="<?php echo  $content["id"] ?>" />
-            <input name="ctype" type="hidden" id="ctype" value="<?php echo  $content["type"] ?>" />
-            <?php echo $_save_close_buttons ?>
-        </td>
-    </tr>
+            </div>
+            <div class="card-footer d-flex flex-wrap gap-2 justify-content-end">
+                <?php echo $_save_close_buttons ?>
+            </div>
+        </div>
+    </div>
 
-    <tr><td colspan="2" class="rowspacer0x7"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <label class="form-label" for="ccomment"><?php echo $BL['be_profile_label_notes'] ?></label>
+                <textarea name="ccomment" id="ccomment" class="form-control autosize" rows="5"><?php echo html($content["comment"]) ?></textarea>
+            </div>
+        </div>
+    </div>
 
-    <tr>
-      <td align="right" class="chatlist tdtop3"><?php echo $BL['be_profile_label_notes'] ?>:&nbsp;</td>
-      <td><textarea name="ccomment" id="ccomment" class="width440 autosize" rows="5"><?php echo html($content["comment"]) ?></textarea></td>
-    </tr>
+</div>
 
-</table>
+<script type="text/javascript">
+
+    var cTabStatus = <?php echo $content["tab_type"] ? 'true' : 'false' ?>,
+        loadblock = true;
+
+    function checkTabStatus(tabVal) {
+
+        cTabStatus = tabVal.options[tabVal.selectedIndex].value !== '0';
+
+        document.getElementById('ctab2').style.display = cTabStatus ? '' : 'none';
+
+        tabVal.blur();
+    }
+
+    function setTabStatus(enabled) {
+        document.getElementById('ctab').disabled = !enabled;
+    }
+
+    function checkCntBlockPaginate(obj) {
+        var paginate = document.getElementById("cpaginate_page"),
+            block = obj.options[obj.selectedIndex].value,
+            system1 = document.getElementById('system1'),
+            ctab = document.getElementById('ctab');
+
+        if(block === 'SYSTEM') {
+            system1.style.display = '';
+            ctab.value = '0';
+            ctab.disabled = true;
+            cTabStatus = false;
+
+            document.getElementById('ctab2').style.display = 'none';
+
+        } else {
+
+            system1.style.display = 'none';
+            ctab.disabled = false;
+
+        }
+
+        if(block !== 'CONTENT') {
+            if(paginate.value !== "0" && !loadblock) {
+                if(!confirm("<?php echo $BL['be_cnt_subsection_warning'] ?>")) {
+                    obj.selectedIndex = 0;
+                    return false;
+                }
+            }
+            paginate.disabled = true;
+        } else {
+            paginate.disabled = false;
+        }
+    }
+
+    function checkCp() {
+
+        var ctab = document.getElementById('ctab'),
+            ctab_title = document.getElementById('ctab_title'),
+            ctab_number = document.getElementById('ctab_number');
+
+        if(ctab.selectedIndex > 0 && ctab_title.value === '' && ctab_number.value === '') {
+            return confirm('<?php echo PHPWCMS_CHARSET === 'utf-8' ? $BL['confirm_cp_tab_warning'] : mb_convert_encoding($BL['confirm_cp_tab_warning'], PHPWCMS_CHARSET); ?>');
+        }
+
+        return true;
+    }
+
+    checkCntBlockPaginate(document.getElementById("cblock"));
+    loadblock = false;
+
+</script>
+
 </form>
