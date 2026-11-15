@@ -631,7 +631,8 @@ existing entry already covers the action before adding a second glyph for it.
   places they were in before.
 - The type forms are included into a slot: `$cp_form_bootstrap` lists the types
   that render their own Bootstrap markup and are included into a `card-body`
-  (currently the code part `11` and the article menu `15`), every other type form
+  (currently the code part `11`, the article menu `15` and the content part alias
+  `24`), every other type form
   still writes `<tr><td>` rows and is included into a plain `table.w-100` inside
   the card body. Revamping a type means rewriting its `cnt<type>.inc.php` as
   `div`-based Bootstrap markup and adding its number to that list; do not remove
@@ -653,6 +654,18 @@ existing entry already covers the action before adding a second glyph for it.
   `confirm_cp_tab_warning`) carry the `\n` escapes of JavaScript themselves and
   are printed as they are — passing them through `js_singlequote()` would double
   those backslashes and the dialog would show a literal `\n`.
+
+## Content part editor: content part alias
+
+- `include/inc_tmpl/content/cnt24.inc.php` is the third type form in Bootstrap:
+  the alias ID (`calias`) as a `form-control w-auto` next to the button that
+  opens the aliased content part, and the five `take over` marks (`cablock`,
+  `caspaces`, `catitle`, `catop`, `castatus`) as `.form-field`/`.check` pairs on
+  the right.
+- The link to the aliased part used to be assembled as table cells; it is one
+  `btn btn-outline theme-secondary btn-sm` now, opening the part in a new tab, and
+  a `badge theme-danger` with `be_cnt_plugin_n.a.` when the aliased part is a
+  plugin that is not installed. The lookup itself is unchanged.
 
 ## Content part editor: code
 
