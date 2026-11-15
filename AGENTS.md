@@ -374,10 +374,22 @@ existing entry already covers the action before adding a second glyph for it.
 - The article owner `<select name="article_uid">` marks admin users by appending
   `($BL['be_article_adminuser'])` to the option label, sorted admins first; the
   old inline `style="background-color:#FFC299"` is gone.
-- `dynCalendar` (the raster `img/dynCal/` trigger next to the begin and end
-  fields, placed with `document.write`) is a legacy widget and stays as it is,
-  including its inline `new dynCalendar(...)` scripts: the date fields are
-  `#aBegin`/`#aEnd` and the input names `article_begin`/`article_end`.
+- The begin and end fields are native `input type="datetime-local" step="1"`
+  controls (`article_begin`/`article_end`), not the `dynCalendar` widget: nothing
+  on this screen uses `img/dynCal/` any more. The stored `Y-m-d H:i:s` value is
+  rendered as `Y-m-d\TH:i:s` (`$article_begin_iso`/`$article_end_iso`, guarded
+  with `strtotime()` so an unset or unparsable value stays empty), and
+  `phpwcms_strtotime()` parses the submitted ISO value back on save, so
+  `article.editcontent.inc.php` is untouched. `step="1"` keeps the seconds the
+  widget used to write.
+- `article_date_changed()` holds the two rules the callbacks used to carry:
+  picking a date marks its own boundary active (`set_begin`/`set_end`), and a
+  begin after the end clears that end, compared by date only as before. The
+  `set_begin`/`set_end` checkboxes still fill the field with the stored value in
+  ISO form when ticked.
+- `initJsCalendar()` still loads `dynCalendar.js` for the article frame
+  (`phpwcms.php`) because the content part editor, news, ads and the calendar
+  module keep the widget.
 - The footer is one `card-footer d-flex flex-wrap gap-2 justify-content-end` with
   the submit inputs: `updatesubmit` (solid primary, `Update` when
   `$article["article_id"]` is set, `Create` otherwise) and `Submit`

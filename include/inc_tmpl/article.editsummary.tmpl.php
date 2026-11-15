@@ -26,6 +26,12 @@ $template_default['article']['image_default_height']     = $template_default['ar
 $template_default['article']['imagelist_default_width']  = $template_default['article']['imagelist_default_width'] ?? '';
 $template_default['article']['imagelist_default_height'] = $template_default['article']['imagelist_default_height'] ?? '';
 
+// the begin/end fields are native datetime-local inputs, which need the ISO 8601 value
+$article_begin_time = empty($article["article_begin"]) ? false : strtotime($article["article_begin"]);
+$article_end_time   = empty($article["article_end"])   ? false : strtotime($article["article_end"]);
+$article_begin_iso  = $article_begin_time === false ? '' : date('Y-m-d\TH:i:s', $article_begin_time);
+$article_end_iso    = $article_end_time === false ? '' : date('Y-m-d\TH:i:s', $article_end_time);
+
 ?>
 <form action="phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=1&amp;id=<?php echo $article["article_id"] ?>" method="post" name="article" id="article">
 
@@ -65,79 +71,46 @@ $template_default['article']['imagelist_default_height'] = $template_default['ar
             </div>
 
             <div class="col-12 md:col-6">
-                <div class="d-flex justify-content-between align-items-center gap-3 mb-2">
-                    <div class="form-field">
-                        <input class="check" name="set_begin" type="checkbox" id="set_begin" value="1"<?php is_checked(1, $set_begin) ?> onclick="document.article.article_begin.value = this.checked ? '<?php echo $article["article_begin"] ?>' : '';" />
-                        <label for="set_begin"><?php echo $BL['be_article_abegin'] ?></label>
-                    </div>
-                    <span class="small fg-secondary">YYYY-MM-DD HH:MM:SS</span>
+                <div class="form-field mb-2">
+                    <input class="check" name="set_begin" type="checkbox" id="set_begin" value="1"<?php is_checked(1, $set_begin) ?> onclick="document.article.article_begin.value = this.checked ? '<?php echo $article_begin_iso ?>' : '';" />
+                    <label for="set_begin"><?php echo $BL['be_article_abegin'] ?></label>
                 </div>
-                <div class="d-flex align-items-center gap-2">
-                    <input name="article_begin" type="text" id="article_begin" class="form-control" value="<?php echo $article["article_begin"]; ?>" />
-                    <span class="d-inline-flex align-items-center flex-shrink-0"><script type="text/javascript">
-                                var currentDateBegin = 0,
-                                    currentDateEnd = 0;
-
-                                function aBegin(day, month, year) {
-
-                                    month = subrstr('00' + month, 2);
-                                    day = subrstr('00' + day, 2);
-
-                                    currentDateBegin = parseInt(year + month + day, 10);
-
-                                    if(currentDateEnd > 0 && currentDateBegin > currentDateEnd) {
-                                        document.article.article_end.value = '';
-                                        document.article.set_end.checked = false;
-                                    }
-
-                                    document.article.article_begin.value = year + '-' + subrstr('00' + month, 2) + '-' + subrstr('00' + day, 2) + ' 00:00:00';
-    document.article.set_begin.checked = true;
-}
-
-calBegin = new dynCalendar('calBegin', 'aBegin', 'img/dynCal/');
-calBegin.setMonthCombo(false);
-calBegin.setYearCombo(false);
-
-                            </script></span>
-                </div>
+                <input name="article_begin" type="datetime-local" step="1" id="article_begin" class="form-control" aria-label="<?php echo html($BL['be_article_abegin']) ?>" value="<?php echo $article_begin_iso ?>" onchange="article_date_changed('begin');" />
             </div>
 
             <div class="col-12 md:col-6">
-                <div class="d-flex justify-content-between align-items-center gap-3 mb-2">
-                    <div class="form-field">
-                        <input class="check" name="set_end" type="checkbox" id="set_end" value="1"<?php is_checked(1, $set_end) ?> onclick="document.article.article_end.value = this.checked ? '<?php echo $article["article_end"] ?>' : '';" />
-                        <label for="set_end"><?php echo $BL['be_article_aend'] ?></label>
-                    </div>
-                    <span class="small fg-secondary">YYYY-MM-DD HH:MM:SS</span>
+                <div class="form-field mb-2">
+                    <input class="check" name="set_end" type="checkbox" id="set_end" value="1"<?php is_checked(1, $set_end) ?> onclick="document.article.article_end.value = this.checked ? '<?php echo $article_end_iso ?>' : '';" />
+                    <label for="set_end"><?php echo $BL['be_article_aend'] ?></label>
                 </div>
-                <div class="d-flex align-items-center gap-2">
-                    <input name="article_end" type="text" id="article_end" class="form-control" value="<?php echo $article["article_end"] ?>" />
-                    <span class="d-inline-flex align-items-center flex-shrink-0"><script type="text/javascript">
-
-                                function aEnd(day, month, year) {
-
-                                    month = subrstr('00' + month, 2);
-                                    day = subrstr('00' + day, 2);
-
-                                    currentDateEnd = parseInt(year + month + day, 10);
-
-                                    if(currentDateBegin > 0 && currentDateBegin > currentDateEnd) {
-                                        document.article.article_begin.value = '';
-                                        document.article.set_begin.checked = false;
-                                    }
-
-                                    document.article.article_end.value = year + '-' + subrstr('00' + month, 2) + '-' + subrstr('00' + day, 2) + ' 23:59:59';
-    document.article.set_end.checked = true;
-
-}
-
-calEnd = new dynCalendar('calEnd', 'aEnd', 'img/dynCal/');
-calEnd.setMonthCombo(false);
-calEnd.setYearCombo(false);
-
-                            </script></span>
-                </div>
+                <input name="article_end" type="datetime-local" step="1" id="article_end" class="form-control" aria-label="<?php echo html($BL['be_article_aend']) ?>" value="<?php echo $article_end_iso ?>" onchange="article_date_changed('end');" />
             </div>
+
+            <script type="text/javascript">
+                // A picked date has to mark its own boundary active, and a begin after
+                // the end has always cleared that end, date only like dynCalendar did
+                function article_date_changed(field) {
+
+                    var form = document.article;
+                    var begin_date = form.article_begin.value.substring(0, 10);
+                    var end_date = form.article_end.value.substring(0, 10);
+
+                    if (field === 'begin') {
+                        form.set_begin.checked = form.article_begin.value !== '';
+                        if (begin_date && end_date && begin_date > end_date) {
+                            form.article_end.value = '';
+                            form.set_end.checked = false;
+                        }
+                    } else {
+                        form.set_end.checked = form.article_end.value !== '';
+                        if (begin_date && end_date && begin_date > end_date) {
+                            form.article_begin.value = '';
+                            form.set_begin.checked = false;
+                        }
+                    }
+
+                }
+            </script>
 
             <div class="col-6 md:col-3">
                 <label class="form-label" for="article_sort"><?php echo $BL['be_cnt_sortvalue'] ?></label>
