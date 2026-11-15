@@ -245,6 +245,8 @@ MIT) inlined at 16x16 from `backend_icon()`. The names are fixed:
   `eye-slash` in `theme-danger` while it is hidden
 - **tree, add and sort**: `chevron-right`, `chevron-down`, `chevron-up` (move
   a content part up), `plus`
+- **list transfer**: `chevron-right` moves the selected entries into the target
+  list, `chevron-left` back (the teaser form's article and source lists)
 - **external link marker**: `arrow-up-right`, before a link or feed preview that
   opens somewhere else (the content part listings of link, link list and RSS
   feed)
@@ -687,9 +689,9 @@ existing entry already covers the action before adding a second glyph for it.
   places they were in before.
 - The type forms are included into a slot: `$cp_form_bootstrap` lists the types
   that render their own Bootstrap markup and are included into a `card-body`
-  (currently `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `10`, `11`, `12`, `14`, `15`,
-  `16`, `18`, `19`, `21`, `22`, `24`, `26`, `27`, `28`, `29`, `33`, `50`, `51`,
-  `52`, `89` and `100`), every other type form
+  (currently `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `10`, `11`, `12`, `13`,
+  `14`, `15`, `16`, `18`, `19`, `21`, `22`, `24`, `25`, `26`, `27`, `28`, `29`,
+  `33`, `50`, `51`, `52`, `89` and `100`), every other type form
   still writes `<tr><td>` rows and is included into a plain `table.w-100` inside
   the card body. Revamping a type means rewriting its `cnt<type>.inc.php` as
   `div`-based Bootstrap markup and adding its number to that list; do not remove
@@ -781,6 +783,48 @@ existing entry already covers the action before adding a second glyph for it.
 - Verified with one temporary content part per type on article 1: no table
   leftovers, no PHP warnings, all fields rendered. The temporary parts were
   removed again.
+
+## Content part editor: teaser, search and media player
+
+- Three more type forms are Bootstrap: teaser/link article `8`, search `13` and
+  media player `25`. Field names, ids and inline handlers are unchanged.
+- Teaser: the mode rows keep their ids — `calink_manual_0/1/2`,
+  `calink_auto_0/1` and `prio0`/`prio1` — but are `div` blocks now, because
+  `showHide_TeaserArticleSelection()` in `contentpart.js` only toggles `display`
+  by id. `prio0` wraps the checkbox and `prio1` the label, so the priority mark
+  still disappears in manual mode while `calink_prio` keeps its id.
+- The article and source lists stay `multiple` selects (`calink[]` with id
+  `calink`, `calinklist`) because `moveSelectedOptions()`, `moveOptionUp()` and
+  `moveOptionDown()` from `optionselect.js` address them through the
+  `teaser_items`/`source_items` globals the template defines. Their actions are
+  `backend_action()` buttons: `chevron-up`, `chevron-down`, `chevron-left` (back
+  to the source list, `theme-danger`) and `chevron-right` (into the selection).
+- The filter row's `input type="image"` magnifier is a primary button labelled
+  with `be_filter` and still named `Submit`, so the filter values reach the POST
+  the way they did.
+- The teaser tags use the jQuery autoSuggest widget like every other tag field:
+  the visible `#calink_keyword_autosuggest` sits next to the hidden
+  `calink_category` that is filled on submit from
+  `#as-values-teaser-category-autosuggest`, so the server still reads
+  `$_POST['calink_category']`. The MooTools `Autocompleter.Ajax.Json` of this
+  form and its `initMootools()` calls are gone.
+- Search: result/word/minimum-character fields with their marks, the start-level
+  select, the default type, the "search not" marks, the news module block
+  (language field, tag autosuggest over the hidden `csearch_news_category`, AND/OR
+  and target), the module marks, the label fields and the intro/result/no-result
+  texts. The news tag field moved to autoSuggest; the news **language** field
+  stays a plain text field with its `keyup` filter, because the `lang` action of
+  the connector answers plain strings and autoSuggest needs objects.
+- Media player: the H.264, WebM and Ogg blocks are generated from one list, each
+  with its internal/external radios, the internal id, the file field, the media
+  browser button and a `trash` action, plus the Flash fallback block and the
+  thumbnail. The settings are marks, selects and the five hidden legacy fields,
+  and the whole `setIdName()`/`setImgIdName()`/`setPlayerSize()`/marker script is
+  unchanged.
+- Verified with one temporary content part per type on article 1: no table rows,
+  no spacer gifs, no PHP warnings. A save round-trip of the teaser form stored
+  `alink_id`, `alink_category` (split from the hidden field), type, priority,
+  max, columns, unique and AND/OR. The temporary parts were removed again.
 
 ## Content part editor: guestbook, recipe, images div, news, rollover images, map
 

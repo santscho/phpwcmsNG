@@ -25,6 +25,10 @@ if(!$content["id"]) {
     include PHPWCMS_ROOT.'/include/inc_lib/content/cnt25.takeval.inc.php';
 }
 
+if(!is_array($fmp_data)) {
+    $fmp_data = array();
+}
+
 if(!isset($fmp_data['fmp_set_skin_html5'])) {
     $fmp_data['fmp_set_skin_html5'] = '';
 }
@@ -67,14 +71,30 @@ if(!isset($fmp_data['fmp_set_downloadbutton'])) {
     $fmp_data['fmp_set_downloadbutton'] = 0;
 }
 
-?>
-<tr><td colspan="2" class="rowspacer0x7"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
+$fmp_html5_media = array(
+    'h264' => array(
+        'label'     => $BL['be_html5_h264'],
+        'ext'       => 'mp4, m4v, mov, m4p, m4a, mp3, aac, mpeg',
+        'opt'       => 12
+    ),
+    'webm' => array(
+        'label'     => $BL['be_html5_webm'],
+        'ext'       => 'webm',
+        'opt'       => 13
+    ),
+    'ogg'  => array(
+        'label'     => $BL['be_html5_ogg'],
+        'ext'       => '.ogg, .ogv, .oga, .ogx',
+        'opt'       => 14
+    )
+);
 
-<tr>
-    <td align="right" class="chatlist"><?php echo $BL['be_admin_struct_template']; ?>:&nbsp;</td>
-    <td><table border="0" cellpadding="0" cellspacing="0" summary="" class="width440">
-        <tr>
-            <td><select name="fmp_template" id="fmp_template" class="width150">
+?>
+<div class="row g-4">
+
+    <div class="col-12 md:col-6">
+        <label class="form-label" for="fmp_template"><?php echo $BL['be_admin_struct_template']; ?></label>
+        <select name="fmp_template" id="fmp_template" class="form-control">
 <?php
 
     echo '<option value="">'.$BL['be_admin_tmpl_default'].'</option>'.LF;
@@ -90,13 +110,16 @@ if(!isset($fmp_data['fmp_set_downloadbutton'])) {
     }
 
 ?>
-            </select></td>
+        </select>
+    </div>
 
-            <td width="20%">&nbsp;</td>
+    <div class="col-12 md:col-6">
+        <div class="d-flex flex-wrap align-items-end gap-3">
+            <div class="flex-grow-1">
+                <label class="form-label" for="fmp_width_height"><?php echo $BL['be_cnt_maxw'] ?></label>
+                <select name="fmp_width_height" id="fmp_width_height" class="form-control" onchange="setPlayerSize(this);">
 
-            <td><select name="fmp_width_height" id="fmp_width_height" onchange="setPlayerSize(this);">
-
-                <option><?php echo $BL['be_flashplayer_selectsize'] ?></option>
+                    <option><?php echo $BL['be_flashplayer_selectsize'] ?></option>
 <?php
 
     if(empty($template_default['settings']['html5_player']['sizes'])) {
@@ -127,172 +150,101 @@ if(!isset($fmp_data['fmp_set_downloadbutton'])) {
 
         foreach($template_default['settings']['html5_player']['sizes'] as $val => $option):
 ?>
-                <option value="<?php echo $val ?>"<?php is_selected($val, $fmp_data['fmp_width'].'x'.$fmp_data['fmp_height']); ?>><?php echo html($option); ?></option>
+                    <option value="<?php echo $val ?>"<?php is_selected($val, $fmp_data['fmp_width'].'x'.$fmp_data['fmp_height']); ?>><?php echo html($option); ?></option>
 
 <?php   endforeach; ?>
 
-            </select></td>
+                </select>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <input name="fmp_width" type="text" class="form-control w-auto text-center" id="fmp_width" size="4" maxlength="4" value="<?php echo $fmp_data['fmp_width']; ?>">
+                <span class="small fg-secondary">x</span>
+                <input name="fmp_height" type="text" class="form-control w-auto text-center" id="fmp_height" size="4" maxlength="4" value="<?php echo $fmp_data['fmp_height']; ?>">
+                <span class="small fg-secondary">px</span>
+            </div>
+        </div>
+    </div>
 
-            <td>&nbsp;&nbsp;</td>
+    <div class="col-12">
+        <div class="form-label"><?php echo $BL['be_html5_media'] ?></div>
+        <div class="d-flex flex-column gap-4">
+<?php foreach($fmp_html5_media as $fmp_key => $fmp_format): ?>
+            <div>
+                <div class="form-label mb-1"><?php echo $fmp_format['label'] ?> <span class="small fg-secondary">&mdash; <i><?php echo $fmp_format['ext'] ?></i></span></div>
+                <div class="d-flex flex-column gap-2">
+                    <div class="d-flex flex-wrap align-items-center gap-3">
+                        <div class="form-field">
+                            <input class="radio" name="fmp_int_ext_<?php echo $fmp_key ?>" id="fmp_int_ext0_<?php echo $fmp_key ?>" type="radio" value="0" <?php is_checked(0, $fmp_data['fmp_int_ext_'.$fmp_key]); ?>>
+                            <label for="fmp_int_ext0_<?php echo $fmp_key ?>"><?php echo $BL['be_cnt_internal'] ?></label>
+                        </div>
+                        <input name="fmp_internal_id_<?php echo $fmp_key ?>" type="hidden" id="fmp_internal_id_<?php echo $fmp_key ?>" value="<?php echo $fmp_data['fmp_internal_id_'.$fmp_key] ?>">
+                        <input name="fmp_internal_name_<?php echo $fmp_key ?>" type="text" id="fmp_internal_name_<?php echo $fmp_key ?>" class="form-control w-auto" value="<?php echo html($fmp_data['fmp_internal_name_'.$fmp_key]) ?>" size="40" onfocus="this.blur()" onclick="openFileBrowser('filebrowser.php?opt=<?php echo $fmp_format['opt'] ?>');">
+                        <a href="javascript:" class="btn btn-outline theme-secondary btn-sm" onclick="openFileBrowser('filebrowser.php?opt=<?php echo $fmp_format['opt'] ?>');"><?php echo $BL['be_cnt_openmediabrowser'] ?></a>
+<?php echo backend_action('#', 'trash', $BL['be_cnt_delmedia'], 'normal', ' onclick="getObjectById(\'fmp_internal_name_'.$fmp_key.'\').value=\'\';getObjectById(\'fmp_internal_id_'.$fmp_key.'\').value=\'0\';this.blur();return false;"', 'danger') ?>
 
-            <td><input name="fmp_width" type="text" class="width35 center-text" id="fmp_width" size="4" maxlength="4" value="<?php echo $fmp_data['fmp_width']; ?>" /></td>
-            <td class="chatlist">&nbsp;x&nbsp;</td>
+                    </div>
+                    <div class="d-flex flex-wrap align-items-center gap-3">
+                        <div class="form-field">
+                            <input class="radio" name="fmp_int_ext_<?php echo $fmp_key ?>" id="fmp_int_ext1_<?php echo $fmp_key ?>" type="radio" value="1" <?php is_checked(1, $fmp_data['fmp_int_ext_'.$fmp_key]); ?>>
+                            <label for="fmp_int_ext1_<?php echo $fmp_key ?>"><?php echo $BL['be_cnt_external'] ?></label>
+                        </div>
+                        <input name="fmp_external_file_<?php echo $fmp_key ?>" type="text" id="fmp_external_file_<?php echo $fmp_key ?>" class="form-control" value="<?php echo html($fmp_data['fmp_external_file_'.$fmp_key]) ?>" size="40">
+                    </div>
+                </div>
+            </div>
+<?php endforeach; ?>
+        </div>
+    </div>
 
-            <td><input name="fmp_height" type="text" class="width35 center-text" id="fmp_height" size="4" maxlength="4" value="<?php echo $fmp_data['fmp_height']; ?>" /></td>
-            <td class="chatlist">&nbsp;px</td>
+    <div class="col-12">
+        <div class="form-label"><?php echo $BL['be_flash_media'] ?> <span class="small fg-secondary">&mdash; <i>mp4, mp3, mov, m4v, jpg, png</i> / Flash (<?php echo $BL['be_deprecated'] ?>) <i>flv, swf, f4v</i></span></div>
+        <div class="d-flex flex-column gap-2">
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                <div class="form-field">
+                    <input class="radio" name="fmp_int_ext" id="fmp_int_ext0" type="radio" value="0" <?php is_checked(0, $fmp_data['fmp_int_ext']); ?>>
+                    <label for="fmp_int_ext0"><?php echo $BL['be_cnt_internal'] ?></label>
+                </div>
+                <input name="fmp_internal_id" type="hidden" id="fmp_internal_id" value="<?php echo $fmp_data['fmp_internal_id'] ?>">
+                <input name="fmp_internal_name" type="text" id="fmp_internal_name" class="form-control w-auto" value="<?php echo html($fmp_data['fmp_internal_name']) ?>" size="40" onfocus="this.blur()" onclick="openFileBrowser('filebrowser.php?opt=6');">
+                <a href="javascript:" class="btn btn-outline theme-secondary btn-sm" onclick="openFileBrowser('filebrowser.php?opt=6');"><?php echo $BL['be_cnt_openmediabrowser'] ?></a>
+<?php echo backend_action('#', 'trash', $BL['be_cnt_delmedia'], 'normal', ' onclick="getObjectById(\'fmp_internal_name\').value=\'\';getObjectById(\'fmp_internal_id\').value=\'0\';this.blur();return false;"', 'danger') ?>
 
-        </tr>
-    </table></td>
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                <div class="form-field">
+                    <input class="radio" name="fmp_int_ext" id="fmp_int_ext1" type="radio" value="1" <?php is_checked(1, $fmp_data['fmp_int_ext']); ?>>
+                    <label for="fmp_int_ext1"><?php echo $BL['be_cnt_external'] ?></label>
+                </div>
+                <input name="fmp_external_file" type="text" id="fmp_external_file" class="form-control" value="<?php echo html($fmp_data['fmp_external_file']) ?>" size="40">
+            </div>
+        </div>
+    </div>
 
-</tr>
+    <div class="col-12">
+        <label class="form-label" for="fmp_caption"><?php echo $BL['be_flashplayer_caption'] ?></label>
+        <textarea name="fmp_caption" cols="40" rows="2" class="form-control autosize" id="fmp_caption"><?php echo html($fmp_data['fmp_caption']) ?></textarea>
+    </div>
 
-<tr><td colspan="2" class="rowspacer7x7"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
+    <div class="col-12">
+        <label class="form-label" for="fmp_link"><?php echo $BL['be_admin_page_link'] ?></label>
+        <input name="fmp_link" type="text" id="fmp_link" class="form-control" value="<?php echo html($fmp_data['fmp_link']) ?>" size="40">
+    </div>
 
-<tr>
-    <td align="right" class="chatlist" valign="top"><strong><?php echo $BL['be_html5_media'] ?></strong>:&nbsp;</td>
+    <div class="col-12">
+        <label class="form-label" for="fmp_img_name"><?php echo $BL['be_flashplayer_thumbnail'] ?></label>
+        <div class="d-flex flex-wrap align-items-center gap-3">
+            <input name="fmp_img_name" type="text" id="fmp_img_name" class="form-control w-auto" value="<?php echo html($fmp_data['fmp_img_name']) ?>" size="40" onfocus="this.blur()" onclick="openFileBrowser('filebrowser.php?opt=7');">
+            <a href="javascript:" class="btn btn-outline theme-secondary btn-sm" onclick="openFileBrowser('filebrowser.php?opt=7');"><?php echo $BL['be_cnt_openmediabrowser'] ?></a>
+<?php echo backend_action('#', 'trash', $BL['be_cnt_delmedia'], 'normal', ' onclick="getObjectById(\'fmp_img_name\').value=\'\';getObjectById(\'fmp_img_id\').value=\'0\';this.blur();return false;"', 'danger') ?>
 
-    <td><table border="0" cellpadding="0" cellspacing="0" summary="">
+            <input name="fmp_img_id" type="hidden" id="fmp_img_id" value="<?php echo $fmp_data['fmp_img_id'] ?>">
+        </div>
+    </div>
 
-        <!-- HTML5 Media H.264 -->
-        <tr>
-            <td colspan="3" class="chatlist tdbottom3" align="right"><?php echo $BL['be_media_format'] ?>&nbsp;&nbsp;</td>
-            <td colspan="3" class="v10 tdbottom3 greyed">&nbsp;<?php echo $BL['be_html5_h264'] ?> &#8212; <i>mp4, m4v, mov, m4p, m4a, mp3, aac, mpeg</i></td>
-        </tr>
-        <tr>
-            <td bgcolor="#E7E8EB"><input name="fmp_int_ext_h264" id="fmp_int_ext0_h264" type="radio" value="0" <?php is_checked(0, $fmp_data['fmp_int_ext_h264']); ?> /></td>
-            <td bgcolor="#E7E8EB" class="v10"><label for="fmp_int_ext0_h264"><?php echo $BL['be_cnt_internal'] ?>&nbsp;</label></td>
-            <td>&nbsp;<input name="fmp_internal_id_h264" type="hidden" id="fmp_internal_id_h264" value="<?php echo $fmp_data['fmp_internal_id_h264'] ?>" /></td>
-            <td><input name="fmp_internal_name_h264" type="text" id="fmp_internal_name_h264" class="width300 greyed" value="<?php echo html($fmp_data['fmp_internal_name_h264']) ?>" size="40" onfocus="this.blur()" onclick="openFileBrowser('filebrowser.php?opt=12');" /></td>
-            <td><a href="#" title="<?php echo $BL['be_cnt_openmediabrowser'] ?>" onclick="openFileBrowser('filebrowser.php?opt=12');return false;"><img src="img/button/open_image_button.gif" alt="" border="0" hspace="3" /></a></td>
-            <td><a href="#" title="<?php echo $BL['be_cnt_delmedia'] ?>" onclick="getObjectById('fmp_internal_name_h264').value='';getObjectById('fmp_internal_id_h264').value='0';this.blur();return false;"><img src="img/button/del_image_button.gif" alt="" border="0" /></a></td>
-        </tr>
-        <tr><td colspan="6"><img src="img/leer.gif" alt="" width="1" height="3" /></td></tr>
-        <tr>
-            <td bgcolor="#E7E8EB"><input name="fmp_int_ext_h264" id="fmp_int_ext1_h264" type="radio" value="1" <?php is_checked(1, $fmp_data['fmp_int_ext_h264']); ?> /></td>
-            <td bgcolor="#E7E8EB" class="v10"><label for="fmp_int_ext1_h264"><?php echo $BL['be_cnt_external'] ?>&nbsp;</label></td>
-            <td>&nbsp;</td>
-            <td colspan="3"><input name="fmp_external_file_h264" type="text" id="fmp_external_file_h264" class="width300" value="<?php echo html($fmp_data['fmp_external_file_h264']) ?>" size="40" /></td>
-        </tr>
-
-        <tr><td colspan="6"><img src="img/leer.gif" alt="" width="1" height="6" /></td></tr>
-
-        <!-- HTML5 Media WebM -->
-        <tr>
-            <td colspan="3" class="chatlist tdbottom3" align="right"><?php echo $BL['be_media_format'] ?>&nbsp;&nbsp;</td>
-            <td colspan="3" class="v10 tdbottom3 greyed">&nbsp;<?php echo $BL['be_html5_webm'] ?> &#8212; <i>webm</i></td>
-        </tr>
-        <tr>
-            <td bgcolor="#E7E8EB"><input name="fmp_int_ext_webm" id="fmp_int_ext0_webm" type="radio" value="0" <?php is_checked(0, $fmp_data['fmp_int_ext_webm']); ?> /></td>
-            <td bgcolor="#E7E8EB" class="v10"><label for="fmp_int_ext0_webm"><?php echo $BL['be_cnt_internal'] ?>&nbsp;</label></td>
-            <td>&nbsp;<input name="fmp_internal_id_webm" type="hidden" id="fmp_internal_id_webm" value="<?php echo $fmp_data['fmp_internal_id_webm'] ?>" /></td>
-            <td><input name="fmp_internal_name_webm" type="text" id="fmp_internal_name_webm" class="width300 greyed" value="<?php echo html($fmp_data['fmp_internal_name_webm']) ?>" size="40" onfocus="this.blur()" onclick="openFileBrowser('filebrowser.php?opt=13');" /></td>
-            <td><a href="#" title="<?php echo $BL['be_cnt_openmediabrowser'] ?>" onclick="openFileBrowser('filebrowser.php?opt=13');return false;"><img src="img/button/open_image_button.gif" alt="" border="0" hspace="3" /></a></td>
-            <td><a href="#" title="<?php echo $BL['be_cnt_delmedia'] ?>" onclick="getObjectById('fmp_internal_name_webm').value='';getObjectById('fmp_internal_id_webm').value='0';this.blur();return false;"><img src="img/button/del_image_button.gif" alt="" border="0" /></a></td>
-        </tr>
-        <tr><td colspan="6"><img src="img/leer.gif" alt="" width="1" height="3" /></td></tr>
-        <tr>
-            <td bgcolor="#E7E8EB"><input name="fmp_int_ext_webm" id="fmp_int_ext1_webm" type="radio" value="1" <?php is_checked(1, $fmp_data['fmp_int_ext_webm']); ?> /></td>
-            <td bgcolor="#E7E8EB" class="v10"><label for="fmp_int_ext1_webm"><?php echo $BL['be_cnt_external'] ?>&nbsp;</label></td>
-            <td>&nbsp;</td>
-            <td colspan="3"><input name="fmp_external_file_webm" type="text" id="fmp_external_file_webm" class="width300" value="<?php echo html($fmp_data['fmp_external_file_webm']) ?>" size="40" /></td>
-        </tr>
-
-        <tr><td colspan="6"><img src="img/leer.gif" alt="" width="1" height="6" /></td></tr>
-
-        <!-- HTML5 Media Ogg -->
-        <tr>
-            <td colspan="3" class="chatlist tdbottom3" align="right"><?php echo $BL['be_media_format'] ?>&nbsp;&nbsp;</td>
-            <td colspan="3" class="v10 tdbottom3 greyed">&nbsp;<?php echo $BL['be_html5_ogg'] ?> &#8212; <i>.ogg, .ogv, .oga, .ogx</i></td>
-        </tr>
-        <tr>
-            <td bgcolor="#E7E8EB"><input name="fmp_int_ext_ogg" id="fmp_int_ext0_ogg" type="radio" value="0" <?php is_checked(0, $fmp_data['fmp_int_ext_ogg']); ?> /></td>
-            <td bgcolor="#E7E8EB" class="v10"><label for="fmp_int_ext0_ogg"><?php echo $BL['be_cnt_internal'] ?>&nbsp;</label></td>
-            <td>&nbsp;<input name="fmp_internal_id_ogg" type="hidden" id="fmp_internal_id_ogg" value="<?php echo $fmp_data['fmp_internal_id_ogg'] ?>" /></td>
-            <td><input name="fmp_internal_name_ogg" type="text" id="fmp_internal_name_ogg" class="width300 greyed" value="<?php echo html($fmp_data['fmp_internal_name_ogg']) ?>" size="40" onfocus="this.blur()" onclick="openFileBrowser('filebrowser.php?opt=14');" /></td>
-            <td><a href="#" title="<?php echo $BL['be_cnt_openmediabrowser'] ?>" onclick="openFileBrowser('filebrowser.php?opt=14');return false;"><img src="img/button/open_image_button.gif" alt="" border="0" hspace="3" /></a></td>
-            <td><a href="#" title="<?php echo $BL['be_cnt_delmedia'] ?>" onclick="getObjectById('fmp_internal_name_ogg').value='';getObjectById('fmp_internal_id_ogg').value='0';this.blur();return false;"><img src="img/button/del_image_button.gif" alt="" border="0" /></a></td>
-        </tr>
-        <tr><td colspan="6"><img src="img/leer.gif" alt="" width="1" height="3" /></td></tr>
-        <tr>
-            <td bgcolor="#E7E8EB"><input name="fmp_int_ext_ogg" id="fmp_int_ext1_ogg" type="radio" value="1" <?php is_checked(1, $fmp_data['fmp_int_ext_ogg']); ?> /></td>
-            <td bgcolor="#E7E8EB" class="v10"><label for="fmp_int_ext1_ogg"><?php echo $BL['be_cnt_external'] ?>&nbsp;</label></td>
-            <td>&nbsp;</td>
-            <td colspan="3"><input name="fmp_external_file_ogg" type="text" id="fmp_external_file_ogg" class="width300" value="<?php echo html($fmp_data['fmp_external_file_ogg']) ?>" size="40" /></td>
-        </tr>
-
-    </table></td>
-</tr>
-
-<tr><td colspan="2" class="rowspacer7x7"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-
-<tr>
-    <td align="right" class="chatlist" valign="top"><strong><?php echo $BL['be_flash_media'] ?></strong>:&nbsp;</td>
-
-    <td><table border="0" cellpadding="0" cellspacing="0" summary="">
-
-        <!-- Flash Media Fallback -->
-        <tr>
-            <td colspan="3" class="chatlist tdbottom3" align="right"><?php echo $BL['be_media_format'] ?>&nbsp;&nbsp;</td>
-            <td colspan="3" class="v10 tdbottom3 greyed">&nbsp;<i>mp4, mp3, mov, m4v, jpg, png</i> / Flash (<?php echo $BL['be_deprecated'] ?>) <i>flv, swf, f4v</i></td>
-        </tr>
-        <tr>
-            <td bgcolor="#E7E8EB"><input name="fmp_int_ext" id="fmp_int_ext0" type="radio" value="0" <?php is_checked(0, $fmp_data['fmp_int_ext']); ?> /></td>
-            <td bgcolor="#E7E8EB" class="v10"><label for="fmp_int_ext0"><?php echo $BL['be_cnt_internal'] ?>&nbsp;</label></td>
-            <td>&nbsp;<input name="fmp_internal_id" type="hidden" id="fmp_internal_id" value="<?php echo $fmp_data['fmp_internal_id'] ?>" /></td>
-            <td><input name="fmp_internal_name" type="text" id="fmp_internal_name" class="width300 greyed" value="<?php echo html($fmp_data['fmp_internal_name']) ?>" size="40" onfocus="this.blur()" onclick="openFileBrowser('filebrowser.php?opt=6');" /></td>
-            <td><a href="#" title="<?php echo $BL['be_cnt_openmediabrowser'] ?>" onclick="openFileBrowser('filebrowser.php?opt=6');return false;"><img src="img/button/open_image_button.gif" alt="" border="0" hspace="3" /></a></td>
-            <td><a href="#" title="<?php echo $BL['be_cnt_delmedia'] ?>" onclick="getObjectById('fmp_internal_name').value='';getObjectById('fmp_internal_id').value='0';this.blur();return false;"><img src="img/button/del_image_button.gif" alt="" border="0" /></a></td>
-        </tr>
-        <tr><td colspan="6"><img src="img/leer.gif" alt="" width="1" height="3" /></td></tr>
-        <tr>
-            <td bgcolor="#E7E8EB"><input name="fmp_int_ext" id="fmp_int_ext1" type="radio" value="1" <?php is_checked(1, $fmp_data['fmp_int_ext']); ?> /></td>
-            <td bgcolor="#E7E8EB" class="v10"><label for="fmp_int_ext1"><?php echo $BL['be_cnt_external'] ?>&nbsp;</label></td>
-            <td>&nbsp;</td>
-            <td colspan="3"><input name="fmp_external_file" type="text" id="fmp_external_file" class="width300" value="<?php echo html($fmp_data['fmp_external_file']) ?>" size="40" /></td>
-        </tr>
-
-    </table></td>
-</tr>
-
-<tr><td colspan="2" class="rowspacer7x7"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-
-<tr>
-    <td align="right" class="chatlist tdtop3"><?php echo $BL['be_flashplayer_caption'] ?>:&nbsp;</td>
-    <td><textarea name="fmp_caption" cols="40" rows="2" class="width440 autosize" id="fmp_caption"><?php echo html($fmp_data['fmp_caption']) ?></textarea></td>
-</tr>
-
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="3"></td></tr>
-
-<tr>
-    <td align="right" class="chatlist tdtop3"><?php echo $BL['be_admin_page_link'] ?>:&nbsp;</td>
-    <td><input name="fmp_link" type="text" id="fmp_link" class="width440" value="<?php echo html($fmp_data['fmp_link']) ?>" size="40" /></td>
-</tr>
-
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="3"></td></tr>
-
-<tr>
-    <td align="right" class="chatlist"><?php echo $BL['be_flashplayer_thumbnail'] ?>:&nbsp;</td>
-
-    <td><table border="0" cellpadding="0" cellspacing="0" summary="">
-
-        <tr>
-            <td><input name="fmp_img_name" type="text" id="fmp_img_name" class="width300 greyed" value="<?php echo html($fmp_data['fmp_img_name']) ?>" size="40" onfocus="this.blur()" onclick="openFileBrowser('filebrowser.php?opt=7');" /></td>
-            <td><a href="#" title="<?php echo $BL['be_cnt_openmediabrowser'] ?>" onclick="openFileBrowser('filebrowser.php?opt=7');return false;"><img src="img/button/open_image_button.gif" alt="" border="0" hspace="3" /></a></td>
-            <td><a href="#" title="<?php echo $BL['be_cnt_delmedia'] ?>" onclick="getObjectById('fmp_img_name').value='';getObjectById('fmp_img_id').value='0';this.blur();return false;"><img src="img/button/del_image_button.gif" alt="" border="0" /></a>
-            <input name="fmp_img_id" type="hidden" id="fmp_img_id" value="<?php echo $fmp_data['fmp_img_id'] ?>" />
-            </td>
-        </tr>
-
-    </table></td>
-</tr>
-
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="3"></td></tr>
-
-<tr>
-    <td align="right" class="chatlist tdtop3"><?php echo $BL['be_flashplayer_marker'] ?>:&nbsp;</td>
-    <td>
-        <textarea name="fmp_marker" cols="40" rows="2" class="width440 autosize" id="fmp_marker"><?php echo html($fmp_data['fmp_marker']) ?></textarea>
-        <span class="caption width440">
+    <div class="col-12">
+        <label class="form-label" for="fmp_marker"><?php echo $BL['be_flashplayer_marker'] ?></label>
+        <textarea name="fmp_marker" cols="40" rows="2" class="form-control autosize" id="fmp_marker"><?php echo html($fmp_data['fmp_marker']) ?></textarea>
+        <div class="small fg-secondary mt-3">
             <?php echo $BL['be_marker_time']; ?>
             |
             <?php echo $BL['be_marker_text']; ?>
@@ -300,123 +252,112 @@ if(!isset($fmp_data['fmp_set_downloadbutton'])) {
             <?php echo $BL['be_marker_overlaytext']; ?>
             |
             <?php echo $BL['be_cnt_css_class']; ?>&nbsp;&crarr;&nbsp;&hellip;
-        </span>
-        <div id="fmp_marker_links" style="display:none;" class="tdtop5"></div>
-    </td>
-</tr>
+        </div>
+        <div id="fmp_marker_links" style="display:none" class="mt-3"></div>
+    </div>
 
-
-<tr><td colspan="2" class="rowspacer10x10"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-
-
-<tr>
-    <td align="right" class="chatlist tdtop3"><?php echo $BL['be_settings'] ?>:&nbsp;</td>
-
-    <td><table border="0" cellpadding="0" cellspacing="0" summary="" class="settings">
-
-        <tr>
-            <td class="chatlist" align="right"><label for="fmp_set_html5only"><?php echo $BL['be_display_html5_only'] ?>:&nbsp;</label></td>
-            <td><input type="checkbox" name="fmp_set_html5only" id="fmp_set_html5only" value="1"<?php is_checked(1, $fmp_data['fmp_set_html5only']) ?> /></td>
-        </tr>
-
-        <tr>
-            <td class="chatlist" align="right"><label for="fmp_set_audio"><?php echo $BL['be_audio_only'] ?>:&nbsp;</label></td>
-            <td><input type="checkbox" name="fmp_set_audio" id="fmp_set_audio" value="1"<?php is_checked(1, $fmp_data['fmp_set_audio']) ?> /></td>
-        </tr>
-
-        <tr>
-            <td class="chatlist" align="right"><label for="fmp_set_autostart">Autostart:&nbsp;</label></td>
-            <td><input type="checkbox" name="fmp_set_autostart" id="fmp_set_autostart" value="1"<?php is_checked(1, $fmp_data['fmp_set_autostart']) ?> /></td>
-        </tr>
-
-        <tr>
-            <td class="chatlist" align="right"><label for="fmp_set_loop">Loop:&nbsp;</label></td>
-            <td><input type="checkbox" name="fmp_set_loop" id="fmp_set_loop" value="1"<?php is_checked(1, $fmp_data['fmp_set_loop']) ?> /></td>
-        </tr>
-
-        <tr>
-            <td class="chatlist" align="right"><label for="fmp_set_downloadbutton"><?php echo $BL['be_hide_downloadbutton'] ?>:&nbsp;</label></td>
-            <td><input type="checkbox" name="fmp_set_downloadbutton" id="fmp_set_downloadbutton" value="1"<?php is_checked(1, $fmp_data['fmp_set_downloadbutton']) ?> /></td>
-        </tr>
-
-        <tr>
-            <td class="chatlist" align="right"><label for="fmp_set_preload">Preload:&nbsp;</label></td>
-            <td><select name="fmp_set_preload" id="fmp_set_preload">
-                <option value="auto"<?php is_selected('auto', $fmp_data['fmp_set_preload']) ?>><?php echo $BL['automatic']; ?></option>
-                <option value="metadata"<?php is_selected('metadata', $fmp_data['fmp_set_preload']) ?>>Metadata</option>
-                <option value="none"<?php is_selected('none', $fmp_data['fmp_set_preload']) ?>><?php echo $BL['be_off'] ?></option>
-            </select></td>
-        </tr>
-
-        <tr>
-            <td class="chatlist" align="right"><label for="fmp_set_skin"><?php echo $BL['be_skin'].' '.$BL['be_html5_media'] ?>:&nbsp;</label></td>
-            <td><select name="fmp_set_skin_html5">
-            <option value="default"<?php is_selected('', $fmp_data['fmp_set_skin_html5']) ?>><?php echo $BL['be_admin_tmpl_default'] ?></option>
+    <div class="col-12">
+        <div class="form-label"><?php echo $BL['be_settings'] ?></div>
+        <div class="row g-3">
+            <div class="col-12 md:col-6">
+                <div class="d-flex flex-column gap-2">
+                    <div class="form-field">
+                        <input class="check" type="checkbox" name="fmp_set_html5only" id="fmp_set_html5only" value="1"<?php is_checked(1, $fmp_data['fmp_set_html5only']) ?>>
+                        <label for="fmp_set_html5only"><?php echo $BL['be_display_html5_only'] ?></label>
+                    </div>
+                    <div class="form-field">
+                        <input class="check" type="checkbox" name="fmp_set_audio" id="fmp_set_audio" value="1"<?php is_checked(1, $fmp_data['fmp_set_audio']) ?>>
+                        <label for="fmp_set_audio"><?php echo $BL['be_audio_only'] ?></label>
+                    </div>
+                    <div class="form-field">
+                        <input class="check" type="checkbox" name="fmp_set_autostart" id="fmp_set_autostart" value="1"<?php is_checked(1, $fmp_data['fmp_set_autostart']) ?>>
+                        <label for="fmp_set_autostart">Autostart</label>
+                    </div>
+                    <div class="form-field">
+                        <input class="check" type="checkbox" name="fmp_set_loop" id="fmp_set_loop" value="1"<?php is_checked(1, $fmp_data['fmp_set_loop']) ?>>
+                        <label for="fmp_set_loop">Loop</label>
+                    </div>
+                    <div class="form-field">
+                        <input class="check" type="checkbox" name="fmp_set_downloadbutton" id="fmp_set_downloadbutton" value="1"<?php is_checked(1, $fmp_data['fmp_set_downloadbutton']) ?>>
+                        <label for="fmp_set_downloadbutton"><?php echo $BL['be_hide_downloadbutton'] ?></label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 md:col-6">
+                <div class="d-flex flex-column gap-3">
+                    <div>
+                        <label class="form-label" for="fmp_set_preload">Preload</label>
+                        <select name="fmp_set_preload" id="fmp_set_preload" class="form-control">
+                            <option value="auto"<?php is_selected('auto', $fmp_data['fmp_set_preload']) ?>><?php echo $BL['automatic']; ?></option>
+                            <option value="metadata"<?php is_selected('metadata', $fmp_data['fmp_set_preload']) ?>>Metadata</option>
+                            <option value="none"<?php is_selected('none', $fmp_data['fmp_set_preload']) ?>><?php echo $BL['be_off'] ?></option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label" for="fmp_set_skin_html5"><?php echo $BL['be_skin'].' '.$BL['be_html5_media'] ?></label>
+                        <select name="fmp_set_skin_html5" id="fmp_set_skin_html5" class="form-control">
+                            <option value="default"<?php is_selected('', $fmp_data['fmp_set_skin_html5']) ?>><?php echo $BL['be_admin_tmpl_default'] ?></option>
 <?php
-            // skins for HTML5 Media Player
-            $skins = returnFileListAsArray(PHPWCMS_TEMPLATE.'lib/video-js/skins', 'css');
-            if(is_array($skins) && count($skins)):
-                foreach($skins as $skin):
-                    $skin = cut_ext($skin['filename']);
+                            // skins for HTML5 Media Player
+                            $skins = returnFileListAsArray(PHPWCMS_TEMPLATE.'lib/video-js/skins', 'css');
+                            if(is_array($skins) && count($skins)):
+                                foreach($skins as $skin):
+                                    $skin = cut_ext($skin['filename']);
 ?>
-            <option value="<?php
-                echo html($skin)
-            ?>"<?php is_selected($skin, $fmp_data['fmp_set_skin_html5']) ?>><?php
-                echo html(ucwords(str_replace('_', ' ', $skin)))
-            ?></option>
+                            <option value="<?php
+                                echo html($skin)
+                            ?>"<?php is_selected($skin, $fmp_data['fmp_set_skin_html5']) ?>><?php
+                                echo html(ucwords(str_replace('_', ' ', $skin)))
+                            ?></option>
 <?php
-                endforeach;
-            endif;
+                                endforeach;
+                            endif;
 ?>
-            </select></td>
-        </tr>
-
-        <tr>
-            <td class="chatlist" align="right"><label for="fmp_set_showcontrols">Controlbar:&nbsp;</label></td>
-            <td><select name="fmp_set_showcontrols" id="fmp_set_showcontrols">
-
-                <option value="bottom"<?php is_selected('bottom', $fmp_data['fmp_set_showcontrols']) ?>><?php echo $BL['be_admin_tmpl_default'] ?></option>
-                <option value="none"<?php is_selected('none', $fmp_data['fmp_set_showcontrols']) ?>><?php echo $BL['be_admin_struct_hide1'] ?></option>
-                <option value="over"<?php is_selected('over', $fmp_data['fmp_set_showcontrols']) ?>><?php echo $BL['over'] ?></option>
-
-            </select>
-
-            <input type="hidden" name="fmp_set_largecontrols" id="fmp_set_largecontrols" value="0" />
-            <input type="hidden" name="fmp_set_showdigits" id="fmp_set_showdigits" value="0" />
-            <input type="hidden" name="fmp_set_showeq" id="fmp_set_showeq" value="0" />
-            <input type="hidden" name="fmp_set_showvolume" id="fmp_set_showvolume" value="0" />
-            <input type="hidden" name="fmp_set_showdownload" id="fmp_set_showdownload" value="0" />
-
-            </td>
-        </tr>
-
-        <tr>
-            <td class="chatlist" align="right"><label for="fmp_set_volume"><?php echo $BL['be_player_volume'] ?>:&nbsp;</label></td>
-            <td><select name="fmp_set_volume" id="fmp_set_volume">
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label" for="fmp_set_showcontrols">Controlbar</label>
+                        <select name="fmp_set_showcontrols" id="fmp_set_showcontrols" class="form-control">
+                            <option value="bottom"<?php is_selected('bottom', $fmp_data['fmp_set_showcontrols']) ?>><?php echo $BL['be_admin_tmpl_default'] ?></option>
+                            <option value="none"<?php is_selected('none', $fmp_data['fmp_set_showcontrols']) ?>><?php echo $BL['be_admin_struct_hide1'] ?></option>
+                            <option value="over"<?php is_selected('over', $fmp_data['fmp_set_showcontrols']) ?>><?php echo $BL['over'] ?></option>
+                        </select>
+                        <input type="hidden" name="fmp_set_largecontrols" id="fmp_set_largecontrols" value="0">
+                        <input type="hidden" name="fmp_set_showdigits" id="fmp_set_showdigits" value="0">
+                        <input type="hidden" name="fmp_set_showeq" id="fmp_set_showeq" value="0">
+                        <input type="hidden" name="fmp_set_showvolume" id="fmp_set_showvolume" value="0">
+                        <input type="hidden" name="fmp_set_showdownload" id="fmp_set_showdownload" value="0">
+                    </div>
+                    <div>
+                        <label class="form-label" for="fmp_set_volume"><?php echo $BL['be_player_volume'] ?></label>
+                        <select name="fmp_set_volume" id="fmp_set_volume" class="form-control">
 <?php       for($x=0; $x<=100; $x+=5) : ?>
-                <option value="<?php echo $x ?>"<?php is_selected($x, $fmp_data['fmp_set_volume']) ?>><?php echo ($x ? $x.' %' : $BL['be_player_volume_muted']) ?></option>
+                            <option value="<?php echo $x ?>"<?php is_selected($x, $fmp_data['fmp_set_volume']) ?>><?php echo ($x ? $x.' %' : $BL['be_player_volume_muted']) ?></option>
 <?php       endfor; ?>
-            </select>
-            </td>
-        </tr>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="d-flex flex-wrap align-items-end gap-3">
+                    <div>
+                        <label class="form-label" for="fmp_set_bgcolor"><?php echo $BL['be_background_color'].' '.$BL['be_flash_media'] ?> (HEX)</label>
+                        <input name="fmp_set_bgcolor" type="text" class="form-control" id="fmp_set_bgcolor" value="<?php echo html($fmp_data['fmp_set_bgcolor']) ?>" size="40" maxlength="7">
+                    </div>
+                    <div>
+                        <label class="form-label" for="fmp_set_color"><?php echo $BL['be_foreground_color'].' '.$BL['be_flash_media'] ?> (HEX)</label>
+                        <input name="fmp_set_color" type="text" class="form-control" id="fmp_set_color" value="<?php echo html($fmp_data['fmp_set_color']) ?>" size="40" maxlength="7">
+                    </div>
+                    <div class="flex-grow-1">
+                        <label class="form-label" for="fmp_set_logo"><?php echo $BL['be_media_watermark'].' '.$BL['be_flash_media'].' ('.$BL['be_cnt_pages_cust'].')' ?></label>
+                        <input name="fmp_set_logo" type="text" class="form-control" id="fmp_set_logo" value="<?php echo html($fmp_data['fmp_set_logo']) ?>" size="40">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <tr>
-            <td class="chatlist" align="right"><label for="fmp_set_bgcolor"><?php echo $BL['be_background_color'].' '.$BL['be_flash_media'] ?> (HEX):&nbsp;</label></td>
-            <td><input name="fmp_set_bgcolor" type="text" id="fmp_set_bgcolor" class="width75" value="<?php echo html($fmp_data['fmp_set_bgcolor']) ?>" size="40" maxlength="7" /></td>
-        </tr>
-
-        <tr>
-            <td class="chatlist" align="right"><label for="fmp_set_color"><?php echo $BL['be_foreground_color'].' '.$BL['be_flash_media'] ?> (HEX):&nbsp;</label></td>
-            <td><input name="fmp_set_color" type="text" id="fmp_set_color" class="width75" value="<?php echo html($fmp_data['fmp_set_color']) ?>" size="40" maxlength="7" /></td>
-        </tr>
-
-        <tr>
-            <td class="chatlist" align="right"><label for="fmp_set_logo"><?php echo $BL['be_media_watermark'].' '.$BL['be_flash_media'].' ('.$BL['be_cnt_pages_cust'].')' ?>:&nbsp;</label></td>
-            <td><input name="fmp_set_logo" type="text" id="fmp_set_logo" class="width200" value="<?php echo html($fmp_data['fmp_set_logo']) ?>" size="40" /></td>
-        </tr>
-
-    </table>
-
+</div>
 <script type="text/javascript">
 
     function setIdName(file_id, file_name, file_type) {
@@ -486,7 +427,7 @@ if(!isset($fmp_data['fmp_set_downloadbutton'])) {
                                                 let anchor = '#fmp' + fmpId + '-',
                                                     get = 'fmp=' + fmpId + '-',
                                                     markerNum = markerLinks.length + 1;
-                                                    link = '<strong class="chatlist"><?php echo $BL['be_flashplayer_marker']; ?> ' + markerNum + ':</strong><br>';
+                                                    link = '<strong><?php echo $BL['be_flashplayer_marker']; ?> ' + markerNum + ':</strong><br>';
 
                                                 link += '<?php echo $BL['be_article_cnt_anchor']; ?> ';
                                                 link += '<a href="#" onclick="copyToClipboard(\'' + anchor + timer + '\');return false;" title="<?php echo $BL['copy_to_clipboard']; ?>">' + anchor + timer + '</a>, ';
@@ -526,7 +467,4 @@ if(!isset($fmp_data['fmp_set_downloadbutton'])) {
         }
     });
 
- </script>
-
-    </td>
-</tr>
+</script>
