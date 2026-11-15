@@ -24,20 +24,25 @@ $cinfo[2] = cut_string($row["acontent_subtitle"],'&#8230;', 55);
 
 $clink = explode(LF, $row["acontent_text"]);
 $clink_liste = "";
-if(count($clink)) {
-	foreach($clink as $key => $value) {
-		list($clink_name, $clink_link)   = explode("|", $value);
-		$clink_name = trim($clink_name);
-		$clink_link = explode(" ", trim($clink_link));
-		$clink_target = isset($clink_link[1]) ? trim($clink_link[1]) : '';
-		$clink_link = trim($clink_link[0]);
-		$clink_liste .= "<a href=\"".$clink_link."\" target=\"_blank\" ";
-		$clink_liste .= "title=\"Link: ".html($clink_link.trim(' '.$clink_target))."\">";
-		$clink_liste .= "<span class=\"d-inline-flex align-items-center\">" . backend_icon('arrow-up-right') . "</span> ";
-		$clink_liste .= html($clink_name ?: $clink_link)."</a>\n";
+foreach($clink as $value) {
+	if(!str_contains($value, '|')) {
+		continue;
 	}
-	unset($clink);
+	list($clink_name, $clink_link) = explode("|", $value, 2);
+	$clink_name = trim($clink_name);
+	$clink_link = explode(" ", trim($clink_link));
+	$clink_target = isset($clink_link[1]) ? trim($clink_link[1]) : '';
+	$clink_link = trim($clink_link[0]);
+	if($clink_link === '') {
+		continue;
+	}
+	$clink_liste .= "<a href=\"".$clink_link."\" target=\"_blank\" ";
+	$clink_liste .= "title=\"Link: ".html($clink_link.trim(' '.$clink_target))."\">";
+	$clink_liste .= "<span class=\"d-inline-flex align-items-center\">" . backend_icon('arrow-up-right') . "</span> ";
+	$clink_liste .= html($clink_name ?: $clink_link)."</a>\n";
 }
+unset($clink);
+
 $cinfo["result"] = "";
 
 foreach($cinfo as $value) {
