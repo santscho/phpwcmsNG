@@ -347,8 +347,10 @@ if($BE['LANG'] == 'ar') {
             return;
         }
         var cleared = false;
+        var hadTerm = field.value !== '';
+        var onHome = (new URLSearchParams(location.search).get('do') || 'home') === 'home';
         var reset = function () {
-            if (field.value !== '') {
+            if (field.value.trim() !== '') {
                 cleared = false;
                 return;
             }
@@ -359,10 +361,31 @@ if($BE['LANG'] == 'ar') {
             var request = new URLSearchParams();
             request.set('action', 'backend_search_clear');
             request.set('csrftoken', '<?php echo get_token_get_value() ?>');
-            fetch('include/inc_act/ajax_connector.php', {method: 'POST', body: request, credentials: 'same-origin', keepalive: true});
+            fetch('include/inc_act/ajax_connector.php', {method: 'POST', body: request, credentials: 'same-origin', keepalive: true}).then(function (response) {
+                if (!response.ok) {
+                    cleared = false;
+                    return;
+                }
+                // the HOME listing is filtered by the stored term, so it has to be loaded
+                // again - as a GET, because reloading the search result would repeat its POST
+                if (onHome && hadTerm && field.value.trim() === '') {
+                    hadTerm = false;
+                    location.replace(location.pathname + location.search);
+                }
+            }).catch(function () {
+                cleared = false;
+            });
         };
         field.addEventListener('input', reset);
         field.addEventListener('search', reset);
+        // Enter on an emptied field cancels the search instead of submitting an empty term
+        field.form.addEventListener('submit', function (event) {
+            if (field.value.trim() !== '') {
+                return;
+            }
+            event.preventDefault();
+            reset();
+        });
     })();
 </script>
 

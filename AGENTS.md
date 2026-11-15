@@ -72,7 +72,12 @@ These apply to every backend screen that is modernized:
   Emptying the field with its clear button (or by deleting the term) posts the
   `backend_search_clear` action to `include/inc_act/ajax_connector.php`, which
   resets the session value, so a cleared term never reappears after navigating to
-  another section.
+  another section. Enter on an emptied field does the same instead of submitting
+  an empty search.
+- The clear action calls `session_write_close()` before it answers, and the HOME
+  card is loaded again afterwards with `location.replace()` on the current URL:
+  the session has to be written before that request runs, and reloading the
+  search result page would repeat its POST instead of reading the new state.
 - Exceptions are possible, but only when deliberately agreed and kept minimal;
   note the reason in the commit message.
 

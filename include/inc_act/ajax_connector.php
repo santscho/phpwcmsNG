@@ -117,6 +117,9 @@ switch($action) {
             die();
         }
         $_SESSION['phpwcms_backend_search'] = '';
+        // the browser reloads the HOME listing right after this response, so the
+        // session has to be written before the response ends
+        session_write_close();
         $data = array('status' => 'ok');
         break;
 
