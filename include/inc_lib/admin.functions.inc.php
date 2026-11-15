@@ -66,10 +66,6 @@ function struct_levellist($struct, $key, $counter, $copy_article_content, $cut_a
     }
     $a .= '>' . LF;
 
-    if($sortable) {
-        $a .= backend_sort_handle();
-    }
-
     $a .= '<span class="fg-secondary flex-shrink-0" title="' . $BL['be_admin_struct_title'] . '">' . backend_icon('folder') . '</span>';
 
     if($child_count) {
@@ -144,6 +140,11 @@ function struct_levellist($struct, $key, $counter, $copy_article_content, $cut_a
     }
 
     $a .= '</div>' . LF;
+
+    if($sortable) {
+        $a .= backend_sort_handle();
+    }
+
     $a .= '</div>' . LF;
     echo $a;
 
@@ -235,10 +236,6 @@ function struct_articlelist($struct_id, $counter, $copy_article_content, $cut_ar
         }
         $a .= '>' . LF;
 
-        if($sortable) {
-            $a .= backend_sort_handle();
-        }
-
         $a .= '<span class="fg-secondary flex-shrink-0" title="' . $BL['be_article'] . '">' . backend_icon('page') . '</span>';
 
         if($acontent_count && $may_edit) {
@@ -291,6 +288,11 @@ function struct_articlelist($struct_id, $counter, $copy_article_content, $cut_ar
         }
 
         $a .= '</div>' . LF;
+
+        if($sortable) {
+            $a .= backend_sort_handle();
+        }
+
         $a .= '</div>' . LF;
         echo $a;
 
@@ -356,10 +358,6 @@ function struct_articlecontentlist($article, $akey, $copy_article_content, $cut_
         }
         $rows .= '>' . LF;
 
-        if($sortable) {
-            $rows .= backend_sort_handle();
-        }
-
         $rows .= '<span class="fg-secondary flex-shrink-0">' . backend_icon('block') . '</span>';
 
         $rows .= '<div class="flex-grow-1 text-truncate"><span class="fg-secondary">' . html($label) . '</span>';
@@ -410,7 +408,13 @@ function struct_articlecontentlist($article, $akey, $copy_article_content, $cut_
             $rows .= backend_action('', 'trash', $BL['be_article_cnt_delpart'], 'disabled');
         }
 
-        $rows .= '</div>' . LF . '</div>' . LF;
+        $rows .= '</div>' . LF;
+
+        if($sortable) {
+            $rows .= backend_sort_handle();
+        }
+
+        $rows .= '</div>' . LF;
     }
 
     if($rows) {
