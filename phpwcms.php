@@ -682,6 +682,17 @@ if($do === 'articles' || ($do === 'admin' && $p === 6)) {
     $BE['HEADER']['backend.sortable.js'] = getJavaScriptSourceLink('include/inc_js/backend.sortable.js');
 }
 
+// confirmation dialog for the destructive actions, the labels in the backend language
+$BE['HEADER']['backend.confirm.labels'] = '<script type="application/json" id="backend-confirm-labels">' . json_encode(
+    array(
+        'title'  => $BL['be_confirm_title'],
+        'ok'     => $BL['be_confirm_ok'],
+        'cancel' => $BL['be_confirm_cancel'],
+    ),
+    JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP
+) . '</script>';
+$BE['HEADER']['backend.confirm.js'] = '<script type="module" src="include/inc_js/backend.confirm.js"></script>';
+
 // html head section
 $BE['HTML'] = str_replace('<!-- phpwcms HEADER -->', implode(LF, $BE['HEADER']), $BE['HTML']);
 

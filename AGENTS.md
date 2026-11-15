@@ -179,6 +179,48 @@ These apply to every backend screen that is modernized:
 - Legacy screens that still use the old table layout and gif buttons keep their
   plain `title` attributes until they are revamped.
 
+## Confirmation dialog
+
+- Every backend question — delete a file, an article, a content part, empty the
+trash — is asked with the Bootstrap dialog component, never with the browser's
+own `confirm()` box. The templates keep their inline handlers
+(`onclick="return confirm(…)"`, `onchange="if (confirm(…)) …"`), the questions
+and the actions stay where they are.
+- `include/inc_js/backend.confirm.js` answers them. The backend frame
+(`phpwcms.php`) loads it for every page, next to `backend.sortable.js`, and
+prints its labels as JSON in `#backend-confirm-labels` from the language keys
+`be_confirm_title`, `be_confirm_ok` and `be_confirm_cancel`, so the dialog
+speaks the backend language.
+- The module listens for `click` and `change` in the capture phase on
+`document`, finds the `[onclick]`/`[onchange]` element whose source calls
+`confirm(` and reads the question by running that handler once with a `confirm`
+that throws straight after it stored the text — nothing after the question runs
+in that pass. A handler that fails before it reaches `confirm` keeps the browser
+dialog.
+- It then cancels the event and shows one `<dialog class="dialog">` per page
+(`new Dialog(element)` from the bundle, `.dialog-header/body/footer`, title
+`Please confirm`). The question is split at its line breaks into one `<div>` per
+line. `Cancel` is `btn btn-outline theme-secondary btn-sm`; `OK` is the solid
+primary button, and switches to `theme-danger` when the question is a
+destructive one (`delete`, `remove`, `trash`, `empty`, `clear` and their German,
+French, Spanish and Dutch words).
+- On OK the same click or change is dispatched again with `window.confirm =
+() => true` while the element carries `data-backend-confirm-running`, which the
+module ignores — so the handler runs exactly as before and the navigation or
+form submit it triggers still happens. The action runs only after the dialog is
+closed: a modal dialog makes the rest of the page inert.
+- Bootstrap drops a hide requested while the dialog is still opening, so
+`close()` asks again and falls back to the native `close()`.
+- `window.phpwcmsConfirm(question)` is the same question as a promise for
+scripts that have no inline handler:
+`phpwcmsConfirm('Delete this file?').then(confirmed => { if (confirmed) … })`.
+- Do not test a node with `instanceof Element` here: MooTools replaces the
+global constructor in the backend frame.
+- A question text is written in the template as before and escaped with
+`js_singlequote()`; that helper turns line breaks into the `\n` escape, because a
+raw line break inside a JavaScript string is a syntax error — the handler then
+never runs and the action fires without asking.
+
 ## Backend icon set
 
 Every backend icon is a Bootstrap Icon (<https://icons.getbootstrap.com>, v1.13.2,

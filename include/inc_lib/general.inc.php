@@ -650,7 +650,10 @@ function get_list_of_file_keywords() {
 
 function js_singlequote($t = '') {
     // make singe quotes js compatible
-    return str_replace(array("\\", "&#92;", "'", '"'), array("\\\\", "\\\\", '&#39;', '&quot;'), $t);
+    $t = str_replace(array("\\", "&#92;", "'", '"'), array("\\\\", "\\\\", '&#39;', '&quot;'), $t);
+    // a raw line break inside a JavaScript string is a syntax error, so it
+    // becomes the \n escape; this runs last so the backslash is not doubled
+    return str_replace(array("\r\n", "\r", "\n"), array('\n', '\n', '\n'), $t);
 }
 
 function get_tmpl_files($dir = '', $ext = '', $sort = true) {

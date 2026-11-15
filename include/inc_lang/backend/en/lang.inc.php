@@ -1126,6 +1126,9 @@ $BL['be_longdatetime']                  = 'm/d/Y H:i:s';
 
 $BL['be_confirm_sending']               = 'confirm sending';
 $BL['be_confirm_text']                  = 'Yes, send newsletter to all recipients!';
+$BL['be_confirm_title']                 = 'Please confirm';
+$BL['be_confirm_ok']                    = 'OK';
+$BL['be_confirm_cancel']                = 'Cancel';
 
 $BL['be_cnt_queued']                    = 'queuing';
 $BL['be_last_sending']                  = 'last sending';
