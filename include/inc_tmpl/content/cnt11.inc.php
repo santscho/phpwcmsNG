@@ -45,7 +45,7 @@ if(is_array($tmpllist) && count($tmpllist)) {
 
 	<div class="col-12">
 		<label class="form-label" for="ccode"><?php echo $BL['be_cnt_code'] ?></label>
-		<textarea name="ccode" rows="20" class="form-control font-monospace autosize" id="ccode"><?php
+		<textarea name="ccode" rows="20" class="form-control autosize" id="ccode" style="font-family: var(--bs-font-mono)"><?php
 
 	if(!empty($content["code"])) {
 

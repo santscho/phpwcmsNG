@@ -661,6 +661,11 @@ existing entry already covers the action before adding a second glyph for it.
   `template/inc_cntpart/code`) as a `form-control` in a `col-12 md:col-6` cell,
   then the code textarea (`ccode`, `rows="20"`) full width as
   `form-control font-monospace autosize`.
+- The code field is monospace through the framework's own token,
+  `style="font-family: var(--bs-font-mono)"`: the `font-monospace` utility does
+  not reach a `textarea` in Bootstrap 6.0.0-alpha.1 (the form control font wins
+  in the cascade, even from a wrapper that carries the class). No font stack and
+  no stylesheet is added for it.
 - The textarea keeps the `autosize` class for the jQuery autosize and the rule
   that prepends a space to code starting with a line break; the legacy `code` and
   `width440` classes are gone.
