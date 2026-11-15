@@ -21,6 +21,11 @@ These apply to every backend screen that is modernized:
    the Bootstrap Icon name to the *Backend icon set* list below in the same
    change, so the set stays documented and no two screens pick different glyphs
    for the same action.
+6. **Backend date and time fields use the picker.** Never a native
+   `datetime-local`, never the legacy `dynCalendar` gif, never a free text field:
+   the field is an `input[data-datepicker]` driven by
+   `include/inc_js/backend.datepicker.js` and shows the date and time format the
+   logged in user picked in the profile — see *Date and time format*.
 
 ## Design: Bootstrap first
 
@@ -405,6 +410,10 @@ existing entry already covers the action before adding a second glyph for it.
 
 ## Date and time format
 
+- Every backend date and time field is a flatpickr picker that displays the
+  logged in user's format (revamp rule 6). Do not add a native `type="date"` or
+  `datetime-local` control, a readable-format text field or the `dynCalendar`
+  widget to a screen that is being revamped; convert the field instead.
 - Every user picks the backend date and time format in the profile
   (`PROFILE > account`, `$BL['be_profile_label_dateformat']`). It is stored in
   `phpwcms_user.usr_date_format` (revision 557, `iso` by default) and loaded into
