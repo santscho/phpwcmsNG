@@ -1,5 +1,27 @@
 # phpwcmsNG — project rules
 
+## General revamp rules
+
+These apply to every backend screen that is modernized:
+
+1. **Keep the functions.** PHP actions, query strings, form fields, hidden
+   inputs, CSRF tokens and POST/GET semantics stay exactly as they are. A revamp
+   changes markup and styling, never behaviour.
+2. **Clear the old UI formatting.** Remove the legacy table layout, sliced
+   images, spacer gifs, inline `width`/`height`/`align`/`bgcolor`/`style`
+   attributes and the old stylesheet rules the screen relied on instead of
+   layering Bootstrap on top of them.
+3. **Rebuild the display with default Bootstrap components** — `card`,
+   `list-group`, `navbar`, `nav`, `table`, `alert`, `badge`, `input-group`, the
+   stock utilities and the button classes below. No custom CSS, colours, fonts
+   or font sizes.
+4. **Replace pixel graphics with Bootstrap Icons** inlined by `backend_icon()` —
+   action buttons, arrows, handles, status marks. No raster chrome is added.
+5. **Register every new icon.** When an icon is introduced, add its function and
+   the Bootstrap Icon name to the *Backend icon set* list below in the same
+   change, so the set stays documented and no two screens pick different glyphs
+   for the same action.
+
 ## Design: Bootstrap first
 
 - All backend and setup UI is built on **Bootstrap 6**, vendored at
@@ -128,6 +150,10 @@ MIT) inlined at 16x16 from `backend_icon()`. The names are fixed:
 
 Do not hand-draw icons or pick replacement glyphs; add the Bootstrap Icon path
 to `backend_icon()` if a new one is needed.
+
+A new icon is only half the job: extend this list in the same change with the
+function it serves and the icon name (see revamp rule 5). Check whether an
+existing entry already covers the action before adding a second glyph for it.
 
 ## Sorting lists
 
