@@ -1152,3 +1152,12 @@ $BL['be_check_feuser_profile']          = '&ouml;nplan kullan&#305;c&#305; profi
 $BL['be_check_feuser_registration']     = 'kay&#305;t';
 $BL['be_check_feuser_manage']           = 'kullan&#305;c&#305; taraf&#305;ndan y&ouml;netildi';
 
+// backend screen mode switcher
+$BL['be_theme_switch']                  = 'Ekran modu';
+$BL['be_theme_auto']                    = 'Otomatik';
+$BL['be_theme_light']                   = 'A&ccedil;&#305;k';
+$BL['be_theme_dark']                    = 'Koyu';
+
+// backend drag and drop ordering
+$BL['be_sort_drag']                     = 's&#305;ralamak i&ccedil;in s&uuml;r&uuml;kleyin';
+$BL['be_sort_drag_error']               = 'S&#305;ralama ba&#351;ar&#305;s&#305;z oldu, l&uuml;tfen sayfay&#305; yenileyip tekrar deneyin.';

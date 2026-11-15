@@ -1238,3 +1238,13 @@ $BL['automatic']                        = 'automatski';
 
 $BL['random_image']                     = 'nasumicna slika';
 $BL['random_image_from_list']           = 'Oznaci jednu nasumicnu sliku iz liste slika';
+
+// backend screen mode switcher
+$BL['be_theme_switch']                  = 'Nacin prikaza';
+$BL['be_theme_auto']                    = 'Automatski';
+$BL['be_theme_light']                   = 'Svijetlo';
+$BL['be_theme_dark']                    = 'Tamno';
+
+// backend drag and drop ordering
+$BL['be_sort_drag']                     = 'prevucite za promjenu redoslijeda';
+$BL['be_sort_drag_error']               = 'Promjena redoslijeda nije uspjela, ponovo ucitajte stranicu i pokusajte opet.';

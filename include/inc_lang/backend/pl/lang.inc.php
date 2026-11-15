@@ -1512,3 +1512,13 @@ $BL['be_cnt_form_apikey_reset'] = 'resetuj';
 $BL['be_copy_link'] = 'kopiuj link';
 
 $BL['be_deprecated'] = 'przestarzałe';
+
+// backend screen mode switcher
+$BL['be_theme_switch'] = 'Tryb ekranu';
+$BL['be_theme_auto'] = 'Automatyczny';
+$BL['be_theme_light'] = 'Jasny';
+$BL['be_theme_dark'] = 'Ciemny';
+
+// backend drag and drop ordering
+$BL['be_sort_drag'] = 'przeciągnij, aby zmienić kolejność';
+$BL['be_sort_drag_error'] = 'Zmiana kolejności nie powiodła się, odśwież stronę i spróbuj ponownie.';

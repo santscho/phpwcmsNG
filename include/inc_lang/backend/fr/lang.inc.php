@@ -1097,4 +1097,12 @@ $BL['CSRF_BTN_BACK'] = 'Retour';
 $BL['CSRF_BTN_LOGIN'] = 'connection';
 $BL['CSRF_BTN_DASHBOARD'] = 'Tableau de bord';
 
+// backend screen mode switcher
+$BL['be_theme_switch'] = "Mode d'affichage";
+$BL['be_theme_auto'] = 'Auto';
+$BL['be_theme_light'] = 'Clair';
+$BL['be_theme_dark'] = 'Sombre';
 
+// backend drag and drop ordering
+$BL['be_sort_drag'] = 'glisser pour r&eacute;ordonner';
+$BL['be_sort_drag_error'] = 'Le r&eacute;ordonnancement a &eacute;chou&eacute;, rechargez la page et r&eacute;essayez.';

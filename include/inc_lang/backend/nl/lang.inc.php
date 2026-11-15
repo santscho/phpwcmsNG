@@ -1113,4 +1113,12 @@ $BL['CSRF_BTN_BACK'] = 'Terug';
 $BL['CSRF_BTN_LOGIN'] = 'Inloggen';
 $BL['CSRF_BTN_DASHBOARD'] = 'Dashboard';
 
+// backend screen mode switcher
+$BL['be_theme_switch'] = 'Schermmodus';
+$BL['be_theme_auto'] = 'Automatisch';
+$BL['be_theme_light'] = 'Licht';
+$BL['be_theme_dark'] = 'Donker';
 
+// backend drag and drop ordering
+$BL['be_sort_drag'] = 'sleep om te herschikken';
+$BL['be_sort_drag_error'] = 'Herschikken is mislukt, herlaad de pagina en probeer het opnieuw.';

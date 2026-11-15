@@ -1223,3 +1223,13 @@ $BL['be_gallery_directory'] = "poddirektorij galerije";
 $BL['be_gallery'] = "galerija";
 
 $BL['be_sort_date'] = "uredi po datumu";
+
+// backend screen mode switcher
+$BL['be_theme_switch'] = "Način prikaza";
+$BL['be_theme_auto'] = "Samodejno";
+$BL['be_theme_light'] = "Svetlo";
+$BL['be_theme_dark'] = "Temno";
+
+// backend drag and drop ordering
+$BL['be_sort_drag'] = "povlecite za prerazporeditev";
+$BL['be_sort_drag_error'] = "Prerazporejanje ni uspelo, znova naložite stran in poskusite znova.";
