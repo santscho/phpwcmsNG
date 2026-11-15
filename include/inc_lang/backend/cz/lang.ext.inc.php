@@ -22,7 +22,7 @@ $BL['FOLDER_LIST'] = 'seznam sloek';
 $BL['FILES'] = 'soubory';
 $BL['SHOW_FILES'] = 'uka soubory uvnitø root adresáøe';
 $BL['SHOW_FILES1'] = 'uka soubory uvnitø adresáøe';
-$BL['TAKE_IMAGE'] = 'vezmi tento soubor a pøidej';
+$BL['TAKE_IMAGE'] = 'vezmi tento soubor a pøidej…';
 $BL['NO_FILE'] = 'ádný soubor';
 $BL['OPEN_DIR'] = 'otevøi adresáø';
 $BL['CLOSE_DIR'] = 'zavøi adresáø';

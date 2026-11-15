@@ -439,7 +439,10 @@ existing entry already covers the action before adding a second glyph for it.
   carries JavaScript `\n` escapes like the frame's confirm texts, so they are
   turned into real line breaks before `js_singlequote()` escapes the string for
   the script — the dialog splits the question at real line breaks, and doubling
-  the backslashes would show a literal `\n`.
+  the backslashes would show a literal `\n`. Invisible control characters in a
+  language string show up as a missing glyph in the dialog: `ADD_ALL_CONFIRM`
+  (en, bs) and `TAKE_IMAGE` (cs, cz) ended in a stray U+0085 and carry an
+  ellipsis now.
 - The upload panel posts through `include/inc_js/backend.upload.js`: a
   `[data-upload-dropzone]` with a multiple `form-control` file input and a
   `[data-upload-fields]` container whose named fields are added to the request
