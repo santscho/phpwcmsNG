@@ -266,7 +266,7 @@ if($BE['LANG'] == 'ar') {
 ?>
 <!-- phpwcms HEADER -->
 </head>
-<body<?php echo $body_onload ?>><!-- phpwcms BODY_OPEN -->
+<body class="d-flex flex-column min-vh-100"<?php echo $body_onload ?>><!-- phpwcms BODY_OPEN -->
 <nav class="navbar sticky-top bg-primary" data-bs-theme="dark">
     <div class="container-fluid gap-3">
         <a href="phpwcms.php?do=home" target="_top" class="navbar-brand d-flex align-items-center">
@@ -317,7 +317,7 @@ if($BE['LANG'] == 'ar') {
         });
     });
 </script>
-<div class="container-fluid py-5">
+<div class="container-fluid py-5 flex-grow-1">
     <div class="row g-5">
         <aside class="col-12 md:col-3 xl:col-2">
             <div class="bg-1 border rounded overflow-hidden">
@@ -570,7 +570,7 @@ if($BE['LANG'] == 'ar') {
     <!--BE_MAIN_CONTENT_END//--></main>
     </div>
 </div>
-<footer class="container-fluid pb-7">
+<footer class="container-fluid mt-auto pb-7">
     <div class="border-top pt-7">
         <div class="d-flex flex-column md:flex-row md:justify-content-between align-items-start gap-5 small fg-secondary">
 

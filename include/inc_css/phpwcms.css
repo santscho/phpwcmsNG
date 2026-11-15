@@ -1284,28 +1284,8 @@
     font-size: 14px;
 }
 
-.valid {
-    color: #2CAD00;
-}
-
 .valign-middle {
     vertical-align: middle;
-}
-
-.versioncheck {
-    border: 1px solid #A0BBD6;
-    margin-top: 15px;
-    padding: 6px;
-}
-
-.versioncheck h1 {
-    font-size: 13px;
-    margin: 0;
-}
-
-.versioncheck p {
-    margin: 5px 0 0;
-    padding: 0;
 }
 
 .width100 {

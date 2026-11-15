@@ -284,12 +284,13 @@ function phpwcmsversionCheck() {
     global $BL;
 
     if(empty($phpwcms['version_check'])) {
-        $version = '<div class="versioncheck">';
-        $version .= '<h1>' . $BL['Version_information'] . '</h1>';
-        $version .= '<p class="alert alert-info">';
+        $version = '<div class="card">';
+        $version .= '<div class="card-header"><h2 class="h6 mb-0">' . $BL['Version_information'] . '</h2></div>';
+        $version .= '<div class="card-body">';
+        $version .= '<p class="alert theme-info mb-0">';
         $version .= sprintf($BL['Current_version_info'], PHPWCMS_VERSION . ' ('. PHPWCMS_RELEASE_DATE. ', r' . PHPWCMS_REVISION . ')');
         $version .= '</p>';
-        $version .= '</div>';
+        $version .= '</div></div>';
 
         return $version;
     }
@@ -381,16 +382,16 @@ function phpwcmsversionCheck() {
         $version_time       = strtotime(PHPWCMS_RELEASE_DATE.' 00:00:00');
 
         if($latest_revision <= $phpwcms['revision'] || $latest_time <= $version_time)   {
-            $version_info  = '<p class="valid">' . $BL['Version_up_to_date'] . '</p>';
+            $version_info  = '<p class="alert theme-success">' . $BL['Version_up_to_date'] . '</p>';
         } else {
-            $version_info  = '<p class="error">' . $BL['Version_not_up_to_date'] . '</p>';
+            $version_info  = '<p class="alert theme-danger">' . $BL['Version_not_up_to_date'] . '</p>';
         }
 
         if($latest_time > $version_time) {
-            $mark_date_prefix = '<span class="error">';
+            $mark_date_prefix = '<span class="badge theme-danger">';
             $mark_date_suffix = '</span>';
         } elseif($latest_time < $version_time) {
-            $mark_date_prefix = '<span class="valid">';
+            $mark_date_prefix = '<span class="badge theme-success">';
             $mark_date_suffix = '</span>';
         } else {
             $mark_date_prefix = '';
@@ -398,28 +399,28 @@ function phpwcmsversionCheck() {
         }
 
         if($latest_revision > $phpwcms['revision']) {
-            $mark_rev_prefix = '<span class="error">';
+            $mark_rev_prefix = '<span class="badge theme-danger">';
             $mark_rev_suffix = '</span>';
         } elseif($latest_revision < $phpwcms['revision']) {
-            $mark_rev_prefix = '<span class="valid">';
+            $mark_rev_prefix = '<span class="badge theme-success">';
             $mark_rev_suffix = '</span>';
         } else {
             $mark_rev_prefix = '';
             $mark_rev_suffix = '';
         }
 
-        $version_info .= '<p>' . sprintf($BL['Latest_version_info'], $latest_version.' ('.$latest_revdate.', r'.$latest_revision.')'). '<br />';
+        $version_info .= '<p class="mb-0">' . sprintf($BL['Latest_version_info'], $latest_version.' ('.$latest_revdate.', r'.$latest_revision.')'). '<br />';
         $version_info .= sprintf($BL['Current_version_info'], $mark_rev_prefix.PHPWCMS_VERSION.$mark_rev_suffix.' ('.$mark_date_prefix.PHPWCMS_RELEASE_DATE.$mark_date_suffix.', r'.PHPWCMS_REVISION.')') . '</p>';
 
     } elseif ($errstr) {
-        $version_info = '<p class="error">' . sprintf($BL['Connect_socket_error'], $errstr) . '</p>';
+        $version_info = '<p class="alert theme-warning mb-0">' . sprintf($BL['Connect_socket_error'], $errstr) . '</p>';
     } elseif (!$has_sockets) {
-        $version_info = '<p>' . $BL['Socket_functions_disabled'] . '</p>';
+        $version_info = '<p class="alert theme-warning mb-0">' . $BL['Socket_functions_disabled'] . '</p>';
     } else {
-        $version_info = '<p class="error">' . sprintf($BL['Connect_socket_error'], 'Invalid response format') . '</p>';
+        $version_info = '<p class="alert theme-warning mb-0">' . sprintf($BL['Connect_socket_error'], 'Invalid response format') . '</p>';
     }
 
-    $_SESSION['phpwcms_version_check'] = '<div class="versioncheck"><h1>'.$BL['Version_information'].'</h1> '.$version_info.'</div>';
+    $_SESSION['phpwcms_version_check'] = '<div class="card"><div class="card-header"><h2 class="h6 mb-0">'.$BL['Version_information'].'</h2></div><div class="card-body">'.$version_info.'</div></div>';
 
     return $_SESSION['phpwcms_version_check'];
 }

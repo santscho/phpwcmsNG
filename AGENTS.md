@@ -19,6 +19,13 @@
   the main sections plus host and logout, then a fluid container row: sidebar column
   (`col-12 md:col-3 xl:col-2`) next to the content column
   (`col-12 md:col-9 xl:col-10`, keeping the `#be_main_content` id).
+- The body is `d-flex flex-column min-vh-100`, the content container carries
+  `flex-grow-1` and the footer `mt-auto pb-7`, so the footer rests on the bottom
+  of the window while the page is short and follows the content when it is long.
+- The version check block (`phpwcmsversionCheck()`) is a `card` with a
+  `card-header` title, an `alert theme-success`/`theme-danger` status line and
+  `badge theme-success`/`theme-danger` marks on the newer version number; no
+  `versioncheck`, `valid` or `error` classes and no separate stylesheet rules.
 - The sidebar is a single light panel `bg-1 border rounded overflow-hidden`.
   Inside it the section sub navigation is a `nav` holding a
   `list-group list-group-flush`; entries are `list-group-item
