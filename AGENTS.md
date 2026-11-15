@@ -150,7 +150,8 @@ MIT) inlined at 16x16 from `backend_icon()`. The names are fixed:
 - **type markers**: site structure `folder-fill`, article `journal-bookmark-fill`,
   content part `postcard-fill` — shown before the row title
 - **row actions**: edit `pen`, cut `scissors`, copy `copy`, paste
-  `clipboard-plus`, delete `trash`
+  `clipboard-plus`, delete `trash`, restore from trash `restore` (Bootstrap icon
+  `arrow-counterclockwise`)
 - **visibility switch**: `eye` in `theme-success` while the entry is visible,
   `eye-slash` in `theme-danger` while it is hidden
 - **tree and add**: `chevron-right`, `chevron-down`, `plus`
@@ -212,6 +213,13 @@ existing entry already covers the action before adding a second glyph for it.
 - `files.abschluss.tmpl.php` and `files.private-filelist.inc.php` are gone: the
   closing bar was decoration and the root files are listed by
   `list_private_files()` now.
+- The file help popup (`include/inc_help/filehelp.htm`, opened from the header
+  question button) is a static page: Bootstrap CSS from `include/inc_ext`, one
+  `card` with a `list-group` of legend rows. Each row repeats the icon the file
+  list uses, inlined as a `<symbol>` sprite at the top of the body and rendered
+  through `<use>` inside an inert `btn btn-icon` span, so outline buttons, solid
+  active marks and the disabled trash match the real toolbar. A small script
+  copies the opener's `data-bs-theme` so the popup follows the screen mode.
 - The multiple upload screen (`files.ftptakeover.tmpl.php`) is cards too: a drop
   zone with a native multiple `form-control` file input, the files waiting in the
   FTP directory as a list group with the total size in a badge, then the file

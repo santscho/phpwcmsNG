@@ -25,7 +25,7 @@ $cutID = (isset($_GET["cut"])) ? intval($_GET["cut"]) : 0;
 // action buttons of the current folder
 $_files_actions = '';
 
-$_files_help = ' onclick="flevPopupLink(this.href,\'filehelp\',\'scrollbars=yes,resizable=yes,width=320,height=300\',0);return document.MM_returnValue"';
+$_files_help = ' onclick="flevPopupLink(this.href,\'filehelp\',\'scrollbars=yes,resizable=yes,width=420,height=560\',0);return document.MM_returnValue"';
 
 if($files_folder === 0) {
 

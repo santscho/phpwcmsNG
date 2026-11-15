@@ -1,312 +1,118 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title>phpwcms: file help</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<meta http-equiv="Expires" content="0">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="cache-control" content="no-cache">
-<meta name="robots" content="noindex, nofollow">
-<link href="../inc_css/phpwcms.min.css" rel="stylesheet" type="text/css">
-<style type="text/css">
-<!--
-body {	background-color: #EBF2F4; }
--->
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>phpwcms: file center help</title>
+<link href="../inc_ext/bootstrap/bootstrap.min.css" rel="stylesheet">
+<script>
+    (function () {
+        try {
+            var theme = window.opener && window.opener.document.documentElement.getAttribute('data-bs-theme');
+            if (theme === 'light' || theme === 'dark') {
+                document.documentElement.setAttribute('data-bs-theme', theme);
+            }
+        } catch (error) {}
+    })();
+</script>
 </head>
-
-<body bgcolor="#EBF2F4" text="#000000" link="#000000" vlink="#000000" alink="#000000">
-<table width="300" border="0" align="center" cellpadding="0" cellspacing="0" bgcolor="#F5F8F9" summary="">
-  <tr>
-    <td colspan="4" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="1" height="6"></td>
-  </tr>
-  <tr>
-    <td width="10" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="10" height="1"></td>
-    <td colspan="2" bgcolor="#CDDEE4" class="h13"><strong>file center help</strong></td>
-    <td width="24" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="1" height="1"></td>
-  </tr>
-  <tr>
-    <td colspan="4" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="10" height="5"></td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td align="center" valign="top"><img src="../../img/button/add_13x13.gif" alt="" width="13" height="13"></td>
-    <td valign="top" class="v10">add new private directory</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td colspan="4" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="1" height="1"></td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td align="center" valign="top"><img src="../../img/button/upload_13x13.gif" alt="" width="13" height="13"></td>
-    <td valign="top" class="v10">upload new file to private directory</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td colspan="4" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="1" height="1"></td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td width="26" align="center" valign="top"><img src="../../img/button/thumbnail_13x13_0.gif" alt="" width="13" height="13"></td>
-    <td width="240" valign="top" class="v10">disable thumbnails in file list</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td colspan="4" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="1" height="1"></td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td align="center" valign="top"><img src="../../img/button/thumbnail_13x13_1.gif" alt="" width="13" height="13"></td>
-    <td valign="top" class="v10">enable thumbnails in file list</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td colspan="4" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="1" height="1"></td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td align="center" valign="top"><img src="../../img/button/edit_22x13.gif" alt="" width="22" height="13"></td>
-    <td valign="top" class="v10">edit file information details</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td colspan="4" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="1" height="1"></td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td align="center" valign="top"><img src="../../img/button/cut_13x13_0.gif" alt="" width="13" height="13"></td>
-    <td valign="top" class="v10">cut file into clipboard for moving to another
-      directory</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td colspan="4" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="1" height="1"></td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td align="center" valign="top"><img src="../../img/button/cut_13x13_1.gif" alt="" width="13" height="13"></td>
-    <td valign="top" class="v10">marked file is in clipboard</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td colspan="4" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="1" height="1"></td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td align="center" valign="top"><img src="../../img/button/paste_13x13.gif" alt="" width="13" height="13"></td>
-    <td valign="top" class="v10">paste file into this directory</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td colspan="4" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="1" height="1"></td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td align="center" valign="top"><img src="../../img/button/download_disc.gif" alt="" width="13" height="13"></td>
-    <td valign="top" class="v10">download file (if it is a picture or text it
-      will open in new browser window - maybe / on PC use right mouse click and
-      save under in context menu / on mac hold down control key and mouse click&#8230;)</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td colspan="4" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="1" height="1"></td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td align="center" valign="top"><img src="../../img/button/trash_13x13_1.gif" alt="" width="13" height="13"></td>
-    <td valign="top" class="v10">delete directory or move file to trash or if
-      the file is in trash delete file</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td colspan="4" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="1" height="1"></td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td align="center" valign="top"><img src="../../img/button/trash_13x13_0.gif" alt="" width="13" height="13"></td>
-    <td valign="top" class="v10">directory can't be deleted because it contains
-      files or subdirectories</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td colspan="4" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="1" height="1"></td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td align="center" valign="top"><img src="../../img/button/cancel_trash_13x13.gif" alt="" width="13" height="13"></td>
-    <td valign="top" class="v10">restore file from trash can (undo) and move
-      back to private file list (file will be moved back to the root dir)</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td colspan="4" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="1" height="1"></td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td align="center" valign="top"><img src="../../img/button/alle_auf.gif" alt="" width="12" height="13"></td>
-    <td valign="top" class="v10">fold out (open) every directory and its subdirectories</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td colspan="4" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="1" height="1"></td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td align="center" valign="top"><img src="../../img/button/alle_zu.gif" alt="" width="12" height="13"></td>
-    <td valign="top" class="v10">fold in (close) every directory and its subdirectories</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td colspan="4" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="1" height="1"></td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td align="center" valign="top"><img src="../../img/button/aktiv_12x13_0.gif" alt="" width="12" height="13"></td>
-    <td valign="top" class="v10">file or directory is inactive - click on it
-      to switch status to active</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td colspan="4" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="1" height="1"></td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td align="center" valign="top"><img src="../../img/button/aktiv_12x13_1.gif" alt="" width="12" height="13"></td>
-    <td valign="top" class="v10">file or directory is active - click on it to
-    switch status to inactive</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td colspan="4" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="1" height="1"></td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td align="center" valign="top"><img src="../../img/button/public_12x13_0.gif" alt="" width="12" height="13"></td>
-    <td valign="top" class="v10">file or directory is private - click on it to
-    switch status to public</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td colspan="4" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="1" height="1"></td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td align="center" valign="top"><img src="../../img/button/public_12x13_1.gif" alt="" width="12" height="13"></td>
-    <td valign="top" class="v10">file or directory is public - click on it to
-    switch status to private</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td colspan="4"><img src="../../img/leer.gif" alt="" width="1" height="3"></td>
-  </tr>
-  <tr>
-    <td colspan="4" bgcolor="#CDDEE4"><img src="../../img/leer.gif" alt="" width="1" height="1"></td>
-  </tr>
-</table>
+<body class="p-3">
+<svg xmlns="http://www.w3.org/2000/svg" class="d-none" aria-hidden="true" focusable="false">
+        <symbol id="i-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/></symbol>
+        <symbol id="i-upload" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/> <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z"/></symbol>
+        <symbol id="i-image-fill" viewBox="0 0 16 16"><path d="M.002 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-12a2 2 0 0 1-2-2zm1 9v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062zm5-6.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0"/></symbol>
+        <symbol id="i-image" viewBox="0 0 16 16"><path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/> <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z"/></symbol>
+        <symbol id="i-pen" viewBox="0 0 16 16"><path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z"/></symbol>
+        <symbol id="i-scissors" viewBox="0 0 16 16"><path d="M3.5 3.5c-.614-.884-.074-1.962.858-2.5L8 7.226 11.642 1c.932.538 1.472 1.616.858 2.5L8.81 8.61l1.556 2.661a2.5 2.5 0 1 1-.794.637L8 9.73l-1.572 2.177a2.5 2.5 0 1 1-.794-.637L7.19 8.61zm2.5 10a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0m7 0a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0"/></symbol>
+        <symbol id="i-clipboard-plus" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 7a.5.5 0 0 1 .5.5V9H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V10H6a.5.5 0 0 1 0-1h1.5V7.5A.5.5 0 0 1 8 7"/><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/></symbol>
+        <symbol id="i-download" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/> <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/></symbol>
+        <symbol id="i-trash" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/></symbol>
+        <symbol id="i-arrow-counterclockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z"/><path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466"/></symbol>
+        <symbol id="i-chevron-bar-expand" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.646 10.146a.5.5 0 0 1 .708 0L8 13.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-4.292a.5.5 0 0 0 .708 0L8 2.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708M1 8a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 8"/></symbol>
+        <symbol id="i-chevron-bar-contract" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.646 14.854a.5.5 0 0 0 .708 0L8 11.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708m0-13.708a.5.5 0 0 1 .708 0L8 4.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708M1 8a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 8"/></symbol>
+        <symbol id="i-toggle-off" viewBox="0 0 16 16"><path d="M11 4a4 4 0 0 1 0 8H8a5 5 0 0 0 2-4 5 5 0 0 0-2-4zm-6 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8M0 8a5 5 0 0 0 5 5h6a5 5 0 0 0 0-10H5a5 5 0 0 0-5 5"/></symbol>
+        <symbol id="i-toggle-on" viewBox="0 0 16 16"><path d="M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10zm6 9a4 4 0 1 1 0-8 4 4 0 0 1 0 8"/></symbol>
+        <symbol id="i-lock" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0a4 4 0 0 1 4 4v2.05a2.5 2.5 0 0 1 2 2.45v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-5a2.5 2.5 0 0 1 2-2.45V4a4 4 0 0 1 4-4M4.5 7A1.5 1.5 0 0 0 3 8.5v5A1.5 1.5 0 0 0 4.5 15h7a1.5 1.5 0 0 0 1.5-1.5v-5A1.5 1.5 0 0 0 11.5 7zM8 1a3 3 0 0 0-3 3v2h6V4a3 3 0 0 0-3-3"/></symbol>
+        <symbol id="i-globe" viewBox="0 0 16 16"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m7.5-6.923c-.67.204-1.335.82-1.887 1.855A8 8 0 0 0 5.145 4H7.5zM4.09 4a9.3 9.3 0 0 1 .64-1.539 7 7 0 0 1 .597-.933A7.03 7.03 0 0 0 2.255 4zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a7 7 0 0 0-.656 2.5zM4.847 5a12.5 12.5 0 0 0-.338 2.5H7.5V5zM8.5 5v2.5h2.99a12.5 12.5 0 0 0-.337-2.5zM4.51 8.5a12.5 12.5 0 0 0 .337 2.5H7.5V8.5zm3.99 0V11h2.653c.187-.765.306-1.608.338-2.5zM5.145 12q.208.58.468 1.068c.552 1.035 1.218 1.65 1.887 1.855V12zm.182 2.472a7 7 0 0 1-.597-.933A9.3 9.3 0 0 1 4.09 12H2.255a7 7 0 0 0 3.072 2.472M3.82 11a13.7 13.7 0 0 1-.312-2.5h-2.49c.062.89.291 1.733.656 2.5zm6.853 3.472A7 7 0 0 0 13.745 12H11.91a9.3 9.3 0 0 1-.64 1.539 7 7 0 0 1-.597.933M8.5 12v2.923c.67-.204 1.335-.82 1.887-1.855q.26-.487.468-1.068zm3.68-1h2.146c.365-.767.594-1.61.656-2.5h-2.49a13.7 13.7 0 0 1-.312 2.5m2.802-3.5a7 7 0 0 0-.656-2.5H12.18c.174.782.282 1.623.312 2.5zM11.27 2.461c.247.464.462.98.64 1.539h1.835a7 7 0 0 0-3.072-2.472c.218.284.418.598.597.933M10.855 4a8 8 0 0 0-.468-1.068C9.835 1.897 9.17 1.282 8.5 1.077V4z"/></symbol>
+</svg>
+<div class="card">
+    <div class="card-header">
+        <h1 class="h6 mb-0">file center help</h1>
+    </div>
+    <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex align-items-start gap-3">
+                <span class="btn btn-icon btn-outline theme-secondary btn-sm flex-shrink-0" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><use href="#i-plus"/></svg></span>
+                <span>add new private directory</span>
+            </li>
+            <li class="list-group-item d-flex align-items-start gap-3">
+                <span class="btn btn-icon btn-outline theme-secondary btn-sm flex-shrink-0" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><use href="#i-upload"/></svg></span>
+                <span>upload new file to private directory</span>
+            </li>
+            <li class="list-group-item d-flex align-items-start gap-3">
+                <span class="btn btn-icon btn-outline theme-secondary btn-sm flex-shrink-0" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><use href="#i-image-fill"/></svg></span>
+                <span>disable thumbnails in file list</span>
+            </li>
+            <li class="list-group-item d-flex align-items-start gap-3">
+                <span class="btn btn-icon btn-outline theme-secondary btn-sm flex-shrink-0" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><use href="#i-image"/></svg></span>
+                <span>enable thumbnails in file list</span>
+            </li>
+            <li class="list-group-item d-flex align-items-start gap-3">
+                <span class="btn btn-icon btn-outline theme-secondary btn-sm flex-shrink-0" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><use href="#i-pen"/></svg></span>
+                <span>edit file information details</span>
+            </li>
+            <li class="list-group-item d-flex align-items-start gap-3">
+                <span class="btn btn-icon btn-outline theme-secondary btn-sm flex-shrink-0" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><use href="#i-scissors"/></svg></span>
+                <span>cut file into clipboard for moving to another directory</span>
+            </li>
+            <li class="list-group-item d-flex align-items-start gap-3">
+                <span class="btn btn-icon theme-success btn-solid btn-sm flex-shrink-0" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><use href="#i-scissors"/></svg></span>
+                <span>marked file is in clipboard</span>
+            </li>
+            <li class="list-group-item d-flex align-items-start gap-3">
+                <span class="btn btn-icon btn-outline theme-secondary btn-sm flex-shrink-0" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><use href="#i-clipboard-plus"/></svg></span>
+                <span>paste file into this directory</span>
+            </li>
+            <li class="list-group-item d-flex align-items-start gap-3">
+                <span class="btn btn-icon btn-outline theme-secondary btn-sm flex-shrink-0" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><use href="#i-download"/></svg></span>
+                <span>download file &mdash; images and text open in a new window, use the context menu or control-click to save them</span>
+            </li>
+            <li class="list-group-item d-flex align-items-start gap-3">
+                <span class="btn btn-icon btn-outline theme-secondary btn-sm flex-shrink-0" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><use href="#i-trash"/></svg></span>
+                <span>delete directory, move file to trash, or delete a file that is in trash</span>
+            </li>
+            <li class="list-group-item d-flex align-items-start gap-3">
+                <span class="btn btn-icon btn-outline theme-secondary btn-sm disabled flex-shrink-0" aria-hidden="true" aria-disabled="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><use href="#i-trash"/></svg></span>
+                <span>directory cannot be deleted because it contains files or subdirectories</span>
+            </li>
+            <li class="list-group-item d-flex align-items-start gap-3">
+                <span class="btn btn-icon btn-outline theme-secondary btn-sm flex-shrink-0" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><use href="#i-arrow-counterclockwise"/></svg></span>
+                <span>restore file from the trash can and move it back to the private file list (root directory)</span>
+            </li>
+            <li class="list-group-item d-flex align-items-start gap-3">
+                <span class="btn btn-icon btn-outline theme-secondary btn-sm flex-shrink-0" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><use href="#i-chevron-bar-expand"/></svg></span>
+                <span>open every directory and its subdirectories</span>
+            </li>
+            <li class="list-group-item d-flex align-items-start gap-3">
+                <span class="btn btn-icon btn-outline theme-secondary btn-sm flex-shrink-0" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><use href="#i-chevron-bar-contract"/></svg></span>
+                <span>close every directory and its subdirectories</span>
+            </li>
+            <li class="list-group-item d-flex align-items-start gap-3">
+                <span class="btn btn-icon btn-outline theme-secondary btn-sm flex-shrink-0" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><use href="#i-toggle-off"/></svg></span>
+                <span>file or directory is inactive &mdash; click to switch it to active</span>
+            </li>
+            <li class="list-group-item d-flex align-items-start gap-3">
+                <span class="btn btn-icon theme-success btn-solid btn-sm flex-shrink-0" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><use href="#i-toggle-on"/></svg></span>
+                <span>file or directory is active &mdash; click to switch it to inactive</span>
+            </li>
+            <li class="list-group-item d-flex align-items-start gap-3">
+                <span class="btn btn-icon btn-outline theme-secondary btn-sm flex-shrink-0" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><use href="#i-lock"/></svg></span>
+                <span>file or directory is private &mdash; click to switch it to public</span>
+            </li>
+            <li class="list-group-item d-flex align-items-start gap-3">
+                <span class="btn btn-icon theme-success btn-solid btn-sm flex-shrink-0" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><use href="#i-globe"/></svg></span>
+                <span>file or directory is public &mdash; click to switch it to private</span>
+            </li>
+    </ul>
+</div>
 </body>
 </html>
