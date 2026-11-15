@@ -56,6 +56,43 @@ function i18n_get_file_open_text() {
 	$text .= '// ATTENTION! Never add the closing PHP tag "? >" at the end of this file!' . LF . LF;
 	return $text;
 }
+// A generated language file is one PHP header followed by plain token entries.
+function i18n_generated_file_is_valid($content) {
+	return strpos($content, '<?php') === 0 && preg_match_all('/^<\?php/m', $content) === 1;
+}
+// Create the language file with its header. Mode "x" creates exclusively, so of
+// several requests reaching a brand new language only one writes the header and
+// the others cannot append a second PHP open tag.
+function i18n_create_file() {
+	$f = i18n_get_filename();
+	if($handle = @fopen($f, 'x')) {
+		fwrite($handle, i18n_get_file_open_text());
+		fflush($handle);
+		fclose($handle);
+		return true;
+	}
+	return is_readable($f);
+}
+// Load the token list of the active language, creating or repairing the file.
+function i18n_load_file() {
+	global $i18n_tokens;
+	$f = i18n_get_filename();
+	if(!is_readable($f) && !i18n_create_file()) {
+		return false;
+	}
+	$content = @file_get_contents($f);
+	if($content === false) {
+		return false;
+	}
+	if(!i18n_generated_file_is_valid($content)) {
+		// A file with more than one PHP header cannot be included at all. It came
+		// from an append without a lock, its entries were unusable, so start over.
+		@file_put_contents($f, i18n_get_file_open_text(), LOCK_EX);
+		return true;
+	}
+	include $f;
+	return true;
+}
 // substitutes a single token
 function i18n_substitute_text_token($token) {
 	global $i18n_tokens, $phpwcms;
@@ -74,12 +111,7 @@ function i18n_substitute_text_token($token) {
 		return $i18n_tokens[$a];
 	} else {
 		$f = i18n_get_filename();
-		if(is_readable($f)) {
-			include $f;
-		} elseif($handle = fopen($f, 'ab')) {
-			fwrite($handle, i18n_get_file_open_text() );
-			fclose($handle);
-		} else {
+		if(!i18n_load_file()) {
 			return $a;
 		}
 		if(isset($i18n_tokens[$a])) {
@@ -98,24 +130,15 @@ function i18n_substitute_text_token($token) {
 		// injection into the generated language file (CWE-94/-95/-96).
 		$export = var_export($a, true);
 		$s = '$i18n_tokens[' . $export . '] = ' . $export . '; // NEW ' . now('Y-m-d H:i:s') . LF;
-		if($handle = fopen($f, 'ab')) {
-			fwrite($handle, $s);
-			fclose($handle);
-		}
+		@file_put_contents($f, $s, FILE_APPEND | LOCK_EX);
 	}
 	return $a;
 }
 // all contents starting and ending with @@ are replaced
 function i18n_substitute_text($tpl_output) {
 	global $i18n_tokens;
-	$f = i18n_get_filename();
 	if(!isset($i18n_tokens)) {
-		if(is_readable($f)) {
-			include $f;
-		} elseif($handle = fopen($f, 'ab')) {
-			fwrite($handle, i18n_get_file_open_text() );
-			fclose($handle);
-		}
+		i18n_load_file();
 	}
 	return preg_replace_callback('/@@(.+?)@@/', 'i18n_substitute_text_token', $tpl_output);
 }

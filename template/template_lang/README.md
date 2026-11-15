@@ -19,4 +19,4 @@ Every new `@@Text@@` token appends one entry to the language file of the active 
 
 Tokens containing control characters (`0x00`-`0x1F`, `0x7F`) are rejected as well.
 
-Translation text is written with `var_export()`, so quotes, backslashes and newlines cannot escape the generated PHP literal. Generated language files are included on every frontend request - never add executable PHP to them, and delete a file to drop its entries and start over.
+Translation text is written with `var_export()`, so quotes, backslashes and newlines cannot escape the generated PHP literal. The file is created with an exclusive write, so several concurrent first requests can never add more than one PHP header, and a file that carries more than one header is replaced by a fresh one on the next request. Generated language files are included on every frontend request - never add executable PHP to them, and delete a file to drop its entries and start over.
