@@ -19,7 +19,7 @@ if (!defined('PHPWCMS_ROOT')) {
 
 // Page / ext. Content
 
-if(!isset($content["page_file"])) {
+if(!isset($content["page_file"]) || !is_array($content["page_file"])) {
 
 	$content["page_file"]["source"] = 0;
 	$content["page_file"]["pfile"] = '';
@@ -27,29 +27,31 @@ if(!isset($content["page_file"])) {
 }
 
 ?>
-<tr><td colspan="2" class="rowspacer0x7"><img src="img/leer.gif" alt="" width="1" height="1"></td></tr>
+<div class="row g-4">
 
-<tr>
-  <td align="right" class="chatlist"><?php echo $BL['be_cnt_pages_from'] ?>:&nbsp;</td>
-  <td valign="top"><table border="0" cellpadding="0" cellspacing="0" bgcolor="#E7E8EB" summary="">
-  <tr>
-  	<td><input name="cpage_source" type="radio" value="0" <?php is_checked(0, $content["page_file"]["source"]) ?>></td>
-	<td><?php echo $BL['be_cnt_pages_fromfile'] ?>&nbsp;&nbsp;</td>
-	<td><input name="cpage_source" type="radio" value="1" <?php is_checked(1, $content["page_file"]["source"]) ?>></td>
-	<td><?php echo $BL['be_cnt_pages_manually'] ?>&nbsp;&nbsp;&nbsp;</td>
-  </tr></table></td>
-</tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="5"></td></tr>
-<tr>
-  <td align="right" class="chatlist"><?php echo $BL['be_cnt_pages_cust'] ?>:&nbsp;</td>
-  <td><input name="cpage_custom" type="text" class="f11" id="cpage_custom" style="width: 440px" value="<?php echo  html($content["page_file"]["pfile"]) ?>" size="40"></td>
-</tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="3"></td></tr>
-<tr>
-	<td align="right" valign="top" class="chatlist"><img src="img/leer.gif" alt="" width="1" height="15" /><?php echo $BL['be_cnt_pages_select'] ?>:&nbsp;</td>
-	<td valign="top"><div style="width:440px;height:200px;overflow:auto;border: 1px solid #7F9DB9;"><?php
+	<div class="col-12">
+		<div class="form-label"><?php echo $BL['be_cnt_pages_from'] ?></div>
+		<div class="d-flex flex-wrap gap-4">
+			<div class="form-field">
+				<input class="radio" name="cpage_source" type="radio" id="cpage_source0" value="0"<?php is_checked(0, $content["page_file"]["source"]) ?>>
+				<label for="cpage_source0"><?php echo $BL['be_cnt_pages_fromfile'] ?></label>
+			</div>
+			<div class="form-field">
+				<input class="radio" name="cpage_source" type="radio" id="cpage_source1" value="1"<?php is_checked(1, $content["page_file"]["source"]) ?>>
+				<label for="cpage_source1"><?php echo $BL['be_cnt_pages_manually'] ?></label>
+			</div>
+		</div>
+	</div>
 
-echo '<table cellspacing="0" cellpadding="0" border="0" width="100%">';
+	<div class="col-12">
+		<label class="form-label" for="cpage_custom"><?php echo $BL['be_cnt_pages_cust'] ?></label>
+		<input name="cpage_custom" type="text" class="form-control" id="cpage_custom" value="<?php echo  html($content["page_file"]["pfile"]) ?>" size="40">
+	</div>
+
+	<div class="col-12">
+		<div class="form-label"><?php echo $BL['be_cnt_pages_select'] ?></div>
+		<div class="border rounded p-3 overflow-auto" style="max-height: 220px">
+<?php
 
 // browse pages subdirectory
 
@@ -57,7 +59,6 @@ browse_pages_dir($phpwcms['content_path'].'pages');
 
 function browse_pages_dir($dir) {
 
-	$pc = 0;
 	$da = array(); //directory array
 	$fa = array(); //file array
 	if(is_dir($dir)) {
@@ -83,24 +84,19 @@ function browse_pages_dir($dir) {
 			$x = 0;
 			foreach($fa as $value) {
 				if(!$x) {
-					echo "\n<tr bgcolor=\"#E7E8EB\" style=\"height:19px;\"><td colspan=\"2\" class=\"chatlist\">";
-					echo '&nbsp;&nbsp;<strong>'.html($dir);
-					echo "</strong></td></tr>\n";
-					echo '<tr><td colspan="2"><img src="img/leer.gif" width="1" height="2" alt="" /></td></tr>';
+					echo '<div class="small fg-secondary pt-2 pb-1">' . html($dir) . '</div>';
 				}
-				echo "\n<tr><td align=\"center\">";
-				echo '<input name="cpage_file" type="radio" value="'.html($dir.'/'.$value).'" ';
-
+				$page_id = 'cpage_file_' . substr(md5($dir.'/'.$value), 0, 8);
+				echo '<div class="form-field">';
+				echo '<input class="radio" name="cpage_file" type="radio" id="' . $page_id . '" value="' . html($dir.'/'.$value) . '"';
 				if($GLOBALS['content']['page_file']['pfile'] == ($dir.'/'.$value)) {
-					echo 'checked="checked" ';
+					echo ' checked="checked"';
 				}
-				echo '/>';
-				echo '</td><td><strong>';
-				echo str_replace(' ', '&nbsp;', html($value));
-				echo '</strong></td></tr>';
+				echo '>';
+				echo '<label for="' . $page_id . '">' . html($value) . '</label>';
+				echo '</div>';
 				$x++;
 			}
-			echo '<tr><td colspan="2"><img src="img/leer.gif" width="1" height="2" alt="" /></td></tr>';
 		}
 
 		// check all subdirs
@@ -111,14 +107,13 @@ function browse_pages_dir($dir) {
 	}
 }
 
-echo "\n<tr><td width=\"25\">";
-echo '<img src="img/leer.gif" width="26" height="1" alt="" /></td><td width="99%"><img src="img/leer.gif" width="1" height="1" alt="" /></td></tr>';
-echo "\n</table>";
-
-?></div></td>
-</tr>
+?>
+		</div>
+	</div>
 <?php
 if (empty($phpwcms['enable_inline_php'])) {
-    echo '<tr><td></td><td class="tdtop3"><span class="error">' . $BL['be_cnt_pages_php_render_warning'] . '</span></td></tr>';
+    echo '<div class="col-12"><small class="fg-danger">' . $BL['be_cnt_pages_php_render_warning'] . '</small></div>';
 }
+?>
 
+</div>

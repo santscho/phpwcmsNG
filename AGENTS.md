@@ -687,8 +687,8 @@ existing entry already covers the action before adding a second glyph for it.
   places they were in before.
 - The type forms are included into a slot: `$cp_form_bootstrap` lists the types
   that render their own Bootstrap markup and are included into a `card-body`
-  (currently `0`, `3`, `4`, `5`, `6`, `10`, `11`, `15`, `16`, `24`, `52` and
-  `100`), every other type form
+  (currently `0`, `3`, `4`, `5`, `6`, `10`, `11`, `15`, `16`, `19`, `21`, `22`,
+  `24`, `27`, `28`, `52`, `89` and `100`), every other type form
   still writes `<tr><td>` rows and is included into a plain `table.w-100` inside
   the card body. Revamping a type means rewriting its `cnt<type>.inc.php` as
   `div`-based Bootstrap markup and adding its number to that list; do not remove
@@ -741,6 +741,45 @@ existing entry already covers the action before adding a second glyph for it.
   a save round-trip of the plain text form stored `acontent_text` and the
   `ctext_format` key of the form data unchanged. The temporary parts were deleted
   again, so article 1 keeps the parts it had.
+
+## Content part editor: sitemap, pages, RSS, FAQ, login and poll forms
+
+- The next six type forms are Bootstrap too: sitemap `19`, ext. content `21`,
+  RSS feed `22`, FAQ `27`, frontend login `28` and poll `89`. Same slot rule as
+  the batch above: `row g-4` grids without a wrapper, straight into the card
+  body.
+- Every field keeps its name, id and handler — `csitemap_*`, `cpage_source`,
+  `cpage_custom`, `cpage_file`, `crss_template`, `crss_url`, `crss_item`,
+  `crss_contenttype`, `crss_cacheoff`, `crss_timeout`, `faq_template`,
+  `faq_question`, `cimage_name`/`cimage_id`/`cimage_width`/`cimage_height`/
+  `cimage_zoom`/`cimage_caption`, `cookie_expire`, `date_format`, `locale`,
+  `validate_userdetail`, `validate_backenduser`, `accept_email_login`,
+  `profile_registration`, `profile_manage`, `profile_manage_redirect`,
+  `cpoll_buttonstyle`, `cpoll_buttontext`, `cpoll_caption`, `cimage_list[]`,
+  `cpoll_width`/`cpoll_height`/`cpoll_zoom`. The `is_checked()` and
+  `is_selected()` calls are unchanged, including `is_selected()` called with
+  `(value, option, 0, 0)` for the RSS cache select.
+- Image pickers are one row: the text field, the `open image browser` button and
+  a `trash` `backend_action()`; the poll and image lists keep the `multiple`
+  select with the up/down/trash actions next to it and the thumbnails as a
+  `d-flex flex-wrap` row. The FAQ thumbnail and caption share a row.
+- The page list of the ext. content form (`browse_pages_dir()`) no longer builds
+  table rows: each file is one `.form-field` radio with a generated id
+  (`cpage_file_` plus eight characters of the path hash) and a label, grouped
+  under a `small fg-secondary` directory heading, inside a bordered
+  `overflow-auto` box. The radio value stays the full path, so the frontend
+  lookup is untouched.
+- The RSS form drops the dead comment block around `crss_cut1st` and the
+  `l538_70.gif` rule, which is an `<hr>` now; the info links of the frontend
+  login form are `(?)` links with a Bootstrap tooltip instead of the famfamfam
+  sprite.
+- Two guards were hardened because the forms are also reached with a `false`
+  value in their form array (nothing new, the old code printed a PHP warning):
+  `page_file` and `poll_list` are initialised when they are not arrays, and the
+  poll select size no longer reads `poll_select` without checking it.
+- Verified with one temporary content part per type on article 1: no table
+  leftovers, no PHP warnings, all fields rendered. The temporary parts were
+  removed again.
 
 ## Content part editor: e-card
 

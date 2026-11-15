@@ -19,11 +19,11 @@ if (!defined('PHPWCMS_ROOT')) {
 //FAQ
 
 ?>
-<tr><td colspan="2" class="rowspacer0x7"><img src="img/leer.gif" alt="" width="1" height="1"></td></tr>
+<div class="row g-4">
 
-<tr>
-    <td align="right" class="chatlist"><?php echo $BL['be_admin_struct_template'] ?>:&nbsp;</td>
-    <td><select name="faq_template" id="faq_template">
+    <div class="col-12 md:col-6">
+        <label class="form-label" for="faq_template"><?php echo $BL['be_admin_struct_template'] ?></label>
+        <select name="faq_template" id="faq_template" class="form-control">
 <?php
 
 // templates for recipes
@@ -41,23 +41,21 @@ if(is_array($tmpllist) && count($tmpllist)) {
 }
 
 ?>
-    </select></td>
-</tr>
+        </select>
+    </div>
 
-<tr><td colspan="2" class="rowspacer7x7"><img src="img/leer.gif" alt="" width="1" height="1"></td></tr>
-
-<tr>
-    <td class="chatlist tdtop3" align="right">&nbsp;<?php echo $BL['be_cnt_question'] ?>:&nbsp;</td>
-    <td><textarea name="faq_question" rows="4" class="width440 autosize" id="faq_question"><?php
+    <div class="col-12">
+        <label class="form-label" for="faq_question"><?php echo $BL['be_cnt_question'] ?></label>
+        <textarea name="faq_question" rows="4" class="form-control autosize" id="faq_question"><?php
 
     echo empty($content["faq_question"]) ? '' : $content["faq_question"];
 
-?></textarea></td>
-</tr>
-<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="8" /></td>
-</tr>
-<tr><td colspan="2" class="chatlist">&nbsp;<?php echo $BL['be_cnt_answer'] ?>:&nbsp;</td></tr>
-<tr><td colspan="2"><?php
+?></textarea>
+    </div>
+
+    <div class="col-12">
+        <div class="form-label"><?php echo $BL['be_cnt_answer'] ?></div>
+<?php
 
 $wysiwyg_editor = array(
     'value'     => $content["faq_answer"] ?? '',
@@ -71,47 +69,41 @@ $wysiwyg_editor = array(
 
 include PHPWCMS_ROOT.'/include/inc_lib/wysiwyg.editor.inc.php';
 
-?></td></tr>
+?>
+    </div>
 
-<tr><td colspan="2" class="rowspacer7x7"><img src="img/leer.gif" alt="" width="1" height="1"></td></tr>
+    <div class="col-12">
+        <label class="form-label" for="cimage_name"><?php echo  $BL['be_cnt_image'] ?></label>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <input name="cimage_name" type="text" id="cimage_name" class="form-control w-auto" value="<?php echo  isset($content["image_name"]) ? html($content["image_name"]) : '' ?>" size="40" maxlength="250" onfocus="this.blur()">
+            <a href="javascript:" class="btn btn-outline theme-secondary btn-sm" onclick="openFileBrowser('filebrowser.php?opt=0&amp;target=nolist')"><?php echo  $BL['be_cnt_openimagebrowser'] ?></a>
+<?php echo backend_action('#', 'trash', $BL['be_cnt_delimage'], 'normal', ' onclick="document.articlecontent.cimage_name.value=\'\';document.articlecontent.cimage_id.value=\'0\';return false;"', 'danger') ?>
+            <input name="cimage_id" type="hidden" value="<?php echo $content["image_id"] ?? '' ?>">
+        </div>
+    </div>
 
-<tr>
-              <td align="right" class="chatlist"><?php echo  $BL['be_cnt_image'] ?>:&nbsp;</td>
-              <td valign="top"><table border="0" cellpadding="0" cellspacing="0" summary="">
-                <tr>
-                  <td><input name="cimage_name" type="text" id="cimage_name" class="f11b" style="width: 200px; color: #727889;" value="<?php echo  isset($content["image_name"]) ? html($content["image_name"]) : '' ?>" size="40" maxlength="250" onfocus="this.blur()" /></td>
-                  <td><img src="img/leer.gif" alt="" width="3" height="1" /><a href="javascript:;" title="<?php echo  $BL['be_cnt_openimagebrowser'] ?>" onclick="openFileBrowser('filebrowser.php?opt=0&amp;target=nolist')"><img src="img/button/open_image_button.gif" alt="" width="20" height="15" border="0" /></a></td>
-                  <td><img src="img/leer.gif" alt="" width="3" height="1" /><a href="javascript:;" title="<?php echo  $BL['be_cnt_delimage'] ?>" onclick="document.articlecontent.cimage_name.value='';document.articlecontent.cimage_id.value='0';this.blur();return false;"><img src="img/button/del_image_button.gif" alt="" width="15" height="15" border="0" /></a>
-                    <input name="cimage_id" type="hidden" value="<?php echo $content["image_id"] ?? '' ?>" /></td>
-                </tr>
-              </table></td>
-              </tr>
-          <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="5" /></td>
-</tr>
-            <tr>
-              <td align="right" class="chatlist"><?php echo $BL['be_cnt_maxw'] ?>:&nbsp;</td>
-              <td valign="top"><table border="0" cellpadding="0" cellspacing="0" summary="">
-                <tr>
-                  <td><input name="cimage_width" type="text" class="f11b" id="cimage_width" style="width: 50px;" size="3" maxlength="4" onkeyup="if(!parseInt(this.value,10)) this.value='';" value="<?php echo $content["image_width"] ?? '' ?>" /></td>
-                  <td class="chatlist">&nbsp;&nbsp;<?php echo $BL['be_cnt_maxh'] ?>:&nbsp; </td>
-                  <td><input name="cimage_height" type="text" class="f11b" id="cimage_height" style="width: 50px;" size="3" maxlength="4" onkeyup="if(!parseInt(this.value,10)) this.value='';" value="<?php echo $content["image_height"] ?? '' ?>" /></td>
-                  <td class="chatlist">&nbsp;px&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                  <td bgcolor="#E7E8EB">&nbsp;</td>
-                  <td bgcolor="#E7E8EB"><input name="cimage_zoom" type="checkbox" id="cimage_zoom" value="1" <?php is_checked(1, $content["image_zoom"] ?? 0); ?> /></td>
-                  <td bgcolor="#E7E8EB" class="v10">&nbsp;<label for="cimage_zoom"><?php echo $BL['be_cnt_enlarge'] ?></label>&nbsp;</td>
-                  <td bgcolor="#E7E8EB"><img src="img/leer.gif" alt="" width="6" height="15" /></td>
-                </tr>
-              </table></td>
-              </tr>
-            <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="6" /></td>
-</tr>
-            <tr>
-              <td align="right" valign="top" class="chatlist"><img src="img/leer.gif" alt="" width="1" height="13" /><?php echo $BL['be_cnt_caption'] ?>:&nbsp;</td>
-              <td valign="top"><table border="0" cellpadding="0" cellspacing="0" summary="">
-                  <tr>
-                    <td valign="top"><textarea name="cimage_caption" cols="30" rows="4" class="width300 autosize" id="cimage_caption"><?php echo  isset($content["image_caption"]) ? html($content["image_caption"]) : '' ?></textarea></td>
-                    <td valign="top"><img src="img/leer.gif" alt="" width="15" height="1" /></td>
-                    <td valign="top"><?php
+    <div class="col-12 md:col-6">
+        <div class="d-flex flex-wrap align-items-end gap-3">
+            <div>
+                <label class="form-label" for="cimage_width"><?php echo $BL['be_cnt_maxw'] ?></label>
+                <input name="cimage_width" type="text" id="cimage_width" class="form-control" size="3" maxlength="4" onkeyup="if(!parseInt(this.value,10)) this.value='';" value="<?php echo $content["image_width"] ?? '' ?>">
+            </div>
+            <div>
+                <label class="form-label" for="cimage_height"><?php echo $BL['be_cnt_maxh'] ?></label>
+                <input name="cimage_height" type="text" id="cimage_height" class="form-control" size="3" maxlength="4" onkeyup="if(!parseInt(this.value,10)) this.value='';" value="<?php echo $content["image_height"] ?? '' ?>">
+            </div>
+            <div class="form-field">
+                <input class="check" name="cimage_zoom" type="checkbox" id="cimage_zoom" value="1" <?php is_checked(1, $content["image_zoom"] ?? 0); ?>>
+                <label for="cimage_zoom"><?php echo $BL['be_cnt_enlarge'] ?></label>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <label class="form-label" for="cimage_caption"><?php echo $BL['be_cnt_caption'] ?></label>
+        <div class="d-flex flex-wrap align-items-start gap-3">
+            <textarea name="cimage_caption" cols="30" rows="4" class="form-control autosize" id="cimage_caption" style="min-width: 300px"><?php echo  isset($content["image_caption"]) ? html($content["image_caption"]) : '' ?></textarea>
+<?php
 
 if(isset($content["image_hash"])) {
     $thumb_image = get_cached_image(array(
@@ -121,11 +113,12 @@ if(isset($content["image_hash"])) {
     ));
 
     if($thumb_image != false) {
-        echo '<img src="' . $thumb_image['src'] .'" alt="" '.$thumb_image[3].'>';
+        echo '<img src="' . $thumb_image['src'] .'" alt="" '.$thumb_image[3].' class="img-fluid">';
     }
 }
 
-?></td>
-                  </tr>
-              </table></td>
-</tr>
+?>
+        </div>
+    </div>
+
+</div>
