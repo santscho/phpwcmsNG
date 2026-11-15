@@ -1619,3 +1619,47 @@ class Phpwcms_Image_lib {
 // END Image_lib Class
 /* End of file Image_lib.php */
 /* Location: ./system/libraries/Image_lib.php */
+
+/**
+ * Remove temporary image files left behind by an interrupted request
+ *
+ * The image processors write to "<destination>.tmp-<pid>-<id>" and move the file to
+ * its destination once they are done. A request that dies in between leaves such a
+ * file behind; the files untouched for $max_age seconds cannot belong to a running
+ * request anymore and are removed the next time a thumbnail is generated in that
+ * folder. Each folder is checked once per request.
+ *
+ * @param   string $dir      folder holding the temporary files
+ * @param   int    $max_age  seconds a temporary file has to be untouched
+ * @return  int              number of removed files
+ */
+function image_cleanup_tmp_files($dir, $max_age = 3600) {
+    static $cleaned = array();
+
+    $dir = rtrim(str_replace('\\', '/', (string)$dir), '/');
+    if ($dir === '' || isset($cleaned[$dir]) || !is_dir($dir)) {
+        return 0;
+    }
+    $cleaned[$dir] = true;
+
+    $max_age = (int)$max_age;
+    $now = time();
+    $removed = 0;
+    $files = @glob($dir . '/*.tmp-*');
+    if (is_array($files)) {
+        foreach ($files as $file) {
+            if (!is_file($file)) {
+                continue;
+            }
+            $mtime = @filemtime($file);
+            if ($max_age > 0 && $mtime !== false && ($now - $mtime) < $max_age) {
+                continue;
+            }
+            if (@unlink($file)) {
+                $removed++;
+            }
+        }
+    }
+
+    return $removed;
+}

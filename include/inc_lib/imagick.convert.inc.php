@@ -205,6 +205,9 @@ function get_cached_image($val=array(), $db_track=true, $return_all_imageinfo=tr
         $val
     );
 
+    // Drop temporary files a crashed image request left next to the thumbnails.
+    image_cleanup_tmp_files($val['thumb_dir']);
+
     $imgCache = false; //do not insert file information in db image cache
     $thumb_image_info = array(
         0 => false,
@@ -507,6 +510,11 @@ function phpwcms_convertimage_gs($source_img='', $target_img='', $config=array()
         ),
         $config
     );
+
+    // Drop temporary files a crashed conversion left next to the target.
+    if ($target_img !== '') {
+        image_cleanup_tmp_files(dirname($target_img));
+    }
 
     $IMG = new Phpwcms_Image_lib($config);
     $IMG->resize();
