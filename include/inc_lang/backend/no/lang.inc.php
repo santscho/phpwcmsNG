@@ -944,9 +944,13 @@ $BL['be_func_content_copy']              = 'kopier denne artikkelens innhold';
 $BL['be_func_content_no_copy']           = "Det er ikke mulig &#229; kopiere denne artikkelens innhold!";
 $BL['be_func_content_paste_cancel']      = 'avbryt endringer i artikkelinnhold';
 
+// backend screen mode switcher
+$BL['be_theme_switch']      = 'Skjermmodus';
+$BL['be_theme_auto']        = 'Automatisk';
+$BL['be_theme_light']       = 'Lys';
+$BL['be_theme_dark']        = 'M&#248;rk';
 
-
-
-
-
-
+// backend drag and drop ordering
+$BL['be_article']           = 'artikkel';
+$BL['be_sort_drag']         = 'dra for &#229; endre rekkef&#248;lge';
+$BL['be_sort_drag_error']   = 'Omorganiseringen mislyktes, last inn siden p&#229; nytt og pr&#248;v igjen.';

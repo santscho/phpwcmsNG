@@ -783,3 +783,13 @@ $BL['be_article_nosummary']             = 'não mostrar o sumário com o artigo 
 $BL['be_article_forlist']               = 'listagem de artigos';
 $BL['be_article_forfull']               = 'mostrar artigo completo';
 
+// backend screen mode switcher
+$BL['be_theme_switch']      = 'Modo de ecr&#227;';
+$BL['be_theme_auto']        = 'Autom&#225;tico';
+$BL['be_theme_light']       = 'Claro';
+$BL['be_theme_dark']        = 'Escuro';
+
+// backend drag and drop ordering
+$BL['be_article']           = 'artigo';
+$BL['be_sort_drag']         = 'arraste para reordenar';
+$BL['be_sort_drag_error']   = 'A reordena&#231;&#227;o falhou, recarregue a p&#225;gina e tente novamente.';

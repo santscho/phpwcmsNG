@@ -993,3 +993,14 @@ $BL['be_cnt_guests']                    = 'kh&#225;ch';
 $BL['be_cnt_admin']                        = 'qu&#7843;n tr&#7883;';
 $BL['be_cnt_write']                        = 'vi&#7871;t';
 $BL['be_cnt_read']                        = '&#273;&#7885;c';
+
+// backend screen mode switcher
+$BL['be_theme_switch']      = 'Ch&#7871; &#273;&#7897; m&#224;n h&#236;nh';
+$BL['be_theme_auto']        = 'T&#7921; &#273;&#7897;ng';
+$BL['be_theme_light']       = 'S&#225;ng';
+$BL['be_theme_dark']        = 'T&#7889;i';
+
+// backend drag and drop ordering
+$BL['be_article']           = 'b&#224;i vi&#7871;t';
+$BL['be_sort_drag']         = 'k&#233;o &#273;&#7875; s&#7855;p x&#7871;p l&#7841;i';
+$BL['be_sort_drag_error']   = 'S&#7855;p x&#7871;p l&#7841;i kh&#244;ng th&#224;nh c&#244;ng, vui l&#242;ng t&#7843;i l&#7841;i trang v&#224; th&#7917; l&#7841;i.';

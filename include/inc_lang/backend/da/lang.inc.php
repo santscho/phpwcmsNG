@@ -659,3 +659,13 @@ $BL['be_ctype_articlemenu']             = 'article menu';
 $BL['be_cnt_sitelevel']                 = 'site level';
 $BL['be_cnt_sitecurrent']               = 'current site level';
 
+// backend screen mode switcher
+$BL['be_theme_switch']     = 'Sk&aelig;rmtilstand';
+$BL['be_theme_auto']       = 'Automatisk';
+$BL['be_theme_light']      = 'Lys';
+$BL['be_theme_dark']       = 'M&oslash;rk';
+
+// backend drag and drop ordering
+$BL['be_article']          = 'artikel';
+$BL['be_sort_drag']        = 'tr&aelig;k for at omorganisere';
+$BL['be_sort_drag_error']  = 'Omorganiseringen mislykkedes, genindl&aelig;s siden, og pr&oslash;v igen.';

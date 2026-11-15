@@ -265,7 +265,7 @@ $BL['be_ftrash_delfinal']               = 'galutinis ištrynimas';
 // files.search.tmpl.php
 $BL['be_fsearch_err1']                  = 'tuščia paieškos užklausa.';
 $BL['be_fsearch_title']                 = 'ieškoti failų';
-$BL['be_fsearch_infotext']              = 'Čia galima atlikti paprastą failų paiešką. Ieškoma atitinkamų raktinių žodžių,<br />failų pavadinimų ir išsamiuose faulų aprašymuose. Simbolio '*' naudoti negalima. Žodžius atskirkite tarpais. <br /> Pasirinkite IR/ARBA ir kokių failų ieškoti: asmeninių/viešai prieinamų.';
+$BL['be_fsearch_infotext']              = 'Čia galima atlikti paprastą failų paiešką. Ieškoma atitinkamų raktinių žodžių,<br />failų pavadinimų ir išsamiuose faulų aprašymuose. Simbolio \'*\' naudoti negalima. Žodžius atskirkite tarpais. <br /> Pasirinkite IR/ARBA ir kokių failų ieškoti: asmeninių/viešai prieinamų.';
 $BL['be_fsearch_nonfound']              = 'pagal jūsų užklausta failų nerasta. patikslinkite užklausą!';
 $BL['be_fsearch_fillin']                = 'malonėkite įrašyti užklausą į viršuje esantį langelį.';
 $BL['be_fsearch_searchlabel']           = 'ieškoti';
@@ -654,3 +654,13 @@ $BL['be_ctype_articlemenu']             = 'article menu';
 $BL['be_cnt_sitelevel']                 = 'site level';
 $BL['be_cnt_sitecurrent']               = 'current site level';
 
+// backend screen mode switcher
+$BL['be_theme_switch']     = 'Ekrano re&#382;imas';
+$BL['be_theme_auto']       = 'Automatinis';
+$BL['be_theme_light']      = '&#352;viesus';
+$BL['be_theme_dark']       = 'Tamsus';
+
+// backend drag and drop ordering
+$BL['be_article']          = 'straipsnis';
+$BL['be_sort_drag']        = 'tempkite, kad pakeistum&#279;te tvark&#261;';
+$BL['be_sort_drag_error']  = 'Pertvarkyti nepavyko, &#303;kelkite puslap&#303; i&#353; naujo ir bandykite dar kart&#261;.';

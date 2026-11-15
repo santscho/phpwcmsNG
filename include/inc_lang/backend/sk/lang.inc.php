@@ -779,6 +779,13 @@ $BL['be_article_nosummary']             = 'nezobrazova&#357; s&uacute;hrn v celo
 $BL['be_article_forlist']               = 'prezeranie &#269;l&aacute;nkov';
 $BL['be_article_forfull']               = 'zobrazi&#357; cel&yacute; &#269;l&aacute;nok';
 
+// backend screen mode switcher
+$BL['be_theme_switch']      = 'Re&#382;im obrazovky';
+$BL['be_theme_auto']        = 'Automaticky';
+$BL['be_theme_light']       = 'Svetl&#253;';
+$BL['be_theme_dark']        = 'Tmav&#253;';
 
-
-
+// backend drag and drop ordering
+$BL['be_article']           = '&#269;l&#225;nok';
+$BL['be_sort_drag']         = 'potiahnite na zmenu poradia';
+$BL['be_sort_drag_error']   = 'Zmena poradia zlyhala, obnovte str&#225;nku a sk&#250;ste to znova.';

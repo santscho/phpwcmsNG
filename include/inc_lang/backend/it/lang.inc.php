@@ -664,4 +664,13 @@ $BL['CSRF_BTN_BACK'] = 'Indietro';
 $BL['CSRF_BTN_LOGIN'] = 'Login';
 $BL['CSRF_BTN_DASHBOARD'] = 'Bacheca';
 
+// backend screen mode switcher
+$BL['be_theme_switch']     = 'Modalit&#224; schermo';
+$BL['be_theme_auto']       = 'Automatico';
+$BL['be_theme_light']      = 'Chiaro';
+$BL['be_theme_dark']       = 'Scuro';
 
+// backend drag and drop ordering
+$BL['be_article']          = 'articolo';
+$BL['be_sort_drag']        = 'trascina per riordinare';
+$BL['be_sort_drag_error']  = 'Riordino non riuscito, ricarica la pagina e riprova.';

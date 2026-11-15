@@ -822,4 +822,13 @@ $BL['be_admin_struct_orderasc']         = 'tõusvas järjestuses';
 $BL['be_admin_struct_ordermanual']      = 'käsitsi (nool üles/alla)';
 $BL['be_cnt_sitemap_startid']           = 'alusta';
 
+// backend screen mode switcher
+$BL['be_theme_switch']      = 'Ekraanire&#382;iim';
+$BL['be_theme_auto']        = 'Automaatne';
+$BL['be_theme_light']       = 'Hele';
+$BL['be_theme_dark']        = 'Tume';
 
+// backend drag and drop ordering
+$BL['be_article']           = 'artikkel';
+$BL['be_sort_drag']         = 'lohistage &#252;mberj&#228;rjestamiseks';
+$BL['be_sort_drag_error']   = '&#220;mberj&#228;rjestamine eba&#245;nnestus, laadige leht uuesti ja proovige uuesti.';

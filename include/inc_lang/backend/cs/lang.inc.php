@@ -937,4 +937,13 @@ $BL['be_func_content_copy']              = 'kopírovat tuto èást èlánku do j
 $BL['be_func_content_no_copy']           = "Není moné kopírovat tuto èást èlánku do tohoto èlánku!";
 $BL['be_func_content_paste_cancel']      = 'zruit akci s touto èástí èlánku';
 
+// backend screen mode switcher
+$BL['be_theme_switch']      = 'Re&#382;im obrazovky';
+$BL['be_theme_auto']        = 'Automaticky';
+$BL['be_theme_light']       = 'Sv&#283;tl&#253;';
+$BL['be_theme_dark']        = 'Tmav&#253;';
 
+// backend drag and drop ordering
+$BL['be_article']           = '&#269;l&#225;nek';
+$BL['be_sort_drag']         = 'p&#345;et&#225;hn&#283;te pro zm&#283;nu po&#345;ad&#237;';
+$BL['be_sort_drag_error']   = 'Zm&#283;na po&#345;ad&#237; se nezda&#345;ila, obnovte str&#225;nku a zkuste to znovu.';

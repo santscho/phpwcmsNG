@@ -882,4 +882,13 @@ $BL['be_cnt_rssfeed_item']              = 'aiheet';
 $BL['be_cnt_rssfeed_max']               = 'max.';
 $BL['be_cnt_rssfeed_cut']               = 'piilota 1. aihe';
 
+// backend screen mode switcher
+$BL['be_theme_switch']      = 'N&auml;ytt&ouml;tila';
+$BL['be_theme_auto']        = 'Automaattinen';
+$BL['be_theme_light']       = 'Vaalea';
+$BL['be_theme_dark']        = 'Tumma';
 
+// backend drag and drop ordering
+$BL['be_article']           = 'artikkeli';
+$BL['be_sort_drag']         = 'ved&auml; j&auml;rjest&auml;&auml;ksesi';
+$BL['be_sort_drag_error']   = 'J&auml;rjest&auml;minen ep&auml;onnistui, lataa sivu uudelleen ja yrit&auml; uudestaan.';

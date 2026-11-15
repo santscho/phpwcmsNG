@@ -822,4 +822,13 @@ $BL['be_admin_struct_orderasc']         = 'növekvõ';
 $BL['be_admin_struct_ordermanual']      = 'manualis (nyil fel/le)';
 $BL['be_cnt_sitemap_startid']           = 'ezzel&nbspkezdõdik';
 
+// backend screen mode switcher
+$BL['be_theme_switch']      = 'K&#233;perny&#337;m&#243;d';
+$BL['be_theme_auto']        = 'Automatikus';
+$BL['be_theme_light']       = 'Vil&#225;gos';
+$BL['be_theme_dark']        = 'S&#246;t&#233;t';
 
+// backend drag and drop ordering
+$BL['be_article']           = 'cikk';
+$BL['be_sort_drag']         = 'h&#250;zza az &#225;trendez&#233;shez';
+$BL['be_sort_drag_error']   = 'Az &#225;trendez&#233;s nem siker&#252;lt, t&#246;ltse &#250;jra az oldalt, &#233;s pr&#243;b&#225;lja &#250;jra.';

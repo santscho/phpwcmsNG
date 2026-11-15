@@ -820,3 +820,14 @@ $BL['be_admin_struct_orderdesc']        = 'Descendent';
 $BL['be_admin_struct_orderasc']         = 'Ascendent';
 $BL['be_admin_struct_ordermanual']      = 'Manual (fletxa amunt/avall)';
 $BL['be_cnt_sitemap_startid']           = 'Comen&ccedil;ant per';
+
+// backend screen mode switcher
+$BL['be_theme_switch']      = 'Mode de pantalla';
+$BL['be_theme_auto']        = 'Autom&agrave;tic';
+$BL['be_theme_light']       = 'Clar';
+$BL['be_theme_dark']        = 'Fosc';
+
+// backend drag and drop ordering
+$BL['be_article']           = 'article';
+$BL['be_sort_drag']         = 'arrossegueu per reordenar';
+$BL['be_sort_drag_error']   = 'No s\'ha pogut reordenar, recarregueu la p&agrave;gina i torneu-ho a provar.';

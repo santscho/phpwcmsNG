@@ -967,3 +967,13 @@ $BL['be_alias_articleID'] = 'alias ID';
 $BL['be_alias_useAll'] = "utilizeaza acest articlol&#8217;s date header";
 $BL['be_article_morelink'] = '[more&#8230;] link';
 
+// backend screen mode switcher
+$BL['be_theme_switch']      = 'Mod ecran';
+$BL['be_theme_auto']        = 'Automat';
+$BL['be_theme_light']       = 'Luminos';
+$BL['be_theme_dark']        = 'Intunecat';
+
+// backend drag and drop ordering
+$BL['be_article']           = 'articol';
+$BL['be_sort_drag']         = 'trageti pentru reordonare';
+$BL['be_sort_drag_error']   = 'Reordonarea a esuat, reincarcati pagina si incercati din nou.';
