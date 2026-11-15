@@ -177,8 +177,11 @@ These apply to every backend screen that is modernized:
 Every backend icon is a Bootstrap Icon (<https://icons.getbootstrap.com>, v1.13.2,
 MIT) inlined at 16x16 from `backend_icon()`. The names are fixed:
 
-- **type markers**: site structure `folder-fill`, article `journal-bookmark-fill`,
-  content part `postcard-fill` — shown before the row title
+- **type markers**: structure level `grid-1x2-fill`, article
+  `journal-bookmark-fill`, content part `postcard-fill` — shown before the row
+  title. Structure levels are the site structure categories in the article tree
+  and on `ADMIN > site structure` (`struct_levellist()`), so they never use the
+  `folder-fill` of the file center directories
 - **row actions**: edit `pen`, cut `scissors` (solid `theme-warning` while the file
   sits in the clipboard), copy `copy`, paste `clipboard-plus`, delete `trash`,
   restore from trash `restore` (Bootstrap icon `arrow-counterclockwise`)

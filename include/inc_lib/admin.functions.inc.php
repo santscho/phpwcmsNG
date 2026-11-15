@@ -66,7 +66,7 @@ function struct_levellist($struct, $key, $counter, $copy_article_content, $cut_a
     }
     $a .= '>' . LF;
 
-    $a .= '<span class="fg-secondary flex-shrink-0" title="' . $BL['be_admin_struct_title'] . '">' . backend_icon('folder-fill') . '</span>';
+    $a .= '<span class="fg-secondary flex-shrink-0" title="' . $BL['be_admin_struct_title'] . '">' . backend_icon('grid-1x2-fill') . '</span>';
 
     if($child_count) {
         $a .= '<a href="phpwcms.php?' . $page_val . '&amp;open=' . rawurlencode($acat_id . ':' . ($is_open ? 0 : 1)) . '"';
