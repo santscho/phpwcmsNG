@@ -21,8 +21,14 @@ if (!defined('PHPWCMS_ROOT')) {
 $sql = "SELECT COUNT(*) FROM ".DB_PREPEND."phpwcms_message WHERE msg_uid=".intval($_SESSION["wcs_user_id"])." AND msg_read=0";
 if(($check = _dbQuery($sql, 'COUNT'))) {
 
-    $wcsnav["navspace1"]  = '<a href="phpwcms.php?do=messages" title="'.$check.' new messages waiting!">'.
-    $wcsnav["navspace1"] .= '<img src="img/symbole/new_mail.gif" border="0" alt="" /></a>';
     $new_mail_waiting = 1;
+
+    if(!empty($wcsnav["messages"])) {
+        $wcsnav["messages"] = str_replace(
+            '</a>',
+            ' <span class="badge theme-warning">' . $check . '</span></a>',
+            $wcsnav["messages"]
+        );
+    }
 
 }

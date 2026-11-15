@@ -15,8 +15,11 @@
   `data-bs-theme="dark"` on a `bg-primary` bar so the white phpwcms logo stays
   legible), then `container` → `row` / `col` → `card` / `card-body`, with the
   standard button classes below.
-- The backend frame (`phpwcms.php`) is a primary `navbar sticky-top` carrying
-  the main sections plus host and logout, then a fluid container row: sidebar column
+- The backend frame (`phpwcms.php`) is a primary `navbar sticky-top`; the main
+  sections are a Bootstrap `nav nav-pills` (`nav-link` anchors, `active` plus
+  `aria-current="page"` on the current one) and the theme switcher, host and
+  logout sit on the right. The unread message count is a `badge theme-warning`
+  inside the messages pill. Below it a fluid container row: sidebar column
   (`col-12 md:col-3 xl:col-2`) next to the content column
   (`col-12 md:col-9 xl:col-10`, keeping the `#be_main_content` id).
 - The body is `d-flex flex-column min-vh-100`, the content container carries

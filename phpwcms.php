@@ -272,10 +272,10 @@ if($BE['LANG'] == 'ar') {
         <a href="phpwcms.php?do=home" target="_top" class="navbar-brand d-flex align-items-center">
             <img src="img/backend/phpwcms-logo.svg" alt="phpwcms v<?php echo html_specialchars(PHPWCMS_VERSION); ?>" width="112" height="31">
         </a>
-        <div class="navbar-nav flex-row flex-wrap align-items-center gap-1 me-auto"><?php
+        <div class="nav nav-pills flex-wrap me-auto"><?php
 
             // create backend main navigation
-            echo '<a href="phpwcms.php?do=home" class="nav-link justify-content-start' . ($do === 'default' ? ' active' : '') . '"' . ($do === 'default' ? ' aria-current="page"' : '') . '>HOME</a>';
+            echo '<a href="phpwcms.php?do=home" class="nav-link' . ($do === 'default' ? ' active' : '') . '"' . ($do === 'default' ? ' aria-current="page"' : '') . '>HOME</a>';
             echo implode('', $wcsnav);
 
         ?></div>
