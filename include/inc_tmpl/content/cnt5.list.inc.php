@@ -36,8 +36,9 @@ foreach($clink as $value) {
 	if($clink_link === '') {
 		continue;
 	}
+	$clink_title = 'Link: ' . $clink_link . ($clink_target !== '' ? ' ' . $clink_target : '');
 	$clink_liste .= "<a href=\"".$clink_link."\" target=\"_blank\" ";
-	$clink_liste .= "title=\"Link: ".html($clink_link.trim(' '.$clink_target))."\">";
+	$clink_liste .= "title=\"".html($clink_title)."\" data-bs-toggle=\"tooltip\">";
 	$clink_liste .= "<span class=\"d-inline-flex align-items-center\">" . backend_icon('arrow-up-right') . "</span> ";
 	$clink_liste .= html($clink_name ?: $clink_link)."</a>\n";
 }
