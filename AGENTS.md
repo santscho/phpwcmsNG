@@ -435,7 +435,11 @@ existing entry already covers the action before adding a second glyph for it.
   `btn-outline theme-secondary` row with the `plus` icon, and an empty directory
   or a user without files is a `fg-secondary` row with `NO_FILE`.
 - `addAllFiles()` asks through `window.phpwcmsConfirm()`, so the popup needs the
-  confirm module and its labels like any screen of the frame.
+  confirm module and its labels like any screen of the frame. `ADD_ALL_CONFIRM`
+  carries JavaScript `\n` escapes like the frame's confirm texts, so they are
+  turned into real line breaks before `js_singlequote()` escapes the string for
+  the script — the dialog splits the question at real line breaks, and doubling
+  the backslashes would show a literal `\n`.
 - The upload panel posts through `include/inc_js/backend.upload.js`: a
   `[data-upload-dropzone]` with a multiple `form-control` file input and a
   `[data-upload-fields]` container whose named fields are added to the request

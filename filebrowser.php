@@ -609,6 +609,8 @@ if(!empty($count_user_files)) { //Listing in case of user files/folders
         echo ' var addAllFilesLink = document.getElementById("addAllFilesLink");' . LF;
         echo ' if(addAllFilesLink) { addAllFilesLink.classList.add("d-none"); }' . LF;
         $confirm = str_replace('{VAL}', $current_dirname, $BL['ADD_ALL_CONFIRM']);
+        // the message carries JavaScript \n escapes, the dialog splits at real line breaks
+        $confirm = str_replace(array('\\r\\n', '\\n'), array("\n", "\n"), $confirm);
         if(PHPWCMS_CHARSET !== 'utf-8') {
             $confirm = mb_convert_encoding($confirm, PHPWCMS_CHARSET);
         }
