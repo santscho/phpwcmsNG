@@ -221,6 +221,25 @@ existing entry already covers the action before adding a second glyph for it.
   the listing afterwards. The qq FileUploader widget is not used here anymore,
   but `filebrowser.php` still loads it, so its files stay.
 
+## Private file upload
+
+- `FILE > file center > private files > upload file`
+  (`include/inc_tmpl/files.private.upload.tmpl.php`) is a single card: the header
+  carries the screen title and a `close` button back to the file center, the body
+  the form, the footer the `close` and primary submit buttons.
+- The body is a `row g-4` of `col-12 md:col-6` fields (directory select and file
+  input first), followed by `border-top mt-4 pt-4` groups for IPTC data, the
+  language tabs, the keywords and the status marks. Upload errors are an
+  `alert theme-danger`, a missing required keyword category is a
+  `badge theme-danger` next to its label.
+- The language switch is a `nav nav-pills` inside `file-lang-tabs`. Every tab keeps
+  its `rel`, every field block is `finfo finfo<lang>` and the inactive ones carry
+  `d-none`, which the jQuery handler toggles. Keep the bare `finfo` class — the tab
+  handler selects `.file-lang-tabs .nav-link`, not a `nav` element.
+- IPTC and the four status marks are `.form-field` with a `.check` input. The tag
+  autosuggest, the `autosize` textareas and the `file_aktion`/`MAX_FILE_SIZE`
+  hidden fields stay as they are.
+
 ## File actions
 
 - `FILE > file actions` (`include/inc_tmpl/files.actions.tmpl.php`) is three
