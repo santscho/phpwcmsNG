@@ -1120,5 +1120,6 @@ $BL['be_theme_light'] = 'Licht';
 $BL['be_theme_dark'] = 'Donker';
 
 // backend drag and drop ordering
+$BL['be_article'] = 'artikel';
 $BL['be_sort_drag'] = 'sleep om te herschikken';
 $BL['be_sort_drag_error'] = 'Herschikken is mislukt, herlaad de pagina en probeer het opnieuw.';

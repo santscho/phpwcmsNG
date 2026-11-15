@@ -1520,5 +1520,6 @@ $BL['be_theme_light'] = 'Jasny';
 $BL['be_theme_dark'] = 'Ciemny';
 
 // backend drag and drop ordering
+$BL['be_article'] = 'artykuł';
 $BL['be_sort_drag'] = 'przeciągnij, aby zmienić kolejność';
 $BL['be_sort_drag_error'] = 'Zmiana kolejności nie powiodła się, odśwież stronę i spróbuj ponownie.';

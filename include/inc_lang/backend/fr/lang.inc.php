@@ -1104,5 +1104,6 @@ $BL['be_theme_light'] = 'Clair';
 $BL['be_theme_dark'] = 'Sombre';
 
 // backend drag and drop ordering
+$BL['be_article'] = 'article';
 $BL['be_sort_drag'] = 'glisser pour r&eacute;ordonner';
 $BL['be_sort_drag_error'] = 'Le r&eacute;ordonnancement a &eacute;chou&eacute;, rechargez la page et r&eacute;essayez.';

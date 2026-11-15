@@ -1246,5 +1246,6 @@ $BL['be_theme_light']                   = 'Svijetlo';
 $BL['be_theme_dark']                    = 'Tamno';
 
 // backend drag and drop ordering
+$BL['be_article']                       = 'clanak';
 $BL['be_sort_drag']                     = 'prevucite za promjenu redoslijeda';
 $BL['be_sort_drag_error']               = 'Promjena redoslijeda nije uspjela, ponovo ucitajte stranicu i pokusajte opet.';

@@ -1159,5 +1159,6 @@ $BL['be_theme_light']                   = 'A&ccedil;&#305;k';
 $BL['be_theme_dark']                    = 'Koyu';
 
 // backend drag and drop ordering
+$BL['be_article']                       = 'makale';
 $BL['be_sort_drag']                     = 's&#305;ralamak i&ccedil;in s&uuml;r&uuml;kleyin';
 $BL['be_sort_drag_error']               = 'S&#305;ralama ba&#351;ar&#305;s&#305;z oldu, l&uuml;tfen sayfay&#305; yenileyip tekrar deneyin.';
