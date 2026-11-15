@@ -47,6 +47,8 @@ require_once PHPWCMS_ROOT.'/include/inc_lib/backend.functions.inc.php';
 
 // date and time format picked in the profile, used by the backend date pickers
 $backend_date_format = backend_date_format($_SESSION['wcs_user_date_format'] ?? '');
+// first day of the week picked in the profile, used by the backend date pickers
+$backend_weekstart = backend_weekstart($_SESSION['wcs_user_weekstart'] ?? '');
 require_once PHPWCMS_ROOT.'/include/inc_lib/default.backend.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lang/backend/en/lang.inc.php'; //load default language EN
 include_once PHPWCMS_ROOT."/include/inc_lang/code.lang.inc.php";

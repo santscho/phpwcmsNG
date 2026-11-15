@@ -153,6 +153,9 @@ $BL['be_profile_label_email']           = 'email';
 $BL['be_profile_account_button']        = 'update';
 $BL['be_profile_label_lang']            = 'language';
 $BL['be_profile_label_dateformat']      = 'date and time format';
+$BL['be_profile_label_weekstart']       = 'week starts on';
+$BL['be_profile_weekstart_monday']      = 'Monday';
+$BL['be_profile_weekstart_sunday']      = 'Sunday';
 
 
 // files.ftptakeover.tmpl.php

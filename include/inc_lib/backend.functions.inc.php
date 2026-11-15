@@ -1200,6 +1200,22 @@ function backend_date_format($format = '') {
     return isset($formats[$format]) ? $formats[$format] : $formats['iso'];
 }
 
+// The first day of a backend calendar week, using the value flatpickr expects:
+// 1 is Monday (ISO 8601, the default), 0 is Sunday
+function backend_weekstarts() {
+    return array(
+        1 => 'monday',
+        0 => 'sunday',
+    );
+}
+
+function backend_weekstart($weekstart = '') {
+    $weekstarts = backend_weekstarts();
+    $weekstart  = is_numeric($weekstart) ? (int) $weekstart : 1;
+
+    return isset($weekstarts[$weekstart]) ? $weekstart : 1;
+}
+
 function initJsDatePicker() {
     $GLOBALS['BE']['HEADER']['flatpickr.css'] = '<link href="include/inc_ext/flatpickr/flatpickr.min.css" rel="stylesheet">';
     $GLOBALS['BE']['HEADER']['flatpickr.js'] = getJavaScriptSourceLink('include/inc_ext/flatpickr/flatpickr.min.js');

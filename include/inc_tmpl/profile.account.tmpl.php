@@ -94,6 +94,18 @@ if (!defined('PHPWCMS_ROOT')) {
 	</tr>
 	<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="10"></td></tr>
 	<tr>
+		<td align="right"><?php echo $BL['be_profile_label_weekstart'] ?>:&nbsp;</td>
+		<td><select name="form_weekstart" id="form_weekstart" class="v12 width250">
+<?php
+	$selected_weekstart = backend_weekstart($_SESSION['wcs_user_weekstart'] ?? '');
+	foreach(backend_weekstarts() as $weekstart_value => $weekstart_label) {
+		echo '<option value="'.$weekstart_value.'"'.($weekstart_value === $selected_weekstart ? ' selected="selected"' : '').'>'.html($BL['be_profile_weekstart_'.$weekstart_label]).'</option>';
+	}
+?>
+        </select></td>
+	</tr>
+	<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="10"></td></tr>
+	<tr>
 		<td align="right" valign="top" class="tdtop5"><?php echo $BL['be_WYSIWYG'] ?>:&nbsp;</td>
 		<td>
         <?php

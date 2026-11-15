@@ -13,7 +13,8 @@
 // The input keeps the canonical Y-m-d H:i:S value that phpwcms stores; flatpickr
 // only adds a visible twin (altInput) that shows the date and time format the
 // user picked in the profile, so the displayed format never depends on the
-// browser locale and the submitted value never depends on the display.
+// browser locale and the submitted value never depends on the display. The
+// calendar starts on the week day from the same preference.
 
 const initDatePickers = () => {
 
@@ -23,6 +24,8 @@ const initDatePickers = () => {
 
     document.querySelectorAll('input[data-datepicker]').forEach((input) => {
 
+        const weekstart = Number.parseInt(input.dataset.datepickerWeekstart, 10);
+
         const picker = window.flatpickr(input, {
             dateFormat: 'Y-m-d H:i:S',
             altInput: true,
@@ -30,6 +33,10 @@ const initDatePickers = () => {
             enableTime: true,
             enableSeconds: true,
             time_24hr: input.dataset.datepicker24h !== '0',
+            // flatpickr keeps the week start in its locale, not in the options
+            locale: {
+                firstDayOfWeek: Number.isInteger(weekstart) ? weekstart : 1,
+            },
             allowInput: true,
             disableMobile: true,
             onChange: () => {

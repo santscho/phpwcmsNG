@@ -24,8 +24,9 @@ These apply to every backend screen that is modernized:
 6. **Backend date and time fields use the picker.** Never a native
    `datetime-local`, never the legacy `dynCalendar` gif, never a free text field:
    the field is an `input[data-datepicker]` driven by
-   `include/inc_js/backend.datepicker.js` and shows the date and time format the
-   logged in user picked in the profile — see *Date and time format*.
+   `include/inc_js/backend.datepicker.js`, it shows the date and time format the
+   logged in user picked in the profile and its calendar starts on that user's
+   week start day — see *Date and time format*.
 
 ## Design: Bootstrap first
 
@@ -387,9 +388,10 @@ existing entry already covers the action before adding a second glyph for it.
   field keeps the canonical `Y-m-d H:i:s` value phpwcms stores
   (`$article_begin_value`/`$article_end_value`, guarded with `strtotime()` so an
   unset value stays empty) and only the visible twin shows the date and time
-  format from the user's profile, see *Date and time format*. The submitted value
-  never depends on the display, so `article.editcontent.inc.php` is untouched.
-  The `last edit` note in the card header uses the same format.
+  format from the user's profile, and the calendar starts on that user's week
+  start day, see *Date and time format*. The submitted value never depends on the
+  display, so `article.editcontent.inc.php` is untouched. The `last edit` note in
+  the card header uses the same format.
 - `article_date_changed()` holds the two rules the callbacks used to carry:
   picking a date marks its own boundary active (`set_begin`/`set_end`), and a
   begin after the end clears that end, compared by date only as before. The
@@ -419,6 +421,15 @@ existing entry already covers the action before adding a second glyph for it.
   `phpwcms_user.usr_date_format` (revision 557, `iso` by default) and loaded into
   `$_SESSION['wcs_user_date_format']` at login; `phpwcms.php` turns it into
   `$backend_date_format` through `backend_date_format()`.
+- Directly below it the user picks the first day of the week for the calendars
+  (`$BL['be_profile_label_weekstart']`, Monday or Sunday). It is stored in
+  `phpwcms_user.usr_weekstart` (revision 558, `1` = Monday by default) and loaded
+  into `$_SESSION['wcs_user_weekstart']` at login; `phpwcms.php` turns it into
+  `$backend_weekstart` through `backend_weekstart()`. The stored value is the one
+  flatpickr expects for `firstDayOfWeek`: `1` is Monday, `0` is Sunday.
+  `backend_weekstarts()` is the list, its keys are the stored values and its
+  values extend to the `$BL['be_profile_weekstart_monday']`/
+  `$BL['be_profile_weekstart_sunday']` labels.
 - `backend_date_formats()` in `include/inc_lib/backend.functions.inc.php` is the
   single list: `iso` (`2026-11-15 19:07:02`), `swiss` (`15.11.2026 19:07:02`),
   `uk` (`15/11/2026 19:07:02`) and `us` (`11/15/2026 7:07:02 PM`). Each entry
@@ -438,11 +449,14 @@ existing entry already covers the action before adding a second glyph for it.
 - A picker field is `<input type="text" name="…" id="…" class="form-control"
   value="canonical Y-m-d H:i:s" data-datepicker="1"
   data-datepicker-alt-format="…" data-datepicker-24h="0|1"
-  data-datepicker-label="…">`. The module creates the visible twin, copies the
-  `class` and the label, and dispatches `change` on the canonical input, so the
-  existing inline `onchange` handlers keep working. Typing is parsed on blur.
-- The picker keeps flatpickr's defaults for the week start (Sunday) and English
-  month names; only the date and time pattern follows the preference.
+  data-datepicker-weekstart="0|1" data-datepicker-label="…">`. The module creates
+  the visible twin, copies the `class` and the label, and dispatches `change` on
+  the canonical input, so the existing inline `onchange` handlers keep working.
+  Typing is parsed on blur. Render the three values from `$backend_date_format`
+  and `$backend_weekstart`, recomputed in the template when it also runs outside
+  the backend frame.
+- Month names stay English, the ones flatpickr ships with: only the date and time
+  pattern and the week start day follow the preference.
 
 ## JavaScript libraries
 

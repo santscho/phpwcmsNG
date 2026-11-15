@@ -29,6 +29,7 @@ $template_default['article']['imagelist_default_height'] = $template_default['ar
 // the begin/end fields hold the canonical database value; the date picker only
 // shows it in the format the user picked in the profile
 $backend_date_format = backend_date_format($_SESSION['wcs_user_date_format'] ?? '');
+$backend_weekstart   = backend_weekstart($_SESSION['wcs_user_weekstart'] ?? '');
 $article_begin_time  = empty($article["article_begin"]) ? false : strtotime($article["article_begin"]);
 $article_end_time    = empty($article["article_end"])   ? false : strtotime($article["article_end"]);
 $article_begin_value = $article_begin_time === false ? '' : date('Y-m-d H:i:s', $article_begin_time);
@@ -84,7 +85,7 @@ if ($article_date_time !== false) {
                     <input class="check" name="set_begin" type="checkbox" id="set_begin" value="1"<?php is_checked(1, $set_begin) ?> onclick="document.article.article_begin.value = this.checked ? '<?php echo $article_begin_value ?>' : '';" />
                     <label for="set_begin"><?php echo $BL['be_article_abegin'] ?></label>
                 </div>
-                <input name="article_begin" type="text" id="article_begin" class="form-control" value="<?php echo $article_begin_value ?>" data-datepicker="1" data-datepicker-alt-format="<?php echo html($backend_date_format['flatpickr']) ?>" data-datepicker-24h="<?php echo $backend_date_format['time_24hr'] ? '1' : '0' ?>" data-datepicker-label="<?php echo html($BL['be_article_abegin']) ?>" onchange="article_date_changed('begin');" />
+                <input name="article_begin" type="text" id="article_begin" class="form-control" value="<?php echo $article_begin_value ?>" data-datepicker="1" data-datepicker-alt-format="<?php echo html($backend_date_format['flatpickr']) ?>" data-datepicker-24h="<?php echo $backend_date_format['time_24hr'] ? '1' : '0' ?>" data-datepicker-weekstart="<?php echo $backend_weekstart ?>" data-datepicker-label="<?php echo html($BL['be_article_abegin']) ?>" onchange="article_date_changed('begin');" />
             </div>
 
             <div class="col-12 md:col-6">
@@ -92,7 +93,7 @@ if ($article_date_time !== false) {
                     <input class="check" name="set_end" type="checkbox" id="set_end" value="1"<?php is_checked(1, $set_end) ?> onclick="document.article.article_end.value = this.checked ? '<?php echo $article_end_value ?>' : '';" />
                     <label for="set_end"><?php echo $BL['be_article_aend'] ?></label>
                 </div>
-                <input name="article_end" type="text" id="article_end" class="form-control" value="<?php echo $article_end_value ?>" data-datepicker="1" data-datepicker-alt-format="<?php echo html($backend_date_format['flatpickr']) ?>" data-datepicker-24h="<?php echo $backend_date_format['time_24hr'] ? '1' : '0' ?>" data-datepicker-label="<?php echo $BL['be_article_aend'] ?>" onchange="article_date_changed('end');" />
+                <input name="article_end" type="text" id="article_end" class="form-control" value="<?php echo $article_end_value ?>" data-datepicker="1" data-datepicker-alt-format="<?php echo html($backend_date_format['flatpickr']) ?>" data-datepicker-24h="<?php echo $backend_date_format['time_24hr'] ? '1' : '0' ?>" data-datepicker-weekstart="<?php echo $backend_weekstart ?>" data-datepicker-label="<?php echo $BL['be_article_aend'] ?>" onchange="article_date_changed('end');" />
             </div>
 
             <script type="text/javascript">
