@@ -77,7 +77,6 @@ require_once PHPWCMS_ROOT.'/include/inc_lib/general.inc.php';
 checkLogin();
 
 require_once PHPWCMS_ROOT.'/include/inc_lib/backend.functions.inc.php';
-require_once PHPWCMS_ROOT.'/include/inc_lib/admin.functions.inc.php'; // backend_indent()
 require_once PHPWCMS_ROOT.'/include/inc_lib/imagick.convert.inc.php';
 
 $phpwcms_filestorage = PHPWCMS_FILES;
@@ -706,7 +705,7 @@ function folder_list($pid, $level, $zieldatei) {
                 $current_dirname = $row["f_name"];
             }
 
-            echo '<div class="list-group-item d-flex align-items-center gap-2 ' . backend_indent($level) . ($current ? ' bg-2' : '') . '">';
+            echo '<div class="list-group-item d-flex align-items-center gap-2' . folder_indent($level) . ($current ? ' bg-2' : '') . '">';
             echo $count;
             echo '<span class="flex-shrink-0 fg-secondary">' . backend_icon('folder-fill') . '</span>';
             echo '<div class="flex-grow-1 text-truncate fw-semibold">' . $dirname . '</div>';
@@ -719,6 +718,17 @@ function folder_list($pid, $level, $zieldatei) {
             $_SESSION["list_zaehler"]++;
         }
     }
+}
+
+function folder_indent($level) {
+
+    // a nested folder row keeps its full width and its divider, only the content
+    // moves in by one step per level - a margin on the row would also indent the
+    // separators and the row background
+    $steps = array('', ' ps-9', ' ps-12');
+
+    return $steps[intval($level)] ?? ' ps-12';
+
 }
 
 function true_false($wert) {

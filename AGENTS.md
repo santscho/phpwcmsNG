@@ -423,10 +423,11 @@ existing entry already covers the action before adding a second glyph for it.
   (`col-12 md:col-7`). Both are cards with a `list-group list-group-flush`.
 - Folder rows are `list-group-item` rows with the open/close chevron
   (`chevron-right`/`chevron-down`, `OPEN_DIR`/`CLOSE_DIR` tooltips), the
-  `folder-fill` icon and the name; the nesting uses `backend_indent()`, which is
-  why the page loads `include/inc_lib/admin.functions.inc.php`. `folder_list()`
-  takes the depth instead of the old pixel indent, the current directory carries
-  `bg-2`.
+  `folder-fill` icon and the name. The nesting is a left padding on the row
+  (`folder_indent()`, `ps-9`/`ps-12`), not a margin: a `ms-*` on the row would
+  indent its dividers and its background as well, which reads as a shifted list
+  instead of a nested one. `folder_list()` takes the depth instead of the old
+  pixel indent, the current directory carries `bg-2`.
 - File rows are the `backend_file_icon()` mark, the name — a link that picks the
   file and closes the window in the modes that close it — and one take button.
   The `window.opener` calls of every `opt` mode are unchanged. The thumbnail is a
