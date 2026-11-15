@@ -341,6 +341,50 @@ existing entry already covers the action before adding a second glyph for it.
   toggling `d-none` — vanilla JS, no MooTools. The result message is an
   `alert theme-success` (or `theme-danger` when nothing was marked).
 
+## Article new and edit
+
+- `ARTICLE > new article` (`phpwcms.php?do=articles&p=1&struct=0`) and the article
+  edit screen are the same template,
+  `include/inc_tmpl/article.editsummary.tmpl.php`, loaded by
+  `include/inc_lib/article.editcontent.inc.php`. It is one form (`name="article"
+  id="article"`) of five stacked cards in a `row g-4`, every field in a
+  `col-12 md:col-6` cell (a few `md:col-3` for the short numeric ones).
+- Card headers are `h2.h6 mb-0`; the two image cards add the purpose as a
+  `badge theme-secondary` (`article detail`, `article listing`) on the right of a
+  `d-flex flex-column md:flex-row` header instead of a second heading. `template`,
+  `cache` and `search index` are `h3.h6 mb-4` groups separated by
+  `border-top mt-4 pt-4`, not nested cards.
+- The image cards are `form-label` + `form-control` + `d-flex flex-wrap gap-2`: the
+  read-only file name field (`onfocus="this.blur()"` stays), the image browser as
+  a text button — `btn btn-outline theme-secondary btn-sm` labelled
+  `be_cnt_openimagebrowser`, there is no local Bootstrap Icons source for a
+  `card-image` glyph — and the delete action as the existing `trash` icon from
+  `backend_action(..., 'danger')`. Max width/height sit in a nested `row g-3`,
+  enlarge/gallery are `.form-field`/`.check` pairs.
+- The language switch stays a set of `.radio` inputs: `input.lang-default` plus
+  one `input.lang-opt` per frontend language from `code.lang.inc.php`. Keep those
+  classes,   `#lang-id-select` unchanged. The alias row above the fields is three `link
+  small` anchors: `article alias` calls `set_article_alias()`, and
+  `#parent_alias`/`#struct_alias` carry the alias in `data-alias` plus a
+  Bootstrap tooltip, which the inline jQuery handler turns into
+  `#article_alias`.
+- The article owner `<select name="article_uid">` marks admin users by appending
+  `($BL['be_article_adminuser'])` to the option label, sorted admins first; the
+  old inline `style="background-color:#FFC299"` is gone.
+- `dynCalendar` (the raster `img/dynCal/` trigger next to the begin and end
+  fields, placed with `document.write`) is a legacy widget and stays as it is,
+  including its inline `new dynCalendar(...)` scripts: the date fields are
+  `#aBegin`/`#aEnd` and the input names `article_begin`/`article_end`.
+- The footer is one `card-footer d-flex flex-wrap gap-2 justify-content-end` with
+  the submit inputs: `updatesubmit` (solid primary, `Update` when
+  `$article["article_id"]` is set, `Create` otherwise) and `Submit`
+  (`Save & close`); both keep their names because
+  `article.editcontent.inc.php` tests `updatesubmit` to decide the action. The
+  cancel link closes the screen as before.
+- Keep `document.article.*` working: the summary editor, the keyword autosuggest
+  (`#article_keyword_autosuggest`, `#as-values-keyword-autosuggest`) and the
+  inline `onchange`/`onclick` handlers reference form elements by name.
+
 ## JavaScript libraries
 
 - The backend does not need MooTools any more. Remove it there in small steps, but
