@@ -330,9 +330,10 @@ existing entry already covers the action before adding a second glyph for it.
   FTP directory as a list group with the total size in a badge, then the file
   information split by a language `nav nav-pills` header with one `card-body`
   pane per language. `include/inc_js/backend.upload.js` sends one request per file
-  to `include/inc_act/act_upload.php` under the field name `qqfile` and reloads
-  the listing afterwards. The qq FileUploader widget is not used here anymore,
-  but `filebrowser.php` still loads it, so its files stay.
+  to   `include/inc_act/act_upload.php` under the field name `qqfile` and reloads
+  the listing afterwards. The qq FileUploader widget is gone — neither this
+  screen nor the file browser loads it any more, so `include/inc_js/uploader/`
+  keeps only the server side `fileuploader.php` that `act_upload.php` requires.
 
 ## File search and trash
 
@@ -403,6 +404,46 @@ existing entry already covers the action before adding a second glyph for it.
   and owner fields plus the submit button are cells that `showAction()` reveals by
   toggling `d-none` — vanilla JS, no MooTools. The result message is an
   `alert theme-success` (or `theme-danger` when nothing was marked).
+
+## File browser popup
+
+- `filebrowser.php` is the picker behind every `open image browser` button
+  (`openFileBrowser()` in `include/inc_js/phpwcms.js` opens it as a resizable
+  popup of at least 450×575). It is a standalone page, not part of the backend
+  frame, so it links `include/inc_ext/bootstrap/bootstrap.min.css` itself, takes
+  the screen mode from `$_SESSION['wcs_user_theme']` for `data-bs-theme` and
+  loads the same `backend.bootstrap.js` (tooltips), `backend.confirm.js` (with
+  its label JSON) and `backend.tags.js` modules as the frame.
+- The layout is a `bg-primary` navbar carrying the browser title and the file
+  type as a `badge theme-secondary`, then a `container-fluid` with the
+  collapsible multiple upload card (`details#filebrowser-uploader`) and a
+  `row g-5` of the folder list (`col-12 md:col-5`) next to the file list
+  (`col-12 md:col-7`). Both are cards with a `list-group list-group-flush`.
+- Folder rows are `list-group-item` rows with the open/close chevron
+  (`chevron-right`/`chevron-down`, `OPEN_DIR`/`CLOSE_DIR` tooltips), the
+  `folder-fill` icon and the name; the nesting uses `backend_indent()`, which is
+  why the page loads `include/inc_lib/admin.functions.inc.php`. `folder_list()`
+  takes the depth instead of the old pixel indent, the current directory carries
+  `bg-2`.
+- File rows are the `backend_file_icon()` mark, the name — a link that picks the
+  file and closes the window in the modes that close it — and one take button.
+  The `window.opener` calls of every `opt` mode are unchanged. The thumbnail is a
+  `rounded mw-100` image under the row, `add all files` is a
+  `btn-outline theme-secondary` row with the `plus` icon, and an empty directory
+  or a user without files is a `fg-secondary` row with `NO_FILE`.
+- `addAllFiles()` asks through `window.phpwcmsConfirm()`, so the popup needs the
+  confirm module and its labels like any screen of the frame.
+- The upload panel posts through `include/inc_js/backend.upload.js`: a
+  `[data-upload-dropzone]` with a multiple `form-control` file input and a
+  `[data-upload-fields]` container whose named fields are added to the request
+  as query parameters, the way the qq FileUploader's `setParams()` sent them —
+  `act_upload.php` reads `file_dir`, `file_aktiv`, `file_public`,
+  `file_longinfo`, `file_copyright` and `file_tags` from `$_GET`. `file_tags`
+  is copied from the tag field's `as-values-keyword-autosuggest` value before
+  the upload starts.
+- The popup no longer loads `phpwcms.min.css`, `autoSuggest.css`,
+  `fileuploader.css` or the qq FileUploader; `phpwcms.min.js` stays for
+  `tmt_winControl()`.
 
 ## Article new and edit
 
@@ -511,9 +552,9 @@ existing entry already covers the action before adding a second glyph for it.
   (`#article_keyword_autosuggest`), the news keywords
   (`#news_keyword_autosuggest`), the file tags (`#file_tags_autosuggest`) and the
   news category in the news content part. `initJsAutocompleter()` loads the
-  plugin and `include/inc_js/backend.tags.js`; it does not load
-  `include/inc_css/autoSuggest.css` any more, that stylesheet is kept for
-  `filebrowser.php` only, which has no Bootstrap.
+  plugin and `include/inc_js/backend.tags.js`; `include/inc_css/autoSuggest.css`
+  is gone, every screen maps the generated markup through that module — the file
+  browser popup included.
 - The plugin builds its own markup, so the module maps the generated elements to
   Bootstrap components: the selections list becomes a `form-control` box, a
   selected term a `badge rounded-pill theme-primary` reading `term ×`, and the

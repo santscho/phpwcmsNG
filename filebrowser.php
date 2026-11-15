@@ -77,6 +77,7 @@ require_once PHPWCMS_ROOT.'/include/inc_lib/general.inc.php';
 checkLogin();
 
 require_once PHPWCMS_ROOT.'/include/inc_lib/backend.functions.inc.php';
+require_once PHPWCMS_ROOT.'/include/inc_lib/admin.functions.inc.php'; // backend_indent()
 require_once PHPWCMS_ROOT.'/include/inc_lib/imagick.convert.inc.php';
 
 $phpwcms_filestorage = PHPWCMS_FILES;
@@ -149,27 +150,44 @@ if(isset($_GET["files"])) {
 
 }
 
+// screen mode of the logged in user
+$backend_theme      = (isset($_SESSION['wcs_user_theme']) && in_array($_SESSION['wcs_user_theme'], ['light', 'dark'], true)) ? $_SESSION['wcs_user_theme'] : 'auto';
+$backend_theme_attr = $backend_theme === 'auto' ? '' : ' data-bs-theme="' . $backend_theme . '"';
+
 //Does user have files and folders that can be used
 $sql = "SELECT COUNT(f_id) FROM ".DB_PREPEND."phpwcms_file WHERE f_aktiv=1 AND (f_public=1 OR f_uid=".intval($_SESSION["wcs_user_id"]).") AND f_trash=0";
 $count_user_files = _dbQuery($sql, 'COUNT');
 
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $user_lang; ?>">
+?><!DOCTYPE html>
+<html lang="<?php echo $user_lang; ?>"<?php echo $backend_theme_attr; ?>>
 <head>
 
     <title><?php echo $titel ?></title>
 
-    <meta http-equiv="Content-Type" content="text/html; charset=<?php echo PHPWCMS_CHARSET ?>" />
+    <meta charset="<?php echo PHPWCMS_CHARSET ?>">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
 
-    <link href="include/inc_css/phpwcms.min.css" rel="stylesheet" type="text/css" />
-    <link href="include/inc_js/uploader/fileuploader.css" rel="stylesheet" type="text/css" />
-    <link href="include/inc_css/autoSuggest.css" rel="stylesheet" type="text/css" />
-    <script src="include/inc_js/jquery/jquery.min.js" type="text/javascript"></script>
-    <script src="include/inc_js/uploader/fileuploader.min.js" type="text/javascript"></script>
-    <script src="include/inc_js/jquery/jquery.autoSuggest.min.js" type="text/javascript"></script>
-    <script src="include/inc_js/phpwcms.min.js" type="text/javascript"></script>
-    <script src="include/inc_js/autosize.min.js" type="text/javascript"></script>
-    <script type="text/javascript">
+    <link href="include/inc_ext/bootstrap/bootstrap.min.css" rel="stylesheet">
+
+    <script src="include/inc_js/jquery/jquery.min.js"></script>
+    <script src="include/inc_js/phpwcms.min.js"></script>
+    <script src="include/inc_js/jquery/jquery.autoSuggest.min.js"></script>
+    <script src="include/inc_js/backend.upload.js"></script>
+    <script type="module" src="include/inc_ext/bootstrap/bootstrap.bundle.min.js"></script>
+    <script type="module" src="include/inc_js/backend.bootstrap.js"></script>
+    <script type="application/json" id="backend-confirm-labels"><?php echo json_encode(
+        array(
+            'title'  => $BL['be_confirm_title'],
+            'ok'     => $BL['be_confirm_ok'],
+            'cancel' => $BL['be_confirm_cancel'],
+        ),
+        JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP
+    ) ?></script>
+    <script type="module" src="include/inc_js/backend.confirm.js"></script>
+    <script type="module" src="include/inc_js/backend.tags.js"></script>
+
+    <script>
         function addFile(obj,text,value) {
             if(obj!=null && obj.options!=null) {
                 var newOpt = new Option(text, value);
@@ -181,51 +199,78 @@ $count_user_files = _dbQuery($sql, 'COUNT');
         }
     </script>
 </head>
-<body class="filebrowser">
-<div class="uploader filebrowser-uploader closed" id="filebrowser-uploader">
+<body class="d-flex flex-column min-vh-100 bg-2">
 
-    <h1 class="title" id="fileupload-switch"><?php echo $BL['be_file_multiple_upload'] ?></h1>
+<nav class="navbar bg-primary" data-bs-theme="dark">
+    <div class="container-fluid gap-3">
+        <span class="navbar-brand d-inline-flex align-items-center gap-3">
+            <?php echo backend_icon('postcard-fill') ?>
+            <span><?php echo $titel ?></span>
+            <span class="badge theme-secondary"><?php echo $filetype ?></span>
+        </span>
+    </div>
+</nav>
 
-    <div class="uploader-button" id="upload-file-select"></div>
+<main class="container-fluid p-5 flex-grow-1">
 
-    <div class="filebrowser-form">
-        <p>
-            <label class="chatlist"><?php echo $BL['be_ftptakeover_longinfo'] ?></label>
-            <textarea cols="40" rows="3" id="file_longinfo"></textarea>
-        </p>
-        <p>
-            <label class="chatlist"><?php echo $BL['be_copyright'] ?></label>
-            <input name="file_copyright" type="text" id="file_copyright" size="40" maxlength="255" value="" />
-        </p>
-        <p>
-            <label class="chatlist"><?php echo $BL['be_tags'] ?></label>
-            <input type="text" id="file_tags_autosuggest" />
-        </p>
+<details class="card mb-5" id="filebrowser-uploader">
 
-        <div class="uploader-button qq-upload-button" id="upload-trigger-send"><?php echo $BL['be_files_upload'] ?></div>
+    <summary class="card-header d-flex flex-row align-items-center gap-2">
+        <span class="flex-shrink-0 fg-secondary"><?php echo backend_icon('upload') ?></span>
+        <h2 class="h6 mb-0 flex-grow-1"><?php echo $BL['be_file_multiple_upload'] ?></h2>
+    </summary>
+
+    <div class="card-body">
+
+        <div class="border rounded p-7 text-center mb-5" data-upload-dropzone="1">
+
+            <p class="fg-secondary mb-3"><?php echo $BL['be_fileuploader_dragText'] ?></p>
+
+            <input type="file" multiple class="form-control" id="upload-file-select" data-upload-input="1" data-upload-action="include/inc_act/act_upload.php?<?php echo get_token_get_string() ?>" data-upload-done="OK" data-upload-failed="<?php echo html($BL['be_error_while_save']) ?>">
+
+        </div>
+
+        <div class="row g-4" data-upload-fields="1">
+
+            <input type="hidden" name="file_dir" value="<?php echo $_SESSION["imgdir"] ?>">
+            <input type="hidden" name="file_aktiv" value="1">
+            <input type="hidden" name="file_public" value="1">
+            <input type="hidden" name="file_tags" id="file_tags" value="">
+
+            <div class="col-12">
+                <label class="form-label" for="file_longinfo"><?php echo $BL['be_ftptakeover_longinfo'] ?></label>
+                <textarea cols="40" rows="3" id="file_longinfo" name="file_longinfo" class="form-control"></textarea>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label" for="file_copyright"><?php echo $BL['be_copyright'] ?></label>
+                <input name="file_copyright" type="text" id="file_copyright" class="form-control" size="40" maxlength="255" value="">
+            </div>
+
+            <div class="col-12">
+                <label class="form-label" for="file_tags_autosuggest"><?php echo $BL['be_tags'] ?></label>
+                <input type="text" id="file_tags_autosuggest" class="form-control">
+            </div>
+
+        </div>
+
+        <div class="list-group list-group-flush mt-5 d-none" data-upload-list="1"></div>
+
     </div>
 
-</div>
-<table summary="" border="0" cellspacing="0" cellpadding="0" style="margin:4px;">
-  <tr>
-        <td bgcolor="#7C98A2"><img src="img/leer.gif" alt="" width="1" height="1" border="0" /></td>
-        <td rowspan="4"><img src="img/leer.gif" alt="" width="5" height="1" border="0" /></td>
-        <td bgcolor="#7C98A2"><img src="img/leer.gif" alt="" width="1" height="1" border="0" /></td>
-  </tr>
-  <tr>
-    <td bgcolor="#7C98A2" class="msgreiter">&nbsp;<?php echo $BL['FOLDER_LIST'] ?>&nbsp;</td>
-    <td bgcolor="#7C98A2" class="msgreiter">&nbsp;<?php echo $filetype ?>&nbsp;</td>
-  </tr>
-  <tr>
-        <td bgcolor="#7C98A2"><img src="img/leer.gif" alt="" width="1" height="1" border="0" /></td>
-        <td bgcolor="#7C98A2"><img src="img/leer.gif" alt="" width="1" height="1" border="0" /></td>
-  </tr>
-  <tr>
-    <td valign="top"><?php
+</details>
+
+<div class="row g-5 align-items-start">
+
+    <div class="col-12 sm:col-5">
+
+        <div class="card">
+
+            <div class="card-header"><h2 class="h6 mb-0"><?php echo $BL['FOLDER_LIST'] ?></h2></div>
+
+<?php
 
 if(!empty($count_user_files)) { //Listing in case of user files/folders
-
-    echo '<table summary="" bgColor="#FCFDFD" border="0" cellspacing="0" cellpadding="0">'.LF;
 
     //Anzeige des Festplattensymbols
     $dirname = $BL['ROOT_DIR'];
@@ -237,42 +282,56 @@ if(!empty($count_user_files)) { //Listing in case of user files/folders
     $count_sql = "SELECT COUNT(f_id) FROM ".DB_PREPEND."phpwcms_file WHERE f_pid=0 AND f_aktiv=1 AND f_trash=0 AND (f_public=1 OR f_uid=".$_SESSION["wcs_user_id"].")";
 
     if(($count_wert = _dbQuery($count_sql, 'COUNT'))) {
-        $count  = '<img src="img/leer.gif" height="1" width="2" alt="" border="0" /><a href="filebrowser.php?opt='.$js_aktion.'&amp;folder=0';
-        $count .= '%7C'.$folder_status.'">'.on_off($folder_status, $dirname, 0).'</a>';
+        $count  = '<a class="flex-shrink-0 link-secondary text-decoration-none" href="filebrowser.php?opt='.$js_aktion.'&amp;folder=0';
+        $count .= '%7C'.$folder_status.'" data-bs-toggle="tooltip" title="'.($folder_status ? $BL['OPEN_DIR'] : $BL['CLOSE_DIR']).': '.html($dirname).'">';
+        $count .= backend_icon($folder_status ? 'chevron-right' : 'chevron-down').'</a>';
     } else {
-        $count = '<img src="img/leer.gif" height="1" width="13" alt="" border="0" />';
+        $count = '<span class="flex-shrink-0 invisible">' . backend_icon('chevron-right') . '</span>';
     }
 
     // define current directory name
     $current_dirname = $dirname;
 
-    $dirname    =  "<a href=\"filebrowser.php?opt=".$js_aktion."&amp;files=0\" title=\"".$BL['SHOW_FILES'].'">'.$dirname."</a>";
-    $bgcol      = (isset($row["f_id"]) && $row["f_id"] == $_SESSION["imgdir"]) ? ' bgcolor="#FED83F"' : '';
+    $dirname = '<a href="filebrowser.php?opt='.$js_aktion.'&amp;files=0" class="text-decoration-none" data-bs-toggle="tooltip" title="'.html($BL['SHOW_FILES']).'">'.$dirname.'</a>';
 
-    echo '<tr'.$bgcol.'><td colspan="2"><img src="img/leer.gif" height="2" width="1" border="0" alt="" /></td></tr>'.LF; //Abstand vor
-    echo '<tr'.$bgcol.'><td class="msglist nowrap" nowrap="nowrap">';
-    echo $count.'<img src="img/leer.gif" height="1" width="4" border="0" alt="" /><img src="img/icons/harddisk_16x11.gif" border="0" alt="" />'; //Zellinhalt 1. Spalte
-    echo '<img src="img/leer.gif" height="1" width="4" alt="" border="0" />'.$dirname.'</td><td><img src="img/leer.gif" height="1" width="5" border="0" alt="" /></td></tr>'.LF;
-    //Aufbau trennende Tabellen-Zeile
-    echo '<tr'.$bgcol.'><td colspan="2"><img src="img/leer.gif" height="1" width="1" border="0" alt="" /></td></tr>'.LF; //Abstand nach
-    echo '<tr bgcolor="#CDDEE4"><td colspan="2"><img src="img/leer.gif" height="1" width="1" border="0" alt="" /></td></tr>'.LF;
+    echo '<div class="list-group list-group-flush">' . LF;
+    echo '<div class="list-group-item d-flex align-items-center gap-2' . (empty($_SESSION["imgdir"]) ? ' bg-2' : '') . '">';
+    echo $count;
+    echo '<span class="flex-shrink-0 fg-secondary">' . backend_icon('folder-fill') . '</span>';
+    echo '<div class="flex-grow-1 text-truncate fw-semibold">' . $dirname . '</div>';
+    echo '</div>' . LF;
 
     //Wenn überhaupt Ordner für User vorhanden, dann Listing
     if(!$folder_status && $count_wert) {
-        folder_list(0, 18, "filebrowser.php?opt=".$js_aktion."&amp;");
+        folder_list(0, 1, "filebrowser.php?opt=".$js_aktion."&amp;");
     }
 
-    echo '</table>';
+    echo '</div>' . LF;
+
 } else {
-    echo "no files available";
+
+    echo '<div class="list-group list-group-flush"><div class="list-group-item fg-secondary">no files available</div></div>' . LF;
+
 }
 
-    ?></td>
-    <td valign="top"><?php
+?>
 
-    //Tabelle
+        </div>
 
-    echo '<table summary="" bgColor="#FFFFFF" width="100%" border="0" cellspacing="0" cellpadding="0">'.LF;
+    </div>
+
+    <div class="col-12 sm:col-7">
+
+        <div class="card">
+
+            <div class="card-header d-flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
+                <h2 class="h6 mb-0"><?php echo $filetype ?></h2>
+            </div>
+
+            <div class="list-group list-group-flush" id="filebrowser-files">
+
+<?php
+
     $file_sql  = "SELECT * FROM ".DB_PREPEND."phpwcms_file WHERE f_pid=".$_SESSION["imgdir"]." AND ";
     switch($js_aktion) {
 
@@ -459,7 +518,7 @@ if(!empty($count_user_files)) { //Listing in case of user files/folders
                      case 16:
                          $js  = "if(window.opener && window.opener.activeTinyMceCallback){window.opener.activeTinyMceCallback('download.php?f=" . $file_row["f_hash"] . "');window.close();}else{window.opener.CKEDITOR.tools.callFunction(".$ckeditor_action.", 'download.php?f=" . $file_row["f_hash"] . "');}";
                          break;
- 
+
                      case 17:
                          $resize_url = PHPWCMS_RESIZE_IMAGE."/".$phpwcms['img_prev_width']."x".$phpwcms['img_prev_height']."/" . $file_row["f_hash"] . '.' . $file_row["f_ext"];
                          $js  = "if(window.opener && window.opener.activeTinyMceCallback){window.opener.activeTinyMceCallback('".$resize_url."');window.close();}else{window.opener.CKEDITOR.tools.callFunction(".$ckeditor_action.", '".$resize_url."');}";
@@ -474,56 +533,70 @@ if(!empty($count_user_files)) { //Listing in case of user files/folders
                 // show "add all files"
                 if($file_durchlauf === 0 && $add_all) {
 
-                    echo '<tr id="addAllFilesLink"><td colspan="4" class="add_all_files"><a href="#" onclick="addAllFiles();return false;" title="';
-                    echo $BL['ADD_ALL_FILES'];
-                    echo '">';
-                    echo $BL['ADD_ALL_FILES'];
-                    echo '<img src="img/button/add_9x9a.gif" alt="" border="0" /></a></td></tr>';
-                    echo '<tr><td colspan="4" bgcolor="#CDDEE4"><img src="img/leer.gif" alt="" border="0" /></td></tr>';
+                    echo '<div class="list-group-item" id="addAllFilesLink">';
+                    echo '<a class="btn btn-outline theme-secondary btn-sm" href="#" onclick="addAllFiles();return false;">';
+                    echo backend_icon('plus') . ' ' . $BL['ADD_ALL_FILES'];
+                    echo '</a></div>' . LF;
 
                 }
 
-                echo '<tr><td colspan="4"><img src="img/leer.gif" width="1" height="2" border="0" alt="" /></td></tr>';
-                echo '<tr><td><img src="img/icons/small_'.extimg($file_row["f_ext"]).'" alt="" hspace="3" vspace="1" /></td>';
-                echo '<td class="msglist">';
+                echo '<div class="list-group-item">' . LF;
+                echo '<div class="d-flex align-items-center gap-2">' . LF;
+                echo '<span class="flex-shrink-0 fg-secondary">' . backend_icon(backend_file_icon($file_row["f_ext"])) . '</span>';
 
                 if($js_aktion != 4 && $js_aktion != 10 && $js_aktion != 16) {
-                    echo $filename.'</td><td><img src="img/leer.gif" width="5" height="1" alt="" />';
+                    echo '<div class="flex-grow-1 text-truncate"><span class="text-truncate d-block">' . $filename . '</span></div>';
+                    echo '<div class="d-flex align-items-center gap-2 flex-shrink-0">' . backend_action('#', 'plus', $BL['TAKE_IMAGE'], 'normal', ' onclick="'.$js.'return false;"') . '</div>';
                 } else {
-                    echo '<a href="#" onclick="'.$js."tmt_winControl('self','close()');\">".$filename.'</a></td><td align="right">';
+                    echo '<div class="flex-grow-1 text-truncate"><a href="#" class="text-decoration-none" onclick="'.$js."tmt_winControl('self','close()');".'">'.$filename.'</a></div>';
+                    echo '<div class="d-flex align-items-center gap-2 flex-shrink-0">' . backend_action('#', 'plus', $BL['TAKE_IMAGE'], 'normal', ' onclick="'.$js.'return false;"') . '</div>';
                 }
 
-                echo '<a href="#" onclick="'.$js.'return false;" title="'.$BL['TAKE_IMAGE'].'">';
-                echo '<img src="img/button/add_9x9a.gif" alt="" hspace="5" vspace="2" /></a></td>';
-                echo '<td><img src="img/leer.gif" alt="" /></td></tr>';
-                echo '<tr><td colspan="4"><img src="img/leer.gif" width="1" height="1" alt="" /></td></tr>';
+                echo '</div>' . LF;
+
                 if((!empty($thumb_image[0]) || $file_row['f_svg']) && in_array( $js_aktion, array(0, 1, 3, 5, 6, 7, 8, 10, 11, 17, 18, 19) ) ) {
-                    echo '<tr><td>&nbsp;</td><td colspan="3"><a href="#" onclick="'.$js;
+                    echo '<div class="mt-3"><a href="#" onclick="'.$js;
                     echo "tmt_winControl('self','close()');\">";
                     if($file_row['f_svg']) {
-                        echo '<img src="'.PHPWCMS_RESIZE_IMAGE.'/'.$phpwcms["img_list_width"].'x'.$phpwcms["img_list_height"].'/'.$file_row['f_hash'].'.'.$file_row['f_ext'].'" alt="" />';
+                        echo '<img src="'.PHPWCMS_RESIZE_IMAGE.'/'.$phpwcms["img_list_width"].'x'.$phpwcms["img_list_height"].'/'.$file_row['f_hash'].'.'.$file_row['f_ext'].'" class="rounded mw-100" alt="'.$filename.'">';
                     } else {
-                        echo '<img src="'.PHPWCMS_IMAGES . $thumb_image[0] .'" '.$thumb_image[3].' alt="" />';
+                        echo '<img src="'.PHPWCMS_IMAGES . $thumb_image[0] .'" class="rounded mw-100" alt="'.$filename.'">';
                     }
-                    echo '</a></td></tr>';
+                    echo '</a></div>' . LF;
                 }
-                echo '<tr><td colspan="4"><img src="img/leer.gif" width="1" height="2" alt="" /></td></tr>';
-                echo '<tr><td colspan="4" bgcolor="#CDDEE4"><img src="img/leer.gif" width="1" height="1" alt="" /></td></tr>';
+
+                echo '</div>' . LF;
+
             }
 
         }
         if(empty($filename)) { //Abschluss der Filelisten-Tabelle
-            echo '<tr><td colspan="4"><img src="img/leer.gif" width="3" height="2" alt="" /></td></tr>';
-            echo '<tr><td colspan="4" class="msglist">&nbsp;'.$BL['NO_FILE'].'&nbsp;&nbsp;</td></tr>';
-            echo '<tr><td colspan="4"><img src="img/leer.gif" width="3" height="2" alt="" /></td></tr>';
+            echo '<div class="list-group-item fg-secondary">' . $BL['NO_FILE'] . '</div>' . LF;
         }
+
+    } else {
+
+        echo '<div class="list-group-item fg-secondary">' . $BL['NO_FILE'] . '</div>' . LF;
+
     }
 
-    echo '</table>';
+?>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</main>
+
+<?php
 
     if( count($js_files_select) ) {
 
-        echo LF . '<script type="text/javascript">';
+        echo LF . '<script>';
         echo LF . SCRIPT_CDATA_START . LF;
 
         echo 'var files_all = new Array(' . LF;
@@ -532,155 +605,69 @@ if(!empty($count_user_files)) { //Listing in case of user files/folders
         echo LF . 'var files_total = ' . $file_durchlauf . ';';
 
         echo LF . LF;
-        echo 'function addAllFiles() {';
-        echo LF . ' ';
-        echo implode(LF . ' ', $js_files_all);
-        echo LF . ' //if(closewin == true) tmt_winControl("self","close()");';
-        echo LF . ' getObjectById("addAllFilesLink").style.display = "none";';
+        echo 'function addAllFiles() {' . LF;
+        echo implode(LF, $js_files_all) . LF;
+        echo ' var addAllFilesLink = document.getElementById("addAllFilesLink");' . LF;
+        echo ' if(addAllFilesLink) { addAllFilesLink.classList.add("d-none"); }' . LF;
         $confirm = str_replace('{VAL}', $current_dirname, $BL['ADD_ALL_CONFIRM']);
         if(PHPWCMS_CHARSET !== 'utf-8') {
             $confirm = mb_convert_encoding($confirm, PHPWCMS_CHARSET);
         }
-        echo LF . ' if(confirm("' . $confirm . '")) tmt_winControl("self","close()");';
-        echo LF . '}' . LF;
+        echo ' phpwcmsConfirm(\'' . js_singlequote($confirm) . '\').then(function(confirmed) {' . LF;
+        echo '  if(confirmed) { tmt_winControl("self", "close()"); }' . LF;
+        echo ' });' . LF;
+        echo '}' . LF;
 
-        echo LF . SCRIPT_CDATA_END;
+        echo SCRIPT_CDATA_END;
         echo LF . '</script>' . LF;
 
     }
 
-    $fileuploaderAllowedExtensions = '';
-    if(is_string($phpwcms['allowed_upload_ext'])) {
-        $fileuploaderAllowedExtensions = strtolower($phpwcms['allowed_upload_ext']);
-        if(str_contains($fileuploaderAllowedExtensions, ',')) {
-            $fileuploaderAllowedExtensions = "'" . str_replace(',', "','", $fileuploaderAllowedExtensions) . "'";
+?>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // the tag field keeps the values the upload sends
+    var tagValues = document.getElementById('as-values-keyword-autosuggest');
+    var tagField = document.getElementById('file_tags');
+
+    function syncTags() {
+        if (tagValues && tagField) {
+            tagField.value = tagValues.value;
         }
-    } elseif(count($phpwcms['allowed_upload_ext'])) {
-        $fileuploaderAllowedExtensions = "'" . implode("','", $phpwcms['allowed_upload_ext']) . "'";
     }
 
-    ?></td>
-  </tr>
-</table>
-<script>
-$(function() {
+    document.addEventListener('change', syncTags, true);
+    document.addEventListener('click', syncTags, true);
+    document.addEventListener('keyup', syncTags, true);
 
-    var fileuploader = $('#filebrowser-uploader'),
-        fileuploadSwitch = $('#fileupload-switch'),
-        uploadTrigger = $('#upload-trigger-send'),
-        fileBrowserForm = $('div.filebrowser-form'),
-        uploadFileCount = 0;
+    syncTags();
 
-    fileuploadSwitch.click(function(){
-        if(fileuploader.hasClass('closed')) {
-            fileuploader.removeClass('closed');
-            if(uploadFileCount) {
-                fileBrowserForm.show();
-            }
-        } else {
-            fileBrowserForm.hide();
-            fileuploader.addClass('closed');
-        }
-    });
+    jQuery(function ($) {
 
-    // File Uploading
-    var uploader = new qq.FileUploader({
-        element: $('#upload-file-select')[0],
-        action: '<?php echo PHPWCMS_URL; ?>include/inc_act/act_upload.php?<?php echo get_token_get_string(); ?>',
-        multiple: true,
-        autoUpload: false,
-        allowedExtensions: [<?php echo $fileuploaderAllowedExtensions; ?>],
-        uploadButtonText: '<?php echo $BL['be_fileuploader_uploadButtonText'] ?>',
-        cancelButtonText: '<?php echo $BL['be_newsletter_button_cancel'] ?>',
-        failUploadText: '<?php echo $BL['be_error_while_save'] ?>',
-        dragText: '<?php echo $BL['be_fileuploader_dragText'] ?>',
-        sizeLimit: <?php
-
-            if(ini_get('post_max_size')) {
-                $post_max_size = return_bytes(ini_get('post_max_size'));
-                if($post_max_size < $phpwcms['file_maxsize']) {
-                    $phpwcms['file_maxsize'] = $post_max_size;
-                }
-            } else {
-                $post_max_size = $phpwcms['file_maxsize'];
-            }
-            if(ini_get('upload_max_filesize')) {
-                $upload_max_filesize = return_bytes(ini_get('upload_max_filesize'));
-                if($upload_max_filesize < $phpwcms['file_maxsize']) {
-                    $phpwcms['file_maxsize'] = $upload_max_filesize;
-                }
-            } else {
-                $upload_max_filesize = $phpwcms['file_maxsize'];
-            }
-
-            echo min($post_max_size, $upload_max_filesize, $phpwcms['file_maxsize']);
-
-        ?>,
-        messages: {
-            typeError: "<?php echo makeCharsetConversion($BL['be_fileuploader_typeError'], 'utf-8', PHPWCMS_CHARSET) ?>",
-            sizeError: "<?php echo makeCharsetConversion($BL['be_fileuploader_sizeError'], 'utf-8', PHPWCMS_CHARSET) ?>",
-            minSizeError: "<?php echo makeCharsetConversion($BL['be_fileuploader_minSizeError'], 'utf-8', PHPWCMS_CHARSET) ?>",
-            emptyError: "<?php echo makeCharsetConversion($BL['be_fileuploader_emptyError'], 'utf-8', PHPWCMS_CHARSET) ?>",
-            noFilesError: "<?php echo makeCharsetConversion($BL['be_fileuploader_noFilesError'], 'utf-8', PHPWCMS_CHARSET) ?>",
-            onLeave: "<?php echo makeCharsetConversion($BL['be_fileuploader_onLeave'], 'utf-8', PHPWCMS_CHARSET) ?>"
-        },
-        disableDefaultDropzone: false,
-        onSubmit: function(id, fileName) {
-            if(!uploadFileCount) {
-                fileBrowserForm.show();
-            }
-            uploadFileCount++;
-        },
-        onCancel: function(id, fileName) {
-            uploadFileCount--;
-            if(!uploadFileCount) {
-                fileBrowserForm.hide();
-            }
-        },
-        onComplete: function(id, fileName, responseJSON) {
-            if(responseJSON.success) {
-                uploadFileCount--;
-                if(!uploadFileCount) {
-                    document.location.reload(true);
-                }
-            }
-        }
-    });
-
-    uploadTrigger.click(function() {
-
-        uploader.setParams({
-            file_dir: <?php echo $_SESSION["imgdir"] ?>,
-            file_aktiv: 1,
-            file_public: 1,
-            file_longinfo: $('#file_longinfo').val(),
-            file_copyright: $('#file_copyright').val(),
-            file_tags: $('#as-values-keyword-autosuggest').val()
+        $("#file_tags_autosuggest").autoSuggest('<?php echo PHPWCMS_URL ?>include/inc_act/ajax_connector.php', {
+            selectedItemProp: "cat_name",
+            selectedValuesProp: 'cat_name',
+            searchObjProps: "cat_name",
+            queryParam: 'value',
+            extraParams: '&method=json&action=category',
+            startText: '',
+            neverSubmit: true,
+            asHtmlID: 'keyword-autosuggest'
         });
 
-        uploader.uploadStoredFiles();
-    });
-
-    $("#file_tags_autosuggest").autoSuggest('<?php echo PHPWCMS_URL ?>include/inc_act/ajax_connector.php', {
-        selectedItemProp: "cat_name",
-        selectedValuesProp: 'cat_name',
-        searchObjProps: "cat_name",
-        queryParam: 'value',
-        extraParams: '&method=json&action=category',
-        startText: '',
-        neverSubmit: true,
-        asHtmlID: 'keyword-autosuggest'
     });
 
 });
-
 </script>
 </body>
 </html>
 <?php
 
-function folder_list($pid, $vor, $zieldatei) {
-    global $current_dirname;
+function folder_list($pid, $level, $zieldatei) {
+
+    global $current_dirname, $BL;
+
     $folder = $_SESSION["folder"];
     $pid = intval($pid);
     $userID = intval($_SESSION["wcs_user_id"]);
@@ -705,44 +692,32 @@ function folder_list($pid, $vor, $zieldatei) {
             $count_sql = "SELECT COUNT(f_id) FROM ".DB_PREPEND."phpwcms_file WHERE f_pid=".$row["f_id"]." AND f_trash=0 AND f_aktiv=1 AND (f_public=1 OR f_uid=".$userID.")";
 
             if(($count_wert = _dbQuery($count_sql, 'COUNT'))) {
-                $count  = '<img src="img/leer.gif" height="1" width="2" alt="" border="0" /><a href="'.$zieldatei."folder=".$row["f_id"];
-                $count .= '%7C'.$folder_status.'">'.on_off($folder_status, $dirname, 0).'</a>';
+                $count  = '<a class="flex-shrink-0 link-secondary text-decoration-none" href="'.$zieldatei."folder=".$row["f_id"];
+                $count .= '%7C'.$folder_status.'" data-bs-toggle="tooltip" title="'.($folder_status ? $BL['OPEN_DIR'] : $BL['CLOSE_DIR']).': '.$dirname.'">';
+                $count .= backend_icon($folder_status ? 'chevron-right' : 'chevron-down').'</a>';
             } else {
-                $count = '<img src="img/leer.gif" height="1" width="13" alt="" border="0" />';
+                $count = '<span class="flex-shrink-0 invisible">' . backend_icon('chevron-right') . '</span>';
             }
 
-            $dirname = '<a href="'.$zieldatei."files=".$row["f_id"].'" title="'.$GLOBALS['BL']['SHOW_FILES1'].'">'. $dirname . '</a>';
+            $dirname = '<a href="'.$zieldatei."files=".$row["f_id"].'" class="text-decoration-none" data-bs-toggle="tooltip" title="'.$BL['SHOW_FILES1'].'">'. $dirname . '</a>';
 
-            if($row["f_id"] == $_SESSION["imgdir"]) {
-                $bgcol = ' bgcolor="#FED83F"';
+            $current = $row["f_id"] == $_SESSION["imgdir"];
+            if($current) {
                 $current_dirname = $row["f_name"];
-            } else {
-                $bgcol = '';
             }
 
-            echo "<tr".$bgcol."><td colspan=\"2\"><img src=\"img/leer.gif\" height=\"2\" width=\"1\" alt=\"\" border=\"0\" /></td></tr>\n";
-            echo "<tr".$bgcol."><td class=\"msglist nowrap\" nowrap=\"nowrap\">";
-            echo $count."<img src=\"img/leer.gif\" height=\"1\" width=\"".($vor+6)."\" border=\"0\" alt=\"\" /><img src=\"img/icons/folder_zu.gif\" border=\"0\" alt=\"\" />";
-            echo "<img src=\"img/leer.gif\" height=\"1\" width=\"5\" alt=\"\" border=\"0\" />".$dirname."</td><td><img src=\"img/leer.gif\" height=\"1\" width=\"5\" alt=\"\" border=\"0\" /></td></tr>\n";
-            echo "<tr".$bgcol."><td colspan=\"2\"><img src=\"img/leer.gif\" height=\"1\" width=\"1\" alt=\"\" border=\"0\" /></td></tr>\n";
-            echo "<tr bgcolor=\"#CDDEE4\"><td colspan=\"2\"><img src=\"img/leer.gif\" height=\"1\" width=\"1\" alt=\"\" border=\"0\" /></td></tr>\n";
+            echo '<div class="list-group-item d-flex align-items-center gap-2 ' . backend_indent($level) . ($current ? ' bg-2' : '') . '">';
+            echo $count;
+            echo '<span class="flex-shrink-0 fg-secondary">' . backend_icon('folder-fill') . '</span>';
+            echo '<div class="flex-grow-1 text-truncate fw-semibold">' . $dirname . '</div>';
+            echo '</div>' . LF;
 
             if(!$folder_status && $count_wert) {
-                folder_list($row["f_id"], $vor+18, $zieldatei);
+                folder_list($row["f_id"], $level + 1, $zieldatei);
             }
 
             $_SESSION["list_zaehler"]++;
         }
-    }
-}
-
-function on_off($wert, $string, $art = 1) {
-    //Erzeugt das Status-Zeichen für Klapp-Auf/Zu
-    //Wenn Art = 1 dann als Zeichen, ansonsten als Bild
-    if($wert) {
-        return $art == 1 ? "+" : "<img src=\"img/symbols/klapp_zu.gif\" border=\"0\" alt=\"\" title=\"".$GLOBALS['BL']['OPEN_DIR'].": ".$string."\" />";
-    } else {
-        return $art == 1 ? "-" : "<img src=\"img/symbols/klapp_auf.gif\" border=\"0\" alt=\"\" title=\"".$GLOBALS['BL']['CLOSE_DIR'].": ".$string."\" />";
     }
 }
 

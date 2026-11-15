@@ -5,6 +5,11 @@
  * file and under the field name the upload handler expects (qqfile), then
  * reloads the listing so the uploaded files can be taken over. The endpoint,
  * its CSRF token and its JSON response are unchanged.
+ *
+ * An optional `[data-upload-fields]` container adds its named fields to the
+ * request as query parameters, the way the qq FileUploader widget used to send
+ * them: the image browser posts the target directory, the file information and
+ * the tags that way and act_upload.php reads them from $_GET.
  */
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -16,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     var list = document.querySelector('[data-upload-list]');
+    var fields = document.querySelector('[data-upload-fields]');
     var action = input.getAttribute('data-upload-action');
     var doneText = input.getAttribute('data-upload-done') || 'OK';
     var failedText = input.getAttribute('data-upload-failed') || 'failed';
@@ -65,6 +71,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
     }
 
+    // named fields of the optional container, as query parameters
+    function params() {
+
+        var query = [];
+
+        if (!fields) {
+            return '';
+        }
+
+        fields.querySelectorAll('input, textarea, select').forEach(function (field) {
+
+            if (!field.name || field.disabled || field.type === 'file') {
+                return;
+            }
+
+            if ((field.type === 'checkbox' || field.type === 'radio') && !field.checked) {
+                return;
+            }
+
+            query.push(encodeURIComponent(field.name) + '=' + encodeURIComponent(field.value));
+
+        });
+
+        if (!query.length) {
+            return '';
+        }
+
+        return (action.indexOf('?') === -1 ? '?' : '&') + query.join('&');
+
+    }
+
     function upload(file) {
 
         var state = addRow(file.name);
@@ -111,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function () {
             finished();
         });
 
-        request.open('POST', action, true);
+        request.open('POST', action + params(), true);
         request.send(form);
 
     }
