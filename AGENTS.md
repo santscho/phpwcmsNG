@@ -105,7 +105,22 @@
   as soon as nothing references them. Search the whole repo for the file name
   first — some paths are assembled from variables (`'img/famfamfam/lang/'.$lang`).
 - Do not add an icon font or icon package without agreement; Bootstrap
-  components are the first choice, inline SVG the second.
+  components are the first choice, inline SVG the second. Backend row actions
+  are rendered with `backend_action()` (outline `btn-sm` icon button, plus the
+  `active` and `disabled` states) and `backend_icon()` from
+  `include/inc_lib/backend.functions.inc.php` instead of pixel gifs.
+
+## Sorting lists
+
+- Reorderable backend lists use plain HTML5 drag and drop from
+  `include/inc_js/backend.sortable.js` — no jQuery and no third-party sorter.
+- The wrapper needs `data-backend-sortable`, `data-backend-sort-token` and
+  `data-backend-sort-error`; the rows need `backend_sort_handle()` as the only
+  drag source plus `data-sort-group`, `data-sort-id` and `data-sort-parent`.
+- The drop is saved by the `backend_sort` action in
+  `include/inc_act/ajax_connector.php`, which checks the CSRF token, the group
+  and that the submitted ids are exactly the sibling set, then rewrites the
+  sort values in steps of 10.
 
 ## Bootstrap skills
 

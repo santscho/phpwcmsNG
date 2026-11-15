@@ -1605,3 +1605,7 @@ $BL['be_theme_switch'] = 'Bildschirmmodus';
 $BL['be_theme_auto'] = 'Automatisch';
 $BL['be_theme_light'] = 'Hell';
 $BL['be_theme_dark'] = 'Dunkel';
+
+// backend drag and drop ordering
+$BL['be_sort_drag'] = 'zum Sortieren ziehen';
+$BL['be_sort_drag_error'] = 'Sortieren fehlgeschlagen, bitte die Seite neu laden und erneut versuchen.';

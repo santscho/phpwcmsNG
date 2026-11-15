@@ -20,13 +20,6 @@ if (!defined('PHPWCMS_ROOT')) {
 //19-11-2004 Fernando Batista -> Copy article, Copy strutures http://fernandobatista.net
 //31-03-2005 Fernando Batista -> Copy/Cut Article Content http://fernandobatista.net
 
-?>
-<table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
-<tr><td colspan="2" class="title"><?php echo $BL['be_article_title'] ?></td></tr>
-    <tr><td colspan="2" class="rowspacer7x7"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-
-<?php
-
 $listmode = 0;
 $cut_id = (isset($_GET["cut"])) ? intval($_GET["cut"]) : 0;
 $cut_article = (isset($_GET["acut"])) ? intval($_GET["acut"]) : 0;
@@ -60,43 +53,46 @@ if(isset($_GET["opena"])) {
 //31-03-2005 Fernando Batista  end-------------------
 
 $child_count = get_root_childcount(0);
-//$an = $BL['be_admin_struct_index'];
-$an = $indexpage['acat_name'];
+$an          = $indexpage['acat_name'];
+$is_open     = !empty($_SESSION['structure'][0]);
+?>
+<div class="card">
 
-$a  = "<tr onMouseOver=\"this.bgColor='#CCFF00';\" onMouseOut=\"this.bgColor='#FFFFFF';\">\n";
-$a .= '<td width="461">';
-$a .= "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" summary=\"\">\n<tr>\n";
-$a .= '<td class="nowrap">';
-$a .= ($child_count) ? "<a href=\"phpwcms.php?do=articles&amp;open=0:".(empty($_SESSION["structure"][0])?1:0)."\">" : "";
-$a .= "<img src=\"img/symbole/plus_".($child_count ? (empty($_SESSION["structure"][0]) ? "open" : "close") : "empty");
-$a .= ".gif\" width=\"15\" height=\"15\" border=\"0\" alt=\"\">".(($child_count) ? "</a>" : "");
+    <div class="card-header">
+        <h2 class="h6 mb-0"><?php echo $BL['be_article_title'] ?></h2>
+    </div>
 
-$a .= "<img src=\"img/symbole/page_1.gif\" width=\"11\" height=\"15\" ";
+    <table class="table table-hover align-middle mb-0" data-backend-sortable="1" data-backend-sort-token="<?php echo get_token_get_value() ?>" data-backend-sort-error="<?php echo html($BL['be_sort_drag_error'] ?? 'Reordering failed.') ?>">
 
-$info  = 'ID: <b>0</b><br />';
-$info .= 'ALIAS: '.html($indexpage["acat_alias"]);
 
-$a .= 'onmouseover="Tip(\''.$info.'\');" onmouseout="UnTip()" alt="" />';
+        <tbody>
 
-$a .= "</td>\n";
-$a .= "<td><img src=\"img/leer.gif\" width=\"2\" height=\"15\" alt=\"\" /></td>\n";
-$a .= '<td class="dir" width="97%"><strong>'.$an."</strong></td>\n</tr>\n</table></td>\n";
+            <tr class="align-middle">
+                <td class="text-nowrap" style="width:1%"><?php
+                if($child_count) {
+                    echo '<a href="phpwcms.php?do=articles&amp;open=0:'.($is_open ? 0 : 1).'" class="text-decoration-none fg-secondary"';
+                    echo ' aria-label="'.html($an).'" title="'.html($an).'">'.backend_icon($is_open ? 'chevron-down' : 'chevron-right').'</a>';
+                } else {
+                    echo '<span style="display:inline-block;width:16px"></span>';
+                }
+                ?></td>
+                <td><strong><?php echo $an ?></strong></td>
+                <td class="text-end text-nowrap"><?php
+                echo backend_action('phpwcms.php?do=articles&amp;p=1&amp;struct=0', 'plus', $BL['be_func_struct_new_article'].' ['.$an.']');
+                echo backend_action('phpwcms.php?do=articles', 'cut', $BL['be_func_struct_no_cut'], 'disabled');
+                echo backend_action('phpwcms.php?do=articles', 'copy', $BL['be_func_struct_no_copy'], 'disabled');
+                ?></td>
+            </tr>
 
-echo $a;
-echo '<td width="77" class="nowrap">';
-
-$struct[0]["acat_id"]       = 0;
-$struct[0]["acat_aktiv"]    = 1;
-$struct[0]["acat_struct"]   = 0;
-
-echo listmode_edits($listmode, $struct, 0, $an, $copy_article_content, $cut_article_content, $copy_article, $copy_id, $cut_article, $cut_id, 0, 0, 0, 0);
-
-echo "</td>\n</tr>\n";
-
+<?php
 if(is_array($_SESSION["structure"]) && !empty($_SESSION["structure"][0])) {
     struct_articlelist(0, 0, $copy_article_content, $cut_article_content, $copy_article, $cut_article, $indexpage['acat_order']);
     struct_list(0, $copy_article_content, $cut_article_content, $copy_id, $copy_article, $cut_id, $cut_article, $listmode);
 }
 ?>
-    <tr><td colspan="2" class="rowspacer7x7"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-</table>
+
+        </tbody>
+
+    </table>
+
+</div>

@@ -106,6 +106,96 @@ switch($action) {
         $data = array('theme' => $value, 'status' => $updated === false ? 'failed' : 'ok');
         break;
 
+    case 'backend_sort':
+        if (
+            $_SERVER['REQUEST_METHOD'] !== 'POST'
+            || empty($_POST['csrftoken'])
+            || $_POST['csrftoken'] !== get_token_get_value()
+            || empty($_SESSION['wcs_user_id'])
+        ) {
+            headerRedirect('', 403);
+            die();
+        }
+
+        $sort_group     = isset($_POST['group']) ? (string) $_POST['group'] : '';
+        $sort_parent    = isset($_POST['parent']) ? intval($_POST['parent']) : 0;
+        $sort_ids       = array();
+
+        if (isset($_POST['ids'])) {
+            foreach (explode(',', (string) $_POST['ids']) as $sort_id) {
+                $sort_id = intval(trim($sort_id));
+                if ($sort_id > 0 && !in_array($sort_id, $sort_ids, true)) {
+                    $sort_ids[] = $sort_id;
+                }
+            }
+        }
+
+        if (!$sort_ids || !in_array($sort_group, array('struct', 'article'), true)) {
+            http_response_code(400);
+            die();
+        }
+
+        $sort_allowed = array();
+        $sort_allowed_uid = true;
+
+        if ($sort_group === 'struct' && !empty($_SESSION['wcs_user_admin'])) {
+            $sort_result = _dbQuery(
+                'SELECT acat_id FROM ' . DB_PREPEND . 'phpwcms_articlecat WHERE acat_trash=0 AND acat_struct=' . $sort_parent
+            );
+        } elseif ($sort_group === 'article') {
+            $sort_result = _dbQuery(
+                'SELECT article_id, article_uid FROM ' . DB_PREPEND . 'phpwcms_article WHERE article_deleted=0 AND article_cid=' . $sort_parent
+            );
+        } else {
+            $sort_result = false;
+        }
+
+        if (is_array($sort_result)) {
+            foreach ($sort_result as $sort_row) {
+                if ($sort_group === 'struct') {
+                    $sort_allowed[] = (int) $sort_row['acat_id'];
+                } else {
+                    $sort_allowed[] = (int) $sort_row['article_id'];
+                    if ((int) $sort_row['article_uid'] !== (int) $_SESSION['wcs_user_id']) {
+                        $sort_allowed_uid = false;
+                    }
+                }
+            }
+        }
+
+        if ($sort_group === 'article' && !$sort_allowed_uid && empty($_SESSION['wcs_user_admin'])) {
+            headerRedirect('', 403);
+            die();
+        }
+
+        $sort_allowed_check = $sort_allowed;
+        $sort_ids_check     = $sort_ids;
+        sort($sort_allowed_check);
+        sort($sort_ids_check);
+
+        if (!$sort_allowed || $sort_allowed_check !== $sort_ids_check) {
+            http_response_code(409);
+            die();
+        }
+
+        $data = array('status' => 'ok', 'count' => count($sort_ids));
+
+        foreach ($sort_ids as $sort_index => $sort_id) {
+            $sort_value = ($sort_index + 1) * 10;
+            if ($sort_group === 'struct') {
+                _dbQuery(
+                    'UPDATE ' . DB_PREPEND . 'phpwcms_articlecat SET acat_sort=' . $sort_value . ' WHERE acat_id=' . $sort_id,
+                    'UPDATE'
+                );
+            } else {
+                _dbQuery(
+                    'UPDATE ' . DB_PREPEND . 'phpwcms_article SET article_sort=' . $sort_value . ' WHERE article_id=' . $sort_id,
+                    'UPDATE'
+                );
+            }
+        }
+        break;
+
     case 'flush_image_cache':
         if (empty($_SESSION['wcs_user_admin'])) {
             headerRedirect('', 401);
