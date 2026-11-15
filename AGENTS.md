@@ -462,6 +462,26 @@ existing entry already covers the action before adding a second glyph for it.
   and a change like the browser size would not reach an editor who has the
   backend open.
 
+## Article center (article tree)
+
+- The tree of `ARTICLE > article center` (`article.structlist.tmpl.php` with
+  `struct_list()`, `struct_levellist()`, `struct_articlelist()` and
+  `struct_articlecontentlist()` in `include/inc_lib/admin.functions.inc.php`) has
+  four row kinds and they do not carry the same actions:
+  - the root row (`Home`) offers the `plus` new article action only — the root
+    level itself can neither be cut nor copied, so it shows no scissors, copy or
+    delete button;
+  - a structure level row offers `plus` and its `backend_sort_handle()`; the
+    scissors and copy buttons are paste targets for an article that is marked
+    for cut or copy, so they only appear while one is marked, and never as a
+    disabled pair;
+  - an article row keeps `pen`, cut, copy, visibility and delete plus its sort
+    handle, and a content part row keeps `pen`, cut, copy, visibility, delete and
+    its sort handle.
+- `ADMIN > site structure` uses the same helper with `$listmode = 1` and is
+  untouched: a level there is a real cut/copy source, so its scissors and copy
+  buttons stay, disabled only where the level is invalid for the operation.
+
 ## Article new and edit
 
 - `ARTICLE > new article` (`phpwcms.php?do=articles&p=1&struct=0`) and the article

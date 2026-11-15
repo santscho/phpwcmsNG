@@ -125,16 +125,15 @@ function struct_levellist($struct, $key, $counter, $copy_article_content, $cut_a
 
         $a .= backend_action('phpwcms.php?do=articles&amp;p=1&amp;struct=' . $acat_id, 'plus', $BL['be_func_struct_new_article'] . ' [' . $an . ']');
 
+        // a structure level is no source but a paste target, and only while an
+        // article is marked for cut or copy; without one the old disabled pair
+        // just looked like two broken buttons next to the new article action
         if($cut_article) {
             $a .= backend_action('include/inc_act/act_structure.php?do=3%7C' . intval($cut_article) . '%7C' . $acat_id, 'clipboard-plus', $BL['be_func_struct_paste_article'] . ' [' . $an . ']', 'active');
-        } else {
-            $a .= backend_action('phpwcms.php?do=articles', 'scissors', $BL['be_func_struct_no_cut'], 'disabled');
         }
 
         if($copy_article) {
             $a .= backend_action('include/inc_act/act_structure.php?do=5%7C' . intval($copy_article) . '%7C' . $acat_id, 'clipboard-plus', $BL['be_func_struct_paste_article'] . ' [' . $an . ']', 'active');
-        } else {
-            $a .= backend_action('phpwcms.php?do=articles', 'copy', $BL['be_func_struct_no_copy'], 'disabled');
         }
 
     }
