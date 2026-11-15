@@ -154,6 +154,19 @@ MIT) inlined at 16x16 from `backend_icon()`. The names are fixed:
 - **visibility switch**: `eye` in `theme-success` while the entry is visible,
   `eye-slash` in `theme-danger` while it is hidden
 - **tree and add**: `chevron-right`, `chevron-down`, `plus`
+- **file manager actions**: upload `upload`, download `download`, new directory
+  `folder-plus`, help `question-circle`, expand all `chevron-bar-expand`,
+  collapse all `chevron-bar-contract`, thumbnails off `image` / on `image-fill`
+- **directory types**: directory `folder-fill`, gallery root directory `images`,
+  gallery sub directory `image`
+- **state switches** (files and directories alike): active `toggle-on` as a
+  solid `theme-success` button, inactive `toggle-off` as an outline
+  `theme-secondary` one; public `globe` and private `lock` follow the same rule
+- **file types** (`backend_file_icon()` maps an extension to one of these):
+  image `file-earmark-image`, pdf `file-earmark-pdf`, word `file-earmark-word`,
+  excel `file-earmark-excel`, archive `file-earmark-zip`, text `file-earmark-text`,
+  audio `file-earmark-music`, video `file-earmark-play`, anything else
+  `file-earmark`
 
 Do not hand-draw icons or pick replacement glyphs; add the Bootstrap Icon path
 to `backend_icon()` if a new one is needed.
@@ -178,6 +191,27 @@ existing entry already covers the action before adding a second glyph for it.
   rows, never tables; indentation comes from `backend_indent()` (mapped `ms-*`
   classes) and row actions sit in a `d-flex gap-2` group of `btn-icon`
   buttons, matching the screen mode buttons in the header.
+
+## File center
+
+- `FILE` keeps its folder tabs as a Bootstrap `nav nav-pills` inside the
+  `card-header` of `include/inc_tmpl/files.reiter.tmpl.php` (`nav-link` anchors,
+  the current folder `active` plus `aria-current="page"`), with the folder
+  actions as `btn-icon` buttons on the right of the same header.
+- The private listing is a `card` with a `list-group list-group-flush`; directory
+  and file rows are `list-group-item` rows of the same shape as the article tree
+  (open/close chevron, type icon, name, actions). Opening a directory nests a
+  further `list-group list-group-flush ms-5` inside the current list instead of
+  indenting with spacers, so any depth stays a plain nested list.
+- Every action is a `backend_action()` icon button: upload, new directory or
+  paste, edit, the two state switches and delete; a non-empty directory gets the
+  disabled trash button with the "not empty" title. File rows also carry
+  download, cut and the file information editor.
+- Thumbnails stay available through the header toggle and render inside the row,
+  but only for image extensions.
+- `files.abschluss.tmpl.php` and `files.private-filelist.inc.php` are gone: the
+  closing bar was decoration and the root files are listed by
+  `list_private_files()` now.
 
 ## Bootstrap skills
 

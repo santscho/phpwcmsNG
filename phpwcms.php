@@ -401,7 +401,6 @@ if($BE['LANG'] == 'ar') {
                         include PHPWCMS_ROOT . '/include/inc_tmpl/files.search.tmpl.php';
                         break;
                 }
-                include PHPWCMS_ROOT . '/include/inc_tmpl/files.abschluss.tmpl.php'; //Abschließende Tabellenzeile = dicke Linie
             }
             break;
 

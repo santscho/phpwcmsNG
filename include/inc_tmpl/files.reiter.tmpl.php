@@ -20,43 +20,67 @@ if (!defined('PHPWCMS_ROOT')) {
 $files_folder = (isset($_GET["f"])) ? intval($_GET["f"]) : 0; //Ermitteln, welcher Unterreiter angezeigt wird
 
 // if cut/paste is active
-$add_paste_icon = '<a href="phpwcms.php?do=files&amp;f=0&amp;mkdir=0" title="'.$BL['be_ftab_createnew'].
-				  '"><img src="img/button/add_13x13.gif" border="0"></a>';
-if(isset($_GET["cut"])) {
-	$cutID = intval($_GET["cut"]);
-	$add_paste_icon = '<a href="include/inc_act/act_file.php?paste='.$cutID.'|0" title="'.$BL['be_ftab_paste'].
-					  '"><img src="img/button/paste_13x13.gif" border="0"></a>';
-} else { $cutID=0; }
+$cutID = (isset($_GET["cut"])) ? intval($_GET["cut"]) : 0;
 
-$change_thumbnail_icon = '<a href="include/inc_act/act_file.php?thumbnail=';
-if($_SESSION["wcs_user_thumb"]) {
-	$change_thumbnail_icon .= '0" title="'.$BL['be_ftab_disablethumb'].'">';
-	$change_thumbnail_icon .= '<img src="img/button/thumbnail_13x13_0.gif" border="0"></a>';
-} else {
-	$change_thumbnail_icon .= '1" title="'.$BL['be_ftab_enablethumb'].'">';
-	$change_thumbnail_icon .= '<img src="img/button/thumbnail_13x13_1.gif" border="0"></a>';
+// action buttons of the current folder
+$_files_actions = '';
+
+$_files_help = ' onclick="flevPopupLink(this.href,\'filehelp\',\'scrollbars=yes,resizable=yes,width=320,height=300\',0);return document.MM_returnValue"';
+
+if($files_folder === 0) {
+
+    // upload a file to the root directory
+    $_files_actions .= backend_action('phpwcms.php?do=files&amp;f=0&amp;upload=0', 'upload', $BL['be_ftab_upload']);
+
+    // create a new directory, or paste the cut file into the root directory
+    if(!$cutID) {
+        $_files_actions .= backend_action('phpwcms.php?do=files&amp;f=0&amp;mkdir=0', 'plus', $BL['be_ftab_createnew']);
+    } else {
+        $_files_actions .= backend_action('include/inc_act/act_file.php?paste=' . $cutID . '%7C0', 'clipboard-plus', $BL['be_ftab_paste']);
+    }
+
 }
 
+if($files_folder === 0 || $files_folder === 1) {
+    $_files_actions .= backend_action('phpwcms.php?do=files&amp;f=' . $files_folder . '&amp;all=open', 'chevron-bar-expand', $BL['be_ftab_open']);
+    $_files_actions .= backend_action('phpwcms.php?do=files&amp;f=' . $files_folder . '&amp;all=close', 'chevron-bar-contract', $BL['be_ftab_close']);
+}
+
+if($files_folder !== 2) {
+    $_files_actions .= backend_action('include/inc_help/filehelp.htm', 'question-circle', $BL['be_ftab_filehelp'], 'normal', $_files_help);
+}
+
+// thumbnail listing on/off
+if($files_folder !== 2) {
+    if($_SESSION["wcs_user_thumb"]) {
+        $_files_actions .= backend_action('include/inc_act/act_file.php?thumbnail=0', 'image-fill', $BL['be_ftab_disablethumb'], 'active');
+    } else {
+        $_files_actions .= backend_action('include/inc_act/act_file.php?thumbnail=1', 'image', $BL['be_ftab_enablethumb']);
+    }
+}
+
+$_files_tabs = array(
+    0 => array('link' => 'phpwcms.php?do=files&amp;f=0', 'label' => $BL['be_ftab_private']),
+    1 => array('link' => 'phpwcms.php?do=files&amp;f=1', 'label' => $BL['be_ftab_public']),
+    3 => array('link' => 'phpwcms.php?do=files&amp;f=3', 'label' => $BL['be_ftab_search']),
+    2 => array('link' => 'phpwcms.php?do=files&amp;f=2', 'label' => $BL['be_ftab_trash']),
+);
+
 ?>
-<table width="538" border="0" cellpadding="0" cellspacing="0" summary="">
-<tr><td class="title"><?php echo $BL['be_ftab_title'] ?></td></tr>
-<tr><td><img src="img/leer.gif" alt="" width="1" height="6" /></td></tr>
-<tr><td><table width="538" border="0" cellpadding="2" cellspacing="0" summary="">
-	<tr>
-		<td width="90" align="center" background="img/background/bg_eckeli.gif" <?php which_folder_active($files_folder, 0) ?>><a href="phpwcms.php?do=files&amp;f=0"><?php echo $BL['be_ftab_private'] ?></a></td>
-		<td width="90" align="center" background="img/background/bg_eckeli.gif" <?php which_folder_active($files_folder, 1) ?>><a href="phpwcms.php?do=files&amp;f=1"><?php echo $BL['be_ftab_public'] ?></a></td>
-		<td width="90" align="center" background="img/background/bg_eckeli.gif" <?php which_folder_active($files_folder, 3) ?>><a href="phpwcms.php?do=files&amp;f=3"><?php echo $BL['be_ftab_search'] ?></a></td>
-		<td width="90" align="center" background="img/background/bg_eckeli.gif" <?php which_folder_active($files_folder, 2) ?>><a href="phpwcms.php?do=files&amp;f=2"><?php echo $BL['be_ftab_trash'] ?></a></td>
-		<?php if($files_folder == 0) { ?>
-		<td width="162" align="right" background="img/background/bg_ecke_lang.gif" bgcolor="#EBF2F4" class="chatlist"><img src="img/button/root_dir.gif" alt="" width="43" height="13" /><a href="phpwcms.php?do=files&amp;f=0&amp;upload=0" title="<?php echo $BL['be_ftab_upload'] ?>"><img src="img/button/upload_13x13.gif" alt="" width="13" height="13" border="0" /></a><?php echo $add_paste_icon ?><a href="include/inc_help/filehelp.htm" target="_blank" onclick="flevPopupLink(this.href,'filehelp','scrollbars=yes,resizable=yes,width=320,height=300',0);return document.MM_returnValue" style="cursor: help;"><img src="img/button/help_22x13.gif" alt="open file help" width="22" height="13" border="0" /></a><a href="phpwcms.php?do=files&amp;f=0&amp;all=open" title="<?php echo $BL['be_ftab_open'] ?>"><img src="img/button/alle_auf.gif" alt="" width="12" height="13" border="0" /></a><a href="phpwcms.php?do=files&amp;f=0&amp;all=close" title="<?php echo $BL['be_ftab_close'] ?>"><img src="img/button/alle_zu.gif" alt="" width="12" height="13" border="0" /></a><img src="img/leer.gif" alt="" width="5" height="1" /><?php echo $change_thumbnail_icon ?></td>
-		<?php } elseif($files_folder == 1) { ?>
-		<td width="162" align="right" background="img/background/bg_ecke_lang.gif" bgcolor="#EBF2F4" class="chatlist"><a href="include/inc_help/filehelp.htm" target="_blank" onclick="flevPopupLink(this.href,'filehelp','scrollbars=yes,resizable=yes,width=320,height=300',0);return document.MM_returnValue" style="cursor: help;"><img src="img/button/help_22x13.gif" alt="<?php echo $BL['be_ftab_filehelp'] ?>" width="22" height="13" border="0" /></a><a href="phpwcms.php?do=files&amp;f=1&amp;all=close" title="<?php echo $BL['be_ftab_close'] ?>"><img src="img/button/alle_zu.gif" alt="" width="12" height="13" border="0" /></a><img src="img/leer.gif" alt="" width="5" height="1" /><?php echo $change_thumbnail_icon ?></td>
-		<?php } elseif($files_folder == 3) { ?>
-		<td width="162" align="right" background="img/background/bg_ecke_lang.gif" bgcolor="#EBF2F4" class="chatlist"><a href="include/inc_help/filehelp.htm" target="_blank" onclick="flevPopupLink(this.href,'filehelp','scrollbars=yes,resizable=yes,width=320,height=300',0);return document.MM_returnValue" style="cursor: help;"><img src="img/button/help_22x13.gif" alt="<?php echo $BL['be_ftab_filehelp'] ?>" width="22" height="13" border="0" /></a><img src="img/leer.gif" alt="" width="5" height="1" /><?php echo $change_thumbnail_icon ?></td>
-		<?php } else { ?>
-		<td width="162" class="chatlist">&nbsp;</td>
-		<?php } ?>
-	</tr></table></td></tr>
-<tr><td bgcolor="#9BBECA"><img src="img/leer.gif" alt="" width="1" height="4" /></td>
-</tr>
-</table>
+<div class="card mb-5">
+
+    <div class="card-header d-flex flex-column lg:flex-row lg:align-items-center gap-3">
+
+        <h2 class="h6 mb-0"><?php echo $BL['be_ftab_title'] ?></h2>
+
+        <div class="nav nav-pills flex-wrap me-auto">
+<?php foreach($_files_tabs as $_files_key => $_files_tab): ?>
+            <a href="<?php echo $_files_tab['link'] ?>" class="nav-link<?php echo $files_folder === $_files_key ? ' active' : '' ?>"<?php echo $files_folder === $_files_key ? ' aria-current="page"' : '' ?>><?php echo $_files_tab['label'] ?></a>
+<?php endforeach; ?>
+        </div>
+
+        <div class="d-flex flex-wrap align-items-center gap-2 flex-shrink-0"><?php echo $_files_actions ?></div>
+
+    </div>
+
+</div>
