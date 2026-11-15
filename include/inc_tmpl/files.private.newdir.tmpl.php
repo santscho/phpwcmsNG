@@ -91,80 +91,58 @@ if($dir_pid) {
 
 ?>
 <form action="phpwcms.php?do=files&amp;f=0" method="post" name="createnewdir" id="createnewdir">
-<table width="538" border="0" cellpadding="0" cellspacing="0" bgcolor='#EBF2F4' summary="">
-	<tr>
-		<td width="67" rowspan="2" valign="top"><a href="phpwcms.php?do=files&amp;f=0"><img src="img/button/close_reiter.gif" alt="" width="45" height="12" border="0" /></a></td>
-		<td width="471"><img src="img/leer.gif" alt="" width="1" height="6" /></td>
-	</tr>
-	<tr><td class="title"><?php echo $BL['be_fpriv_title'] ?></td></tr>
-	<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="5" /></td></tr>
-	<tr>
-		<td width="67" align="right" class="v09"><?php echo $BL['be_fpriv_inside'] ?>:&nbsp;</td>
-		<td class="v10"><strong><?php echo $dir_parent_name ?></strong></td>
-	</tr>
-	<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="6" /></td></tr>
-	<tr><td colspan="2"><img src="img/lines/line-bluelight.gif" alt="" width="538" height="1" /></td></tr>
-	<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="6" /></td></tr>
-	<?php if(isset($dir_error)) { ?>
-	<tr>
-	  <td><img src="img/leer.gif" alt="" width="1" height="1" /></td>
-	  <td class="v10"><strong style="color:#FF3300;"><?php echo $BL['be_fpriv_error'] ?></strong></td>
-	</tr>
-	<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="2" /></td></tr>
-	<?php } ?>
-	<tr>
-		<td align="right" class="v09"><?php echo $BL['be_fpriv_name'] ?>:&nbsp;</td>
-		<td><input name="dir_newname" type="text" class="width440 v12" id="dir_newname" value="<?php echo html($dir_newname) ?>" size="40" maxlength="250" /></td>
-	</tr>
-	<tr><td colspan="2" valign="top"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-	<tr>
-		<td align="right" valign="top" class="v09 tdtop4"><?php echo $BL['be_ftptakeover_longinfo'] ?>:&nbsp;</td>
-		<td valign="top"><textarea name="dir_longinfo" cols="40" rows="4" class="width440" id="dir_longinfo"><?php echo html($dir_longinfo) ?></textarea></td>
-	</tr>
-
-	<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="5" /></td></tr>
-
-	<tr>
-		<td align="right" class="v09"><?php echo $BL['be_gallery'] ?>:&nbsp;</td>
-		<td><select name="dir_gallery" id="dir_gallery">
-			<option value="0"<?php is_selected(0, $dir_gallery) ?>>-</option>
-			<option value="2"<?php is_selected(2, $dir_gallery) ?>><?php echo $BL['be_gallery_root'] ?></option>
-			<option value="3"<?php is_selected(3, $dir_gallery) ?>><?php echo $BL['be_gallery_directory'] ?></option>
-		</select></td>
-	</tr>
-
-	<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="8"></td></tr>
-
-	<tr>
-		<td align="right" class="v09">&nbsp;<?php echo $BL['be_cnt_sorting'] ?>:&nbsp;</td>
-		<td><input name="dir_sort" type="text" id="dir_sort" size="10" class="width50" maxlength="10" value="<?php echo intval($dir_sort) ?>" /></td>
-	</tr>
-
-	<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="5" /></td></tr>
-
-
-	<tr>
-		<td align="right" class="v09"><?php echo $BL['be_fpriv_status'] ?>:&nbsp;</td>
-		<td><table border="0" cellpadding="0" cellspacing="0" summary="">
-		<tr>
-			<td><input name="dir_aktiv" type="checkbox" id="dir_aktiv" value="1"<?php is_checked("1", $dir_aktiv) ?> /></td>
-			<td class="v10"><strong><label for="dir_aktiv"><?php echo $BL['be_ftptakeover_active'] ?></label></strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-
-			<td><input name="dir_public" type="checkbox" id="dir_public" value="1"<?php is_checked("1", $dir_public) ?> /></td>
-			<td class="v10"><strong><label for="dir_public"><?php echo $BL['be_ftptakeover_public'] ?></label></strong></td>
-		</tr>
-		</table></td>
-	</tr>
-	<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="5" /></td></tr>
-	<tr>
-		<td width="67" valign="top"><input name="dir_pid" type="hidden" id="dir_pid" value="<?php echo $dir_pid ?>" />
-		<input name="dir_aktion" type="hidden" id="dir_aktion" value="1" /></td>
-		<td>
-			<input name="Submit" type="submit" class="button" value="<?php echo $BL['be_fpriv_button'] ?>" />
-			<input type="button" class="button" value="<?php echo $BL['be_func_struct_close'] ?>" onclick="document.location.href='phpwcms.php?do=files&amp;f=0'" />
-		</td>
-	</tr>
-	<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="8" /></td></tr>
-	<tr><td colspan="2" bgcolor="#9BBECA"><img src="img/leer.gif" alt="" width="1" height="4" /></td></tr>
-</table>
+<div class="card mb-4">
+    <div class="card-header d-flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
+        <h2 class="h6 mb-0"><?php echo $BL['be_fpriv_title'] ?></h2>
+        <a href="phpwcms.php?do=files&amp;f=0" class="btn btn-outline theme-secondary btn-sm"><?php echo $BL['be_func_struct_close'] ?></a>
+    </div>
+    <div class="card-body">
+<?php if(isset($dir_error)) { ?>
+        <div class="alert theme-danger mb-4"><?php echo $BL['be_fpriv_error'] ?></div>
+<?php } ?>
+        <div class="row g-4">
+            <div class="col-12">
+                <div class="form-label"><?php echo $BL['be_fpriv_inside'] ?></div>
+                <p class="mb-0"><strong><?php echo $dir_parent_name ?></strong></p>
+            </div>
+            <div class="col-12 md:col-6">
+                <label class="form-label" for="dir_newname"><?php echo $BL['be_fpriv_name'] ?></label>
+                <input name="dir_newname" type="text" class="form-control" id="dir_newname" value="<?php echo html($dir_newname) ?>" maxlength="250">
+            </div>
+            <div class="col-12 md:col-6">
+                <label class="form-label" for="dir_gallery"><?php echo $BL['be_gallery'] ?></label>
+                <select name="dir_gallery" id="dir_gallery" class="form-control">
+                    <option value="0"<?php is_selected(0, $dir_gallery) ?>>-</option>
+                    <option value="2"<?php is_selected(2, $dir_gallery) ?>><?php echo $BL['be_gallery_root'] ?></option>
+                    <option value="3"<?php is_selected(3, $dir_gallery) ?>><?php echo $BL['be_gallery_directory'] ?></option>
+                </select>
+            </div>
+            <div class="col-12">
+                <label class="form-label" for="dir_longinfo"><?php echo $BL['be_ftptakeover_longinfo'] ?></label>
+                <textarea name="dir_longinfo" rows="4" class="form-control" id="dir_longinfo"><?php echo html($dir_longinfo) ?></textarea>
+            </div>
+            <div class="col-12 md:col-6">
+                <label class="form-label" for="dir_sort"><?php echo $BL['be_cnt_sorting'] ?></label>
+                <input name="dir_sort" type="text" id="dir_sort" class="form-control" maxlength="10" value="<?php echo intval($dir_sort) ?>">
+            </div>
+            <div class="col-12 md:col-6">
+                <div class="form-label"><?php echo $BL['be_fpriv_status'] ?></div>
+                <div class="form-field">
+                    <input class="check" name="dir_aktiv" type="checkbox" id="dir_aktiv" value="1"<?php is_checked("1", $dir_aktiv) ?>>
+                    <label for="dir_aktiv"><?php echo $BL['be_ftptakeover_active'] ?></label>
+                </div>
+                <div class="form-field">
+                    <input class="check" name="dir_public" type="checkbox" id="dir_public" value="1"<?php is_checked("1", $dir_public) ?>>
+                    <label for="dir_public"><?php echo $BL['be_ftptakeover_public'] ?></label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer d-flex flex-wrap gap-2 justify-content-end">
+        <input name="dir_pid" type="hidden" id="dir_pid" value="<?php echo $dir_pid ?>">
+        <input name="dir_aktion" type="hidden" id="dir_aktion" value="1">
+        <input type="button" class="btn btn-outline theme-secondary btn-sm" value="<?php echo $BL['be_func_struct_close'] ?>" onclick="document.location.href='phpwcms.php?do=files&amp;f=0'">
+        <input name="Submit" type="submit" class="btn theme-primary btn-solid btn-styled btn-sm" value="<?php echo $BL['be_fpriv_button'] ?>">
+    </div>
+</div>
 </form>

@@ -240,6 +240,19 @@ existing entry already covers the action before adding a second glyph for it.
   autosuggest, the `autosize` textareas and the `file_aktion`/`MAX_FILE_SIZE`
   hidden fields stay as they are.
 
+## Private new directory
+
+- `FILE > file center > private files > create new dir`
+  (`include/inc_tmpl/files.private.newdir.tmpl.php`) follows the upload screen: a
+  single card with the title and a `close` button in the header, the form in the
+  body and `close` plus the primary `create new dir` button in the footer.
+- The parent directory is shown as a `form-label` over its name (the root
+  directory when nothing was selected), then a `row g-4` of `col-12 md:col-6`
+  fields: name and gallery select, the full width long info textarea, sorting and
+  the two status marks as `.form-field`/`.check` pairs under a `status` label.
+- A missing name is reported as an `alert theme-danger` above the fields; the
+  `dir_pid` and `dir_aktion` hidden fields live in the footer with the buttons.
+
 ## File actions
 
 - `FILE > file actions` (`include/inc_tmpl/files.actions.tmpl.php`) is three
