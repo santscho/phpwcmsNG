@@ -672,14 +672,19 @@ function backend_sort_handle($label='') {
 
     $label = $label ?: ($BL['be_sort_drag'] ?? 'drag to reorder');
 
-    $handle  = '<span class="backend-sort-handle fg-secondary" data-sort-handle="1" role="button"';
+    $handle  = '<span class="backend-sort-handle d-inline-flex align-items-center justify-content-center flex-shrink-0 rounded" data-sort-handle="1" role="button"';
     $handle .= ' aria-label="' . html($label) . '" title="' . html($label) . '"';
-    $handle .= ' style="cursor:grab;display:inline-flex;align-items:center;padding:0 4px 0 0;vertical-align:middle">';
-    $handle .= '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="15" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">';
-    $handle .= '<path d="M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>';
+    $handle .= ' style="cursor:grab;width:26px;height:26px">';
+    $handle .= '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="24" fill="currentColor" viewBox="0 0 16 24" aria-hidden="true">';
+    foreach (array(4, 9, 14, 19) as $handle_y) {
+        foreach (array(4.5, 11.5) as $handle_x) {
+            $handle .= '<circle cx="' . $handle_x . '" cy="' . $handle_y . '" r="1.8"/>';
+        }
+    }
     $handle .= '</svg></span>';
 
     return $handle;
+
 }
 
 function show_status_message($return_status=false) {
