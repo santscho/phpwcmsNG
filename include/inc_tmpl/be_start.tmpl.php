@@ -36,11 +36,14 @@ if(isset($_POST['homeMaxCntParts'])) {
 	$_SESSION['phpwcms_backend_search'] = '';
 }
 
+// date and time format picked in the profile, used for the "last edited" notes
+$backend_date_format = backend_date_format($_SESSION['wcs_user_date_format'] ?? '');
+
 // set if user has admin rights
 $_usql = $_SESSION["wcs_user_admin"] ? '' : 'AND article_uid='.intval($_SESSION["wcs_user_id"]).' ';
 
 // first list last edited articles
-$_asql_1  = "SELECT *, DATE_FORMAT(acontent_tstamp, '%d/%m/%Y %H:%i') AS acontent_changed FROM ".DB_PREPEND."phpwcms_articlecontent t1 ";
+$_asql_1  = "SELECT *, acontent_tstamp AS acontent_changed FROM ".DB_PREPEND."phpwcms_articlecontent t1 ";
 $_asql_1 .= "LEFT JOIN ".DB_PREPEND."phpwcms_article t2 ON ";
 $_asql_1 .= "t1.acontent_aid = t2.article_id ";
 $_asql_1 .= 'WHERE t1.acontent_trash=0 AND t2.article_deleted=0 ';
@@ -64,7 +67,7 @@ $_asql_1 .= ' ORDER BY acontent_tstamp DESC LIMIT '.$_phpwcms_home['homeMaxCntPa
 $_last10_articlecontent = _dbQuery($_asql_1);
 
 $_asql_1  = "SELECT article_id, article_cid, article_title, article_subtitle, article_aktiv, article_uid, ";
-$_asql_1 .= "date_format(article_tstamp, '%d/%m/%Y %H:%i') AS article_date ";
+$_asql_1 .= "article_tstamp AS article_date ";
 $_asql_1 .= 'FROM '.DB_PREPEND.'phpwcms_article WHERE article_deleted=0 ';
 $_asql_1 .= $_usql;
 if(!empty($_SESSION['phpwcms_backend_search'])) {
@@ -99,6 +102,9 @@ $_last10_article = _dbQuery($_asql_1);
 
         foreach($_last10_article as $value) {
 
+            $_article_date    = strtotime((string) $value['article_date']);
+            $_article_changed = $_article_date === false ? $value['article_date'] : date($backend_date_format['php'], $_article_date);
+
             $_article_link = 'phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;id='.$value['article_id'];
 
             echo '<div class="list-group-item list-group-item-action d-flex align-items-center gap-2" role="link"';
@@ -113,7 +119,7 @@ $_last10_article = _dbQuery($_asql_1);
                 echo ' <span class="fg-secondary">/ '.html($value['article_subtitle']).'</span>';
             }
             echo '</div>';
-            echo '<div class="small fg-secondary text-truncate">'.$value['article_date'].'</div>';
+            echo '<div class="small fg-secondary text-truncate">'.$_article_changed.'</div>';
             echo '</div>';
 
             echo '<span class="badge '.($value['article_aktiv'] ? 'theme-success' : 'theme-secondary').'">';
@@ -183,6 +189,9 @@ $_last10_article = _dbQuery($_asql_1);
 
             $value['notice'] = html(preg_replace('/\s+/', ' ', $value['notice'], false));
 
+            $_acontent_date    = strtotime((string) $value['acontent_changed']);
+            $_acontent_changed = $_acontent_date === false ? $value['acontent_changed'] : date($backend_date_format['php'], $_acontent_date);
+
             $_content_link = 'phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;id='.$value['acontent_aid'].'&amp;acid='.$value['acontent_id'];
 
             echo '<div class="list-group-item list-group-item-action d-flex align-items-center gap-2" role="link"';
@@ -197,7 +206,7 @@ $_last10_article = _dbQuery($_asql_1);
             if($value["acontent_type"] == 30) {
                 echo ' <span class="fg-secondary">'.$BL['modules'][$value["acontent_module"]]['listing_title'].'</span>';
             }
-            echo ' &middot; '.$value['acontent_changed'].'</div>';
+            echo ' &middot; '.$_acontent_changed.'</div>';
             echo '</div>';
 
             echo '<span class="badge '.($value['acontent_visible'] ? 'theme-success' : 'theme-secondary').'">';

@@ -26,7 +26,8 @@ These apply to every backend screen that is modernized:
    the field is an `input[data-datepicker]` driven by
    `include/inc_js/backend.datepicker.js`, it shows the date and time format the
    logged in user picked in the profile and its calendar starts on that user's
-   week start day — see *Date and time format*.
+   week start day. Dates a screen only renders use the same format — see
+   *Date and time format*.
 
 ## Design: Bootstrap first
 
@@ -431,6 +432,13 @@ existing entry already covers the action before adding a second glyph for it.
   `backend_weekstarts()` is the list, its keys are the stored values and its
   values extend to the `$BL['be_profile_weekstart_monday']`/
   `$BL['be_profile_weekstart_sunday']` labels.
+- Dates that are only displayed follow the same preference: read the stored
+  value or timestamp from the query and render it with
+  `date($backend_date_format['php'], $time)`, guarding `strtotime()` so an empty
+  or unparsable value stays as it is. Do not format in SQL with `DATE_FORMAT()`
+  and do not use `$BL['be_longdatetime']`; HOME's two *last edited* cards
+  (`include/inc_tmpl/be_start.tmpl.php`) were converted that way, the article
+  summary header already was.
 - `window.phpwcmsDatePickerSet(inputOrId, canonicalValue)` is the module's
   setter for other inline handlers: it writes the canonical value through the
   picker instance (so the visible twin follows) and dispatches `change`;
