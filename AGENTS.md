@@ -478,8 +478,10 @@ existing entry already covers the action before adding a second glyph for it.
   - an article row keeps `pen`, cut, copy, visibility and delete plus its sort
     handle, and a content part row keeps `pen`, cut, copy, visibility, delete and
     its sort handle.
-- `ADMIN > site structure` uses the same helper with `$listmode = 1` and is
-  untouched: a level there is a real cut/copy source, so its scissors and copy
+- `ADMIN > site structure` (`admin.structlist.tmpl.php`) uses the same helper
+  with `$listmode = 1`. Its root row shows only the `plus` new level action and
+  the `pen` of the index page, because the root level can neither be cut nor
+  copied; a level below it is a real cut/copy source, so its scissors and copy
   buttons stay, disabled only where the level is invalid for the operation.
 
 ## Article new and edit

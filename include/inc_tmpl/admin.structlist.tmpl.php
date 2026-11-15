@@ -73,9 +73,8 @@ if(isset($struct_template[0]['template_name'])) {
 ?></div>
             <div class="d-flex align-items-center gap-2 flex-shrink-0">
 <?php
+// the root level is neither a cut nor a copy source, so it only offers a new level and its editor
 echo backend_action('phpwcms.php?do=admin&amp;p=6&amp;struct=0&amp;sort='.$child_sort, 'plus', $BL['be_func_struct_insert_level'].' ['.$an.']');
-echo backend_action('phpwcms.php?do=admin&amp;p=6', 'scissors', $BL['be_func_struct_no_cut'], 'disabled');
-echo backend_action('phpwcms.php?do=admin&amp;p=6', 'copy', $BL['be_func_struct_no_copy'], 'disabled');
 echo backend_action('phpwcms.php?do=admin&amp;p=6&amp;struct=index', 'pen', $BL['be_func_struct_sedit'].' ['.$an.']');
 ?>
             </div>
