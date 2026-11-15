@@ -26,11 +26,11 @@ if(empty($content['ctext_format'])) {
 }
 
 ?>
-<tr><td colspan="2" class="rowspacer0x7"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
+<div class="row g-4">
 
-<tr>
-	<td align="right" class="chatlist"><?php echo $BL['be_admin_struct_template']; ?>:&nbsp;</td>
-	<td><select name="template" id="template">
+	<div class="col-12 md:col-6">
+		<label class="form-label" for="template"><?php echo $BL['be_admin_struct_template']; ?></label>
+		<select name="template" id="template" class="form-control">
 <?php
 
 	echo '<option value="">'.$BL['be_admin_tmpl_default'].'</option>'.LF;
@@ -41,41 +41,37 @@ if(is_array($tmpllist) && count($tmpllist)) {
 	foreach($tmpllist as $val) {
 		$selected_val = (isset($content["template"]) && $val == $content["template"]) ? ' selected="selected"' : '';
 		$val = html($val);
-		echo '	<option value="' . $val . '"' . $selected_val . '>' . $val . '</option>' . LF;
+		echo "\t" . '<option value="' . $val . '"' . $selected_val . '>' . $val . '</option>' . LF;
 	}
 }
 
 ?>
-		</select></td>
-</tr>
+		</select>
+	</div>
 
-<tr><td colspan="2" class="rowspacer7x7"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
+	<div class="col-12">
+		<div class="form-label"><?php echo $BL['be_media_format'] ?></div>
+		<div class="d-flex flex-wrap gap-4">
+			<div class="form-field">
+				<input class="radio" name="ctext_format" type="radio" id="ctext_format0" value="plain"<?php is_checked('plain', $content['ctext_format']); ?>>
+				<label for="ctext_format0"><?php echo $BL['be_ctype_plaintext'] ?></label>
+			</div>
+			<div class="form-field">
+				<input class="radio" name="ctext_format" type="radio" id="ctext_format1" value="markdown"<?php is_checked('markdown', $content['ctext_format']); ?>>
+				<label for="ctext_format1">MarkDown</label>
+				<a href="http://en.wikipedia.org/wiki/Markdown" target="_blank" class="link small" data-bs-toggle="tooltip" title="Wikipedia: Markdown">(?)</a>
+			</div>
+			<div class="form-field">
+				<input class="radio" name="ctext_format" type="radio" id="ctext_format2" value="textile"<?php is_checked('textile', $content['ctext_format']); ?>>
+				<label for="ctext_format2">Textile</label>
+				<a href="http://en.wikipedia.org/wiki/Textile_%28markup_language%29" target="_blank" class="link small" data-bs-toggle="tooltip" title="Wikipedia: Textile">(?)</a>
+			</div>
+		</div>
+	</div>
 
-<tr>
-	<td align="right" class="chatlist"><?php echo $BL['be_media_format'] ?>:&nbsp;</td>
-	<td valign="top"><table border="0" cellpadding="0" cellspacing="0" summary="">
-			<tr>
-				<td><input name="ctext_format" type="radio" id="ctext_format0" value="plain" <?php is_checked('plain', $content['ctext_format']); ?> /></td>
-				<td class="v10"><label for="ctext_format0" class="checkbox"><?php echo $BL['be_ctype_plaintext'] ?></label></td>
-
-				<td>&nbsp;</td>
-				<td><input name="ctext_format" type="radio" id="ctext_format1" value="markdown" <?php is_checked('markdown', $content['ctext_format']); ?> /></td>
-				<td class="v10"><label for="ctext_format1" class="checkbox">MarkDown</label>(<a href="http://en.wikipedia.org/wiki/Markdown" target="_blank" title="Wikipedia: Markdown">?</a>)</td>
-
-				<td>&nbsp;</td>
-				<td><input name="ctext_format" type="radio" id="ctext_format2" value="textile" <?php is_checked('textile', $content['ctext_format']); ?> /></td>
-				<td class="v10"><label for="ctext_format2" class="checkbox">Textile</label>(<a href="http://en.wikipedia.org/wiki/Textile_%28markup_language%29" target="_blank" title="Wikipedia: Textile">?</a>)</td>
-
-			</tr>
-		</table>
-	</td>
-</tr>
-
-<tr><td colspan="2" class="rowspacer7x7"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-
-<tr>
-	<td align="right" valign="top" class="chatlist tdtop4"><?php echo $BL['be_cnt_plaintext'] ?>:&nbsp;</td>
-	<td valign="top"><textarea name="ctext" rows="20" class="code width440 autosize" id="ctext"><?php
+	<div class="col-12">
+		<label class="form-label" for="ctext"><?php echo $BL['be_cnt_plaintext'] ?></label>
+		<textarea name="ctext" rows="20" class="form-control autosize" id="ctext" style="font-family: var(--bs-font-mono)"><?php
 		if(empty($content["text"])) {
 
 			echo '';
@@ -89,5 +85,7 @@ if(is_array($tmpllist) && count($tmpllist)) {
 
 		}
 
-	?></textarea></td>
-</tr>
+	?></textarea>
+	</div>
+
+</div>

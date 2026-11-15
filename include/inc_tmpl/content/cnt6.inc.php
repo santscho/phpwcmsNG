@@ -22,12 +22,11 @@ if (!defined('PHPWCMS_ROOT')) {
 if(!isset($content["html"])) $content["html"] = '';
 
 ?>
+<div class="row g-4">
 
-<tr><td colspan="2" class="rowspacer0x7"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
-
-<tr>
-	<td align="right" class="chatlist"><?php echo $BL['be_admin_struct_template']; ?>:&nbsp;</td>
-	<td><select name="template" id="template">
+	<div class="col-12 md:col-6">
+		<label class="form-label" for="template"><?php echo $BL['be_admin_struct_template']; ?></label>
+		<select name="template" id="template" class="form-control">
 <?php
 
 	echo '<option value="">'.$BL['be_admin_tmpl_default'].'</option>'.LF;
@@ -38,17 +37,17 @@ if(is_array($tmpllist) && count($tmpllist)) {
 	foreach($tmpllist as $val) {
 		$selected_val = (isset($content["template"]) && $val == $content["template"]) ? ' selected="selected"' : '';
 		$val = html($val);
-		echo '	<option value="' . $val . '"' . $selected_val . '>' . $val . '</option>' . LF;
+		echo "\t" . '<option value="' . $val . '"' . $selected_val . '>' . $val . '</option>' . LF;
 	}
 }
 
 ?>
-		</select></td>
-</tr>
+		</select>
+	</div>
 
-<tr><td colspan="2" class="rowspacer7x7"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
+	<div class="col-12">
+		<label class="form-label" for="chtml"><?php echo $BL['be_cnt_plainhtml'] ?></label>
+		<textarea name="chtml" rows="20" class="form-control autosize" id="chtml" style="font-family: var(--bs-font-mono)"><?php echo html($content["html"], true) ?></textarea>
+	</div>
 
-<tr>
-	<td align="right" valign="top" class="chatlist"><img src="img/leer.gif" alt="" width="1" height="13" /><?php echo $BL['be_cnt_plainhtml'] ?>:&nbsp;</td>
-	<td valign="top"><textarea name="chtml" rows="20" class="code width440 autosize" id="chtml"><?php echo html($content["html"], true) ?></textarea></td>
-</tr>
+</div>

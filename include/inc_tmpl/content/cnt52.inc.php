@@ -20,8 +20,11 @@ if (!defined('PHPWCMS_ROOT')) {
 // PHP variables
 
 ?>
-<tr><td colspan="2" class="rowspacer0x7"><img src="img/leer.gif" alt="" width="1" height="1"></td></tr>
-<tr>
-    <td align="right" class="chatlist tdtop3"><?php echo $BL['be_cnt_vars'] ?>:&nbsp;</td>
-    <td><textarea name="cvar" rows="20" wrap="VIRTUAL" class="code width440 autosize" id="cvar"><?php echo isset($content["var"]) ? html($content["var"]) : '' ?></textarea></td>
-</tr>
+<div class="row g-4">
+
+	<div class="col-12">
+		<label class="form-label" for="cvar"><?php echo $BL['be_cnt_vars'] ?></label>
+		<textarea name="cvar" rows="20" wrap="VIRTUAL" class="form-control autosize" id="cvar" style="font-family: var(--bs-font-mono)"><?php echo isset($content["var"]) ? html($content["var"]) : '' ?></textarea>
+	</div>
+
+</div>

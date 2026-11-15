@@ -687,8 +687,8 @@ existing entry already covers the action before adding a second glyph for it.
   places they were in before.
 - The type forms are included into a slot: `$cp_form_bootstrap` lists the types
   that render their own Bootstrap markup and are included into a `card-body`
-  (currently the code part `11`, the article menu `15`, the e-card `16` and the
-  content part alias `24`), every other type form
+  (currently `0`, `3`, `4`, `5`, `6`, `10`, `11`, `15`, `16`, `24`, `52` and
+  `100`), every other type form
   still writes `<tr><td>` rows and is included into a plain `table.w-100` inside
   the card body. Revamping a type means rewriting its `cnt<type>.inc.php` as
   `div`-based Bootstrap markup and adding its number to that list; do not remove
@@ -710,6 +710,37 @@ existing entry already covers the action before adding a second glyph for it.
   `confirm_cp_tab_warning`) carry the `\n` escapes of JavaScript themselves and
   are printed as they are — passing them through `js_singlequote()` would double
   those backslashes and the dialog would show a literal `\n`.
+
+## Content part editor: text, list, link and HTML forms
+
+- The eight smallest type forms moved to Bootstrap in one batch: plain text `0`,
+  link & email `3`, bullet list `4`, link list `5`, HTML `6`, the deprecated
+  email form generator `10`, PHP variables `52` and list `100`. Each one is a
+  plain `row g-4` grid without a wrapper element of its own, because the frame
+  puts it into the `card-body` of the type card.
+- Field names, ids and inline handlers are untouched: `template`, `ctext`,
+  `chtml`, `cvar`, `clink`, `ctarget`, `cmailsubject`, `cmailrecipient`,
+  `cmailbutton`, `cmailform`, plus the radios `ctext_format`, `cmailhtml` and
+  `clist_type`. The `is_checked()`/`is_selected()` calls are the original ones,
+  including the `is_checked(..., 0, 0)` form of `cnt100` that echoes its own
+  attribute.
+- The radio groups became `.form-field`/`.radio`/`<label for>` pairs in a
+  `d-flex flex-wrap gap-4` row instead of nested tables; the option labels of the
+  list form keep their `&lt;ul&gt;`/`&lt;ol&gt;`/`&lt;dl&gt;` text. The Wikipedia
+  links of the plain text format radios are Bootstrap tooltips
+  (`data-bs-toggle="tooltip"`).
+- Code-like textareas (`ctext` of plain text, `chtml`, `cvar`) are monospace
+  through `style="font-family: var(--bs-font-mono)"` and keep the `autosize`
+  class; the remaining textareas are `form-control autosize` with their `wrap`
+  attribute. The deprecation notice of the email form generator is an
+  `alert theme-warning`.
+- The plain text form still calls `initMootools('1.2')`; it is the only form of
+  the batch that asks for MooTools. Nothing else in these eight forms uses it.
+- Verified with one temporary content part per type on article 1: every form
+  renders inside the card body without a table row, keeps all of its fields, and
+  a save round-trip of the plain text form stored `acontent_text` and the
+  `ctext_format` key of the form data unchanged. The temporary parts were deleted
+  again, so article 1 keeps the parts it had.
 
 ## Content part editor: e-card
 
