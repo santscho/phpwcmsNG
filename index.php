@@ -67,6 +67,15 @@ require PHPWCMS_ROOT.'/include/inc_front/front.func.inc.php';
 require PHPWCMS_ROOT.'/include/inc_front/ext.func.inc.php';
 require PHPWCMS_ROOT.'/include/inc_front/content.func.inc.php';
 
+// a queued two factor lock warning is retried now and then by an ordinary page
+// hit too: the gate is one stat, so the class is only loaded and the queue only
+// read once the interval has passed, and the send happens after the response
+$two_factor_outbox_stamp = PHPWCMS_TEMP . '2fa-outbox.stamp';
+if (!is_file($two_factor_outbox_stamp) || @filemtime($two_factor_outbox_stamp) < time() - 60) {
+    require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.twofactorguard.php';
+    PhpwcmsTwoFactorGuard::drainQueuePeriodically();
+}
+
 // SEO logging
 if(!empty($phpwcms['enable_seolog']) && !empty($_SERVER['HTTP_REFERER']) && !str_contains($_SERVER['HTTP_REFERER'], $_SERVER['SERVER_NAME'])) {
     $phpwcms['seo_referrer_data'] = seReferrer( $_SERVER['HTTP_REFERER'] );

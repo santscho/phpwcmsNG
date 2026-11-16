@@ -44,6 +44,8 @@ class PhpwcmsTwoFactorGuard {
     public const OUTBOX_ATTEMPTS = 5;
     /** seconds before a failed warning is tried again */
     public const OUTBOX_RETRY = 300;
+    /** seconds between two queue checks triggered by ordinary requests */
+    public const OUTBOX_INTERVAL = 60;
 
     /** the outbox is drained once per request at most */
     private static bool $drainQueued = false;
@@ -322,8 +324,39 @@ class PhpwcmsTwoFactorGuard {
     }
 
     /**
+     * Retry the outbox from any request, frontend hits included, without paying
+     * for it every time: a single stat against a stamp file decides whether
+     * this request looks at the queue at all, and the work happens after the
+     * response, so the page latency stays as it is.
+     */
+    public static function drainQueuePeriodically(int $interval = self::OUTBOX_INTERVAL): void
+    {
+        $stamp = self::outboxStampFile();
+
+        if (is_file($stamp) && @filemtime($stamp) > time() - max(1, $interval)) {
+            return;
+        }
+
+        // a temporary directory that cannot be stamped turns the gate into a
+        // query per request, but losing warnings is worse, so it still runs
+        @touch($stamp);
+
+        self::drainQueueAfterResponse();
+    }
+
+    /**
+     * The stamp the cheap gate reads. It lives in the temporary directory the
+     * install already uses for caches, so reading it is one stat.
+     */
+    private static function outboxStampFile(): string
+    {
+        return PHPWCMS_TEMP . '2fa-outbox.stamp';
+    }
+
+    /**
      * Send what the outbox still holds. Runs after a response on the login and
-     * backend screens, so a send that failed is retried instead of forgotten.
+     * backend screens and now and then from a frontend request, so a send that
+     * failed is retried instead of forgotten.
      */
     public static function drainQueue(int $limit = 5): void
     {
