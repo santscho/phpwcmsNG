@@ -109,7 +109,7 @@ $two_factor_marks = array(
     $two_factor_attempts = (int) ($two_factor_pending['outbox_attempts'] ?? 0);
     $two_factor_last     = (int) ($two_factor_pending['outbox_last_attempt'] ?? 0);
     $two_factor_error    = trim((string) ($two_factor_pending['outbox_error'] ?? ''));
-    $two_factor_kind     = in_array($two_factor_pending['outbox_kind'] ?? '', array('code', 'reset'), true)
+    $two_factor_kind     = in_array($two_factor_pending['outbox_kind'] ?? '', array('code', 'reset', 'notice'), true)
         ? (string) $two_factor_pending['outbox_kind']
         : 'password';
 ?>

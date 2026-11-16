@@ -116,6 +116,7 @@ if (
                 'UPDATE'
             );
             PhpwcmsTwoFactorLog::add(PhpwcmsTwoFactorLog::ENROLLED, $two_factor_user_id, (string) ($_SESSION['wcs_user'] ?? ''));
+            PhpwcmsTwoFactorGuard::notifyChange($two_factor_user_id, 'enrolled');
             unset($_SESSION['wcs_2fa_enroll']);
             $two_factor_message = $BL['be_2fa_enabled_ok'];
         }
@@ -187,6 +188,7 @@ if (
                         (string) ($_SESSION['wcs_user'] ?? ''),
                         (string) ($_SESSION['wcs_user'] ?? '')
                     );
+                    PhpwcmsTwoFactorGuard::notifyChange($two_factor_user_id, 'reissued');
                     $two_factor_new_codes = $two_factor_codes_new;
                     $two_factor_message   = $BL['be_2fa_reissued_ok'];
                 } else {
@@ -234,6 +236,7 @@ if (
                     'UPDATE'
                 );
                 PhpwcmsTwoFactorLog::add(PhpwcmsTwoFactorLog::DISABLED, $two_factor_user_id, (string) ($_SESSION['wcs_user'] ?? ''));
+                PhpwcmsTwoFactorGuard::notifyChange($two_factor_user_id, 'disabled');
                 unset($_SESSION['wcs_2fa_enroll']);
                 $two_factor_message = $BL['be_2fa_disabled_ok'];
             }

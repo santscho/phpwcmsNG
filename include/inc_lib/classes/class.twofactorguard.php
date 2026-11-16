@@ -592,7 +592,66 @@ class PhpwcmsTwoFactorGuard {
                 $login,
                 (string) ($row['reset_actor'] ?? '')
             );
+
+            self::notifyChange($userId, 'reset', (string) ($row['reset_actor'] ?? ''));
         }
+    }
+
+    /**
+     * Mail the owner when the second factor of the account changes: setting it
+     * up, switching it off, new recovery codes or a removal that went through.
+     * Wrong guesses already send mail, so the changes should not be quieter
+     * than a failed attempt.
+     */
+    public static function notifyChange(int $userId, string $event, string $actor = ''): void
+    {
+        if ($userId <= 0 || !function_exists('is_valid_email')) {
+            return;
+        }
+
+        if (!in_array($event, array('enrolled', 'disabled', 'reissued', 'reset'), true)) {
+            return;
+        }
+
+        $result  = _dbQuery(
+            'SELECT usr_login, usr_email, usr_name, usr_lang FROM ' . DB_PREPEND . 'phpwcms_user WHERE usr_id=' . $userId
+        );
+        $account = isset($result[0]) ? $result[0] : array();
+        $email   = trim((string) ($account['usr_email'] ?? ''));
+
+        if ($email === '' || !is_valid_email($email)) {
+            self::logNotificationFailure($userId);
+            return;
+        }
+
+        $BL = array();
+        self::loadMailLanguage((string) ($account['usr_lang'] ?? ''), $BL);
+
+        $subject = 'be_2fa_mail_notice_' . $event . '_subject';
+        $body    = 'be_2fa_mail_notice_' . $event . '_body';
+
+        if (empty($BL[$subject]) || empty($BL[$body])) {
+            self::logNotificationFailure($userId);
+            return;
+        }
+
+        $login = (string) ($account['usr_login'] ?? '');
+        $name  = trim((string) ($account['usr_name'] ?? '')) !== '' ? (string) $account['usr_name'] : $login;
+
+        self::queueMessage($userId, 'notice', array(
+            'recipient' => $email,
+            'toName'    => $name,
+            'subject'   => sprintf((string) $BL[$subject], $login),
+            'text'      => sprintf(
+                (string) $BL[$body],
+                $name,
+                $login,
+                $actor !== '' ? $actor : '-',
+                date('Y-m-d H:i:s'),
+                PHPWCMS_GDPR_MODE ? getAnonymizedIp() : getRemoteIP()
+            ),
+            'login'     => $login,
+        ));
     }
 
     /**
