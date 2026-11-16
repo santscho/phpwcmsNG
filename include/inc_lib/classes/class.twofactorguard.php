@@ -102,6 +102,7 @@ class PhpwcmsTwoFactorGuard {
 
         if ($failed === self::MAX_FAILURES) {
             PhpwcmsTwoFactorLog::add(PhpwcmsTwoFactorLog::LOCKED, $userId, $login);
+            self::notifyLock($userId, 'code');
         }
     }
 
@@ -169,7 +170,7 @@ class PhpwcmsTwoFactorGuard {
 
         if ($failed === self::MAX_PASSWORD_FAILURES) {
             PhpwcmsTwoFactorLog::add(PhpwcmsTwoFactorLog::PASSWORD_LOCKED, $userId, $login, $login);
-            self::notifyPasswordLock($userId);
+            self::notifyLock($userId, 'password');
         }
     }
 
@@ -177,13 +178,31 @@ class PhpwcmsTwoFactorGuard {
      * The warning mail for a locked password check, or an empty array when the
      * account has no usable address.
      *
-     * The recipient is read from the account and never from the request: a
-     * wrong password must not be able to send mail anywhere else. The body is
-     * written in the backend language stored on the account.
-     *
      * @return array{recipient: string, toName: string, subject: string, text: string}
      */
     public static function passwordLockMail(int $userId, int $minutes = 0): array
+    {
+        return self::lockMail($userId, 'password', $minutes);
+    }
+
+    /**
+     * The warning mail for a locked authenticator code check.
+     *
+     * @return array{recipient: string, toName: string, subject: string, text: string}
+     */
+    public static function codeLockMail(int $userId, int $minutes = 0): array
+    {
+        return self::lockMail($userId, 'code', $minutes);
+    }
+
+    /**
+     * Build a lock warning. The recipient is read from the account and never
+     * from the request, so a wrong secret cannot be used to send mail anywhere
+     * else, and the text follows the backend language stored on the account.
+     *
+     * @return array{recipient: string, toName: string, subject: string, text: string}
+     */
+    private static function lockMail(int $userId, string $kind, int $minutes = 0): array
     {
         if ($userId <= 0 || !function_exists('is_valid_email')) {
             return array();
@@ -204,7 +223,11 @@ class PhpwcmsTwoFactorGuard {
         $BL = array();
         self::loadMailLanguage((string) ($account['usr_lang'] ?? ''), $BL);
 
-        if (empty($BL['be_2fa_mail_locked_subject']) || empty($BL['be_2fa_mail_locked_body'])) {
+        $kind    = $kind === 'code' ? 'code' : 'password';
+        $subject = 'be_2fa_mail_' . $kind . '_subject';
+        $body    = 'be_2fa_mail_' . $kind . '_body';
+
+        if (empty($BL[$subject]) || empty($BL[$body])) {
             return array();
         }
 
@@ -217,9 +240,9 @@ class PhpwcmsTwoFactorGuard {
         return array(
             'recipient' => $email,
             'toName'    => $name,
-            'subject'   => sprintf((string) $BL['be_2fa_mail_locked_subject'], $login),
+            'subject'   => sprintf((string) $BL[$subject], $login),
             'text'      => sprintf(
-                (string) $BL['be_2fa_mail_locked_body'],
+                (string) $BL[$body],
                 $name,
                 $login,
                 $minutes,
@@ -230,12 +253,12 @@ class PhpwcmsTwoFactorGuard {
     }
 
     /**
-     * Send the warning mail. A mail server that is down or unconfigured must
+     * Send a lock warning. A mail server that is down or unconfigured must
      * never break the login or the lock itself, so failures are swallowed.
      */
-    private static function notifyPasswordLock(int $userId): void
+    private static function notifyLock(int $userId, string $kind): void
     {
-        $mail = self::passwordLockMail($userId);
+        $mail = self::lockMail($userId, $kind);
 
         if (!$mail || !function_exists('sendEmail')) {
             return;
@@ -267,7 +290,7 @@ class PhpwcmsTwoFactorGuard {
             include $base . $lang . '/lang.inc.php';
         }
 
-        if (empty($BL['be_2fa_mail_locked_subject']) || empty($BL['be_2fa_mail_locked_body'])) {
+        if (empty($BL['be_2fa_mail_password_subject']) || empty($BL['be_2fa_mail_password_body'])) {
             $BL = array();
             include $base . 'en/lang.inc.php';
         }
