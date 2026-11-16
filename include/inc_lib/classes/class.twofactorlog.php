@@ -31,6 +31,8 @@ class PhpwcmsTwoFactorLog {
     public const RECOVERY_USED = 'recovery_used';
     public const DISABLED      = 'disabled';
     public const LOCKED        = 'locked';
+    public const REISSUED      = 'reissued';
+    public const RESET         = 'reset';
 
     /** entries kept per account */
     public const KEEP = 50;
@@ -43,13 +45,18 @@ class PhpwcmsTwoFactorLog {
             self::RECOVERY_USED,
             self::DISABLED,
             self::LOCKED,
+            self::REISSUED,
+            self::RESET,
         );
     }
 
     /**
      * Record one event. Unknown events and missing accounts are ignored.
+     *
+     * `$actor` names the account that caused the event when it is not the
+     * affected one, like an administrator resetting somebody else's factor.
      */
-    public static function add(string $event, int $userId, string $login = ''): void
+    public static function add(string $event, int $userId, string $login = '', string $actor = ''): void
     {
         if ($userId <= 0 || !in_array($event, self::events(), true)) {
             return;
@@ -59,9 +66,9 @@ class PhpwcmsTwoFactorLog {
 
         _dbQuery(
             'INSERT INTO ' . DB_PREPEND . 'phpwcms_user_2fa_log'
-            . ' (log_user_id, log_login, log_event, log_ip, log_created) VALUES ('
+            . ' (log_user_id, log_login, log_event, log_actor, log_ip, log_created) VALUES ('
             . $userId . ', ' . _dbEscape($login) . ', ' . _dbEscape($event) . ', '
-            . _dbEscape((string) $ip) . ', ' . time() . ')',
+            . _dbEscape($actor) . ', ' . _dbEscape((string) $ip) . ', ' . time() . ')',
             'INSERT'
         );
 
@@ -89,7 +96,7 @@ class PhpwcmsTwoFactorLog {
     public static function recentAll(int $limit = 100): array
     {
         $result = _dbQuery(
-            'SELECT log_event, log_login, log_created FROM ' . DB_PREPEND . 'phpwcms_user_2fa_log'
+            'SELECT log_event, log_login, log_actor, log_created FROM ' . DB_PREPEND . 'phpwcms_user_2fa_log'
             . ' ORDER BY log_id DESC LIMIT ' . max(1, min(500, $limit))
         );
 
@@ -108,7 +115,7 @@ class PhpwcmsTwoFactorLog {
         }
 
         $result = _dbQuery(
-            'SELECT log_event, log_ip, log_created FROM ' . DB_PREPEND . 'phpwcms_user_2fa_log'
+            'SELECT log_event, log_actor, log_ip, log_created FROM ' . DB_PREPEND . 'phpwcms_user_2fa_log'
             . ' WHERE log_user_id=' . $userId
             . ' ORDER BY log_id DESC LIMIT ' . max(1, min(100, $limit))
         );

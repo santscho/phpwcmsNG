@@ -56,7 +56,12 @@ $two_factor_marks = array(
                         <tr>
                             <td class="small fg-secondary"><?php echo html(date(($backend_date_format['php'] ?? 'Y-m-d H:i:s'), (int) ($two_factor_audit_row['log_created'] ?? 0))) ?></td>
                             <td><?php echo html((string) ($two_factor_audit_row['log_login'] ?? '')) ?></td>
-                            <td><span class="badge <?php echo $two_factor_marks[$two_factor_event] ?? 'theme-secondary' ?>"><?php echo html($two_factor_labels[$two_factor_event] ?? $two_factor_event) ?></span></td>
+                            <td>
+                                <span class="badge <?php echo $two_factor_marks[$two_factor_event] ?? 'theme-secondary' ?>"><?php echo html($two_factor_labels[$two_factor_event] ?? $two_factor_event) ?></span>
+<?php if(!empty($two_factor_audit_row['log_actor']) && ($two_factor_audit_row['log_actor'] ?? '') !== ($two_factor_audit_row['log_login'] ?? '')): ?>
+                                <small class="fg-secondary"><?php echo $BL['be_2fa_log_by'] . ' ' . html((string) $two_factor_audit_row['log_actor']) ?></small>
+<?php endif; ?>
+                            </td>
                         </tr>
 <?php endforeach; ?>
                     </tbody>
@@ -70,6 +75,77 @@ $two_factor_marks = array(
             </div>
 
 <?php endif; ?>
+
+        </div>
+
+        <div class="card mt-5">
+
+            <h2 class="card-header h6 mb-0"><?php echo $BL['be_2fa_admins_title'] ?></h2>
+
+            <div class="card-body">
+
+<?php if($two_factor_reset_done): ?>
+                <div class="alert theme-success" role="alert"><div><?php echo html($two_factor_reset_done) ?></div></div>
+<?php endif; ?>
+<?php if($two_factor_reset_error): ?>
+                <div class="alert theme-danger" role="alert"><div><?php echo html($two_factor_reset_error) ?></div></div>
+<?php endif; ?>
+
+                <p class="fg-secondary mb-0"><?php echo $BL['be_2fa_admins_note'] ?></p>
+
+            </div>
+
+            <div class="overflow-auto">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col"><?php echo $BL['be_2fa_log_col_user'] ?></th>
+                            <th scope="col"><?php echo $BL['be_2fa_col_status'] ?></th>
+                            <th scope="col"><?php echo $BL['be_2fa_col_codes'] ?></th>
+                            <th scope="col"><?php echo $BL['be_2fa_col_action'] ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+<?php foreach($two_factor_admins as $two_factor_admin):
+    $two_factor_admin_id   = (int) ($two_factor_admin['usr_id'] ?? 0);
+    $two_factor_admin_on   = !empty($two_factor_admin['usr_2fa_enabled']);
+    $two_factor_admin_self = $two_factor_admin_id === (int) ($_SESSION['wcs_user_id'] ?? 0);
+?>
+                        <tr>
+                            <td>
+                                <?php echo html((string) ($two_factor_admin['usr_login'] ?? '')) ?>
+<?php if($two_factor_admin_self): ?>
+                                <span class="badge theme-secondary"><?php echo $BL['be_2fa_you'] ?></span>
+<?php endif; ?>
+                            </td>
+                            <td>
+<?php if($two_factor_admin_on): ?>
+                                <span class="badge theme-success"><?php echo $BL['be_2fa_status_on'] ?></span>
+<?php else: ?>
+                                <span class="badge theme-secondary"><?php echo $BL['be_2fa_status_off'] ?></span>
+<?php endif; ?>
+                            </td>
+                            <td><?php echo $two_factor_admin_on ? (int) PhpwcmsRecoveryCode::remaining((string) ($two_factor_admin['usr_2fa_recovery'] ?? '')) : 0; ?></td>
+                            <td>
+<?php if($two_factor_admin_on && !$two_factor_admin_self): ?>
+                                <form action="phpwcms.php?do=profile&amp;p=3" method="post" class="d-flex flex-wrap gap-2 align-items-end">
+                                    <input type="hidden" name="form_aktion" value="reset_2fa" />
+                                    <input type="hidden" name="reset_uid" value="<?php echo $two_factor_admin_id ?>" />
+                                    <div>
+                                        <label class="form-label" for="password_2fa_reset_<?php echo $two_factor_admin_id ?>"><?php echo $BL['be_2fa_password_label'] ?></label>
+                                        <input type="password" class="form-control" name="password_2fa" id="password_2fa_reset_<?php echo $two_factor_admin_id ?>" autocomplete="current-password" required />
+                                    </div>
+                                    <div>
+                                        <button type="submit" class="btn btn-outline theme-danger btn-sm"><?php echo $BL['be_2fa_reset'] ?></button>
+                                    </div>
+                                </form>
+<?php endif; ?>
+                            </td>
+                        </tr>
+<?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
 
         </div>
 

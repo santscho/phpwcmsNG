@@ -104,6 +104,19 @@ if ($two_factor_uri !== '') {
                         <button type="submit" class="btn btn-outline theme-danger btn-sm"><?php echo $BL['be_2fa_disable'] ?></button>
                     </div>
                 </form>
+
+                <form action="phpwcms.php?do=profile&amp;p=2" method="post" class="row g-3 align-items-end border-top mt-4 pt-4">
+                    <input type="hidden" name="form_aktion" value="update_2fa" />
+                    <input type="hidden" name="do_2fa" value="reissue" />
+                    <div class="col-12 md:col-4">
+                        <label class="form-label" for="password_2fa_reissue"><?php echo $BL['be_2fa_password_label'] ?></label>
+                        <input type="password" class="form-control" name="password_2fa" id="password_2fa_reissue" autocomplete="current-password" required />
+                    </div>
+                    <div class="col-12 md:col-8">
+                        <button type="submit" class="btn btn-outline theme-secondary btn-sm"><?php echo $BL['be_2fa_reissue'] ?></button>
+                        <small class="fg-secondary d-block mt-3"><?php echo $BL['be_2fa_reissue_note'] ?></small>
+                    </div>
+                </form>
             </div>
 
 <?php elseif($two_factor_enroll): ?>
@@ -173,7 +186,7 @@ if ($two_factor_uri !== '') {
             <ul class="list-group list-group-flush">
 <?php foreach($two_factor_log as $two_factor_log_row): ?>
                 <li class="list-group-item d-flex flex-wrap gap-2 justify-content-between align-items-center">
-                    <span><?php echo html($BL['be_2fa_log_' . (string) ($two_factor_log_row['log_event'] ?? '')] ?? (string) ($two_factor_log_row['log_event'] ?? '')) ?></span>
+                    <span><?php echo html($BL['be_2fa_log_' . (string) ($two_factor_log_row['log_event'] ?? '')] ?? (string) ($two_factor_log_row['log_event'] ?? '')) ?><?php if(!empty($two_factor_log_row['log_actor']) && ($two_factor_log_row['log_actor'] ?? '') !== ($two_factor_log_row['log_login'] ?? '')): ?> <small class="fg-secondary"><?php echo $BL['be_2fa_log_by'] . ' ' . html((string) $two_factor_log_row['log_actor']) ?></small><?php endif; ?></span>
                     <small class="fg-secondary"><?php echo html(date(($backend_date_format['php'] ?? 'Y-m-d H:i:s'), (int) ($two_factor_log_row['log_created'] ?? 0))) ?></small>
                 </li>
 <?php endforeach; ?>

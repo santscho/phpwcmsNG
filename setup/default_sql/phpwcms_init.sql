@@ -884,6 +884,7 @@ CREATE TABLE `phpwcms_user_2fa_log` (
   `log_user_id` int unsigned NOT NULL DEFAULT '0',
   `log_login` varchar(100) NOT NULL DEFAULT '',
   `log_event` varchar(40) NOT NULL DEFAULT '',
+  `log_actor` varchar(100) NOT NULL DEFAULT '',
   `log_ip` varchar(64) NOT NULL DEFAULT '',
   `log_created` int unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`log_id`),

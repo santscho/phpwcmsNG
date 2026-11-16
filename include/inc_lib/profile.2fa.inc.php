@@ -106,6 +106,52 @@ if (
             $two_factor_message = $BL['be_2fa_enabled_ok'];
         }
 
+    } elseif ($two_factor_do === 'reissue') {
+
+        // fresh recovery codes for an account that still has its authenticator:
+        // exchanging the list keeps the old codes from working, they are not
+        // added to it
+        $result = _dbQuery(
+            'SELECT usr_2fa_enabled, usr_2fa_recovery FROM ' . DB_PREPEND . 'phpwcms_user'
+            . ' WHERE usr_id=' . $two_factor_user_id
+        );
+
+        if (!$two_factor_password_ok) {
+            $two_factor_error = $BL['be_2fa_error_password'];
+        } elseif ($two_factor_limit['locked']) {
+            $two_factor_error = sprintf($BL['be_2fa_locked'], (int) $two_factor_limit['wait']);
+        } elseif (!PhpwcmsRecoveryCode::configured()) {
+            $two_factor_error = $BL['be_2fa_error_key'];
+        } elseif (empty($result[0]['usr_2fa_enabled'])) {
+            $two_factor_error = $BL['be_2fa_error_session'];
+        } else {
+
+            $two_factor_codes_old = (string) ($result[0]['usr_2fa_recovery'] ?? '');
+            $two_factor_codes_new = PhpwcmsRecoveryCode::generate();
+
+            // the list is only exchanged while it is still the one that was read
+            $two_factor_write = _dbQuery(
+                'UPDATE ' . DB_PREPEND . 'phpwcms_user SET usr_2fa_recovery='
+                . _dbEscape(PhpwcmsRecoveryCode::hashList($two_factor_codes_new))
+                . ' WHERE usr_id=' . $two_factor_user_id
+                . ' AND usr_2fa_recovery=' . _dbEscape($two_factor_codes_old),
+                'UPDATE'
+            );
+
+            if (((int) ($two_factor_write['AFFECTED_ROWS'] ?? 0)) === 1) {
+                PhpwcmsTwoFactorLog::add(
+                    PhpwcmsTwoFactorLog::REISSUED,
+                    $two_factor_user_id,
+                    (string) ($_SESSION['wcs_user'] ?? ''),
+                    (string) ($_SESSION['wcs_user'] ?? '')
+                );
+                $two_factor_new_codes = $two_factor_codes_new;
+                $two_factor_message   = $BL['be_2fa_reissued_ok'];
+            } else {
+                $two_factor_error = $BL['be_2fa_error_session'];
+            }
+        }
+
     } elseif ($two_factor_do === 'disable') {
 
         // switching it off needs the password and a valid code, either the
