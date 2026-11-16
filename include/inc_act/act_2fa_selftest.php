@@ -62,5 +62,21 @@ $check('accepts spaces in the input', $slice, PhpwcmsTotp::verify($secret, ' 081
 $uri = PhpwcmsTotp::provisioningUri('ABC234', 'admin', 'phpwcmsng.test');
 $check('provisioning uri scheme', 'otpauth://totp/phpwcmsng.test%3Aadmin?secret=ABC234&issuer=phpwcmsng.test&algorithm=SHA1&digits=6&period=30', $uri);
 
+// QR code helper: version choice has to follow the capacity of the level
+require_once PHPWCMS_ROOT . '/include/inc_lib/classes/class.qrcode.php';
+$check('qr of a short text is version 1', 21, count(PhpwcmsQrCode::matrix('abc')));
+$check('qr of the provisioning uri at M', 45, count(PhpwcmsQrCode::matrix($uri, PhpwcmsQrCode::ECC_M)));
+$check('qr of the provisioning uri at H', 57, count(PhpwcmsQrCode::matrix($uri, PhpwcmsQrCode::ECC_H)));
+$qr = PhpwcmsQrCode::matrix('abc');
+$check('qr finder pattern in the corner', true, $qr[0][0] && $qr[3][3] && $qr[0][6]);
+$check('qr timing pattern alternates', [true, false], [$qr[6][8], $qr[6][9]]);
+$too_long = false;
+try {
+    PhpwcmsQrCode::matrix(str_repeat('x', 400));
+} catch (RuntimeException $e) {
+    $too_long = true;
+}
+$check('qr refuses text that is too long', true, $too_long);
+
 printf("\n%s\n", $failures === 0 ? 'all checks passed' : $failures . ' check(s) failed');
 exit($failures === 0 ? 0 : 1);

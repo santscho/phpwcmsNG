@@ -21,6 +21,16 @@ $two_factor_account = $_SESSION['wcs_user'] ?? '';
 $two_factor_uri     = $two_factor_enroll
     ? PhpwcmsTotp::provisioningUri($two_factor_enroll['secret'], $two_factor_account, PHPWCMS_HOST)
     : '';
+
+// a very long account or host name would not fit, the secret below stays
+$two_factor_qr = '';
+if ($two_factor_uri !== '') {
+    try {
+        $two_factor_qr = PhpwcmsQrCode::svg($two_factor_uri, PhpwcmsQrCode::ECC_M, $BL['be_2fa_qr_alt']);
+    } catch (RuntimeException $e) {
+        $two_factor_qr = '';
+    }
+}
 ?>
 <div class="row g-4">
 
@@ -71,6 +81,10 @@ $two_factor_uri     = $two_factor_enroll
 <?php elseif($two_factor_enroll): ?>
 
                 <div class="alert theme-warning" role="alert"><div><?php echo $BL['be_2fa_scan_note'] ?></div></div>
+
+<?php if($two_factor_qr): ?>
+                <div class="mb-4"><?php echo $two_factor_qr ?></div>
+<?php endif; ?>
 
                 <h3 class="h6 mb-4"><?php echo $BL['be_2fa_secret_label'] ?></h3>
                 <p class="mb-4"><code><?php echo html($two_factor_enroll['secret']) ?></code></p>

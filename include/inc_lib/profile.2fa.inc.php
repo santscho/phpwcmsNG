@@ -17,6 +17,7 @@ if (!defined('PHPWCMS_ROOT')) {
 // ----------------------------------------------------------------
 
 require_once PHPWCMS_ROOT . '/include/inc_lib/classes/class.totp.php';
+require_once PHPWCMS_ROOT . '/include/inc_lib/classes/class.qrcode.php';
 
 /*
  * Two factor authentication proof of concept: enrollment and switch off.
