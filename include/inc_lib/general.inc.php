@@ -845,7 +845,10 @@ function sendEmail($data = array(
     $sendTo = array();
     $from = empty($data['from']) || !is_valid_email($data['from']) ? $phpwcms['SMTP_FROM_EMAIL'] : $data['from'];
     $sender = empty($data['sender']) || !is_valid_email($data['sender']) ? $from : $data['sender'];
-    $fromName = empty($data['fromName']) ? '' : cleanUpForEmailHeader($data['fromName']);
+    // a caller that names no sender still gets the site's name, so every
+    // message does not go out with a bare address
+    $fromName = empty($data['fromName']) ? (string) ($phpwcms['SMTP_FROM_NAME'] ?? '') : (string) $data['fromName'];
+    $fromName = $fromName === '' ? '' : cleanUpForEmailHeader($fromName);
     $senderName = empty($data['senderName']) ? $fromName : cleanUpForEmailHeader($data['senderName']);
     $toName = empty($data['toName']) ? '' : cleanUpForEmailHeader($data['toName']);
     $subject = empty($data['subject']) ? 'Email sent by phpwcms' : cleanUpForEmailHeader($data['subject']);
