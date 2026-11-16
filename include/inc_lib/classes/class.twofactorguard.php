@@ -28,6 +28,8 @@ if (!defined('PHPWCMS_ROOT')) {
  * enrolled or switched off, so a stolen session alone cannot attach another
  * device to the account.
  */
+require_once __DIR__ . '/class.twofactorlog.php';
+
 class PhpwcmsTwoFactorGuard {
 
     /** failures inside the window before the account stops accepting codes */
@@ -77,10 +79,11 @@ class PhpwcmsTwoFactorGuard {
         }
 
         $result = _dbQuery(
-            'SELECT usr_2fa_failed, usr_2fa_failed_at FROM ' . DB_PREPEND . 'phpwcms_user'
+            'SELECT usr_login, usr_2fa_failed, usr_2fa_failed_at FROM ' . DB_PREPEND . 'phpwcms_user'
             . ' WHERE usr_id=' . $userId
         );
 
+        $login  = (string) ($result[0]['usr_login'] ?? '');
         $failed = (int) ($result[0]['usr_2fa_failed'] ?? 0);
         $at     = (int) ($result[0]['usr_2fa_failed_at'] ?? 0);
 
@@ -95,6 +98,12 @@ class PhpwcmsTwoFactorGuard {
             . ' WHERE usr_id=' . $userId,
             'UPDATE'
         );
+
+        PhpwcmsTwoFactorLog::add(PhpwcmsTwoFactorLog::CODE_FAILED, $userId, $login);
+
+        if ($failed + 1 === self::MAX_FAILURES) {
+            PhpwcmsTwoFactorLog::add(PhpwcmsTwoFactorLog::LOCKED, $userId, $login);
+        }
     }
 
     /**

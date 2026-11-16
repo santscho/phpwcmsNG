@@ -61,6 +61,7 @@ require_once PHPWCMS_ROOT.'/include/inc_lang/code.lang.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.totp.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.recoverycode.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.twofactorguard.php';
+require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.twofactorlog.php';
 
 if (isset($_GET['reason']) && str_starts_with($_GET['reason'], 'csrf-')) {
     headerAvoidPageCaching();
@@ -298,6 +299,11 @@ if($form_action === 'login2fa' && $json_check === 1) {
                         'UPDATE ' . DB_PREPEND . 'phpwcms_user SET usr_2fa_recovery=' . _dbEscape($recovery_left)
                         . ' WHERE usr_id=' . (int) $result[0]['usr_id'],
                         'UPDATE'
+                    );
+                    PhpwcmsTwoFactorLog::add(
+                        PhpwcmsTwoFactorLog::RECOVERY_USED,
+                        (int) $result[0]['usr_id'],
+                        (string) $result[0]['usr_login']
                     );
                     $second_step_passed = true;
                 }

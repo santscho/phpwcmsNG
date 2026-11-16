@@ -14,6 +14,7 @@
  * - Add the two factor authentication fields to phpwcms_user: the shared
  *   secret, the switch, the last accepted time slice (replay protection),
  *   the single use recovery codes and the attempt counter
+ * - Add the audit log table for the two factor events
  *
  * The columns are only added, nothing existing is touched.
  *
@@ -43,6 +44,23 @@ function phpwcms_revision_r559() {
                 break;
             }
         }
+    }
+
+    // the audit log, one row per event
+    if ($status && _dbQuery('SHOW TABLES LIKE ' . _dbEscape(DB_PREPEND . 'phpwcms_user_2fa_log'), 'COUNT_SHOW') === 0) {
+        $status = (bool) _dbQuery(
+            'CREATE TABLE IF NOT EXISTS `' . DB_PREPEND . 'phpwcms_user_2fa_log` ('
+            . "`log_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,"
+            . "`log_user_id` INT UNSIGNED NOT NULL DEFAULT '0',"
+            . "`log_login` VARCHAR(100) NOT NULL DEFAULT '',"
+            . "`log_event` VARCHAR(40) NOT NULL DEFAULT '',"
+            . "`log_ip` VARCHAR(64) NOT NULL DEFAULT '',"
+            . "`log_created` INT UNSIGNED NOT NULL DEFAULT '0',"
+            . 'PRIMARY KEY (`log_id`),'
+            . 'KEY `log_user_id` (`log_user_id`, `log_id`)'
+            . ')',
+            'CREATE'
+        );
     }
 
     return $status;

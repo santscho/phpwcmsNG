@@ -149,6 +149,27 @@ if ($two_factor_uri !== '') {
 
         </div>
 
+        <div class="card mt-5">
+
+            <h2 class="card-header h6 mb-0"><?php echo $BL['be_2fa_log_title'] ?></h2>
+
+<?php if($two_factor_log): ?>
+            <ul class="list-group list-group-flush">
+<?php foreach($two_factor_log as $two_factor_log_row): ?>
+                <li class="list-group-item d-flex flex-wrap gap-2 justify-content-between align-items-center">
+                    <span><?php echo html($BL['be_2fa_log_' . (string) ($two_factor_log_row['log_event'] ?? '')] ?? (string) ($two_factor_log_row['log_event'] ?? '')) ?></span>
+                    <small class="fg-secondary"><?php echo html(date(($backend_date_format['php'] ?? 'Y-m-d H:i:s'), (int) ($two_factor_log_row['log_created'] ?? 0))) ?></small>
+                </li>
+<?php endforeach; ?>
+            </ul>
+<?php else: ?>
+            <div class="card-body">
+                <p class="mb-0 fg-secondary"><?php echo $BL['be_2fa_log_empty'] ?></p>
+            </div>
+<?php endif; ?>
+
+        </div>
+
     </div>
 
 </div>

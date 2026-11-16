@@ -879,6 +879,17 @@ CREATE TABLE `phpwcms_usergroup` (
   KEY `group_member` (`group_member`(255))
 );
 
+CREATE TABLE `phpwcms_user_2fa_log` (
+  `log_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `log_user_id` int unsigned NOT NULL DEFAULT '0',
+  `log_login` varchar(100) NOT NULL DEFAULT '',
+  `log_event` varchar(40) NOT NULL DEFAULT '',
+  `log_ip` varchar(64) NOT NULL DEFAULT '',
+  `log_created` int unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`log_id`),
+  KEY `log_user_id` (`log_user_id`,`log_id`)
+);
+
 CREATE TABLE `phpwcms_userlog` (
   `userlog_id` int(11) NOT NULL AUTO_INCREMENT,
   `logged_user` varchar(30) NOT NULL DEFAULT '',

@@ -20,6 +20,7 @@ require_once PHPWCMS_ROOT . '/include/inc_lib/classes/class.totp.php';
 require_once PHPWCMS_ROOT . '/include/inc_lib/classes/class.qrcode.php';
 require_once PHPWCMS_ROOT . '/include/inc_lib/classes/class.recoverycode.php';
 require_once PHPWCMS_ROOT . '/include/inc_lib/classes/class.twofactorguard.php';
+require_once PHPWCMS_ROOT . '/include/inc_lib/classes/class.twofactorlog.php';
 
 /*
  * Two factor authentication proof of concept: enrollment and switch off.
@@ -92,6 +93,7 @@ if (
                 . ' WHERE usr_id=' . $two_factor_user_id,
                 'UPDATE'
             );
+            PhpwcmsTwoFactorLog::add(PhpwcmsTwoFactorLog::ENROLLED, $two_factor_user_id, (string) ($_SESSION['wcs_user'] ?? ''));
             unset($_SESSION['wcs_2fa_enroll']);
             $two_factor_message = $BL['be_2fa_enabled_ok'];
         }
@@ -112,22 +114,30 @@ if (
             $two_factor_error = sprintf($BL['be_2fa_locked'], (int) $two_factor_limit['wait']);
         } elseif (!isset($result[0]['usr_2fa_secret']) || $result[0]['usr_2fa_secret'] === '') {
             $two_factor_error = $BL['be_2fa_error_session'];
-        } elseif (
-            PhpwcmsTotp::verify($result[0]['usr_2fa_secret'], $two_factor_code, 1, (int) $result[0]['usr_2fa_last_slice']) === false
-            && PhpwcmsRecoveryCode::consume((string) ($result[0]['usr_2fa_recovery'] ?? ''), $two_factor_code) === null
-        ) {
-            PhpwcmsTwoFactorGuard::fail($two_factor_user_id);
-            $two_factor_error = $BL['be_2fa_error_code'];
         } else {
-            PhpwcmsTwoFactorGuard::reset($two_factor_user_id);
-            _dbQuery(
-                'UPDATE ' . DB_PREPEND . 'phpwcms_user SET '
-                . "usr_2fa_secret='', usr_2fa_enabled=0, usr_2fa_last_slice=0, usr_2fa_recovery=''"
-                . ' WHERE usr_id=' . $two_factor_user_id,
-                'UPDATE'
-            );
-            unset($_SESSION['wcs_2fa_enroll']);
-            $two_factor_message = $BL['be_2fa_disabled_ok'];
+            $two_factor_slice    = PhpwcmsTotp::verify($result[0]['usr_2fa_secret'], $two_factor_code, 1, (int) $result[0]['usr_2fa_last_slice']);
+            $two_factor_recovery = $two_factor_slice === false
+                ? PhpwcmsRecoveryCode::consume((string) ($result[0]['usr_2fa_recovery'] ?? ''), $two_factor_code)
+                : null;
+
+            if ($two_factor_slice === false && $two_factor_recovery === null) {
+                PhpwcmsTwoFactorGuard::fail($two_factor_user_id);
+                $two_factor_error = $BL['be_2fa_error_code'];
+            } else {
+                if ($two_factor_recovery !== null) {
+                    PhpwcmsTwoFactorLog::add(PhpwcmsTwoFactorLog::RECOVERY_USED, $two_factor_user_id, (string) ($_SESSION['wcs_user'] ?? ''));
+                }
+                PhpwcmsTwoFactorGuard::reset($two_factor_user_id);
+                _dbQuery(
+                    'UPDATE ' . DB_PREPEND . 'phpwcms_user SET '
+                    . "usr_2fa_secret='', usr_2fa_enabled=0, usr_2fa_last_slice=0, usr_2fa_recovery=''"
+                    . ' WHERE usr_id=' . $two_factor_user_id,
+                    'UPDATE'
+                );
+                PhpwcmsTwoFactorLog::add(PhpwcmsTwoFactorLog::DISABLED, $two_factor_user_id, (string) ($_SESSION['wcs_user'] ?? ''));
+                unset($_SESSION['wcs_2fa_enroll']);
+                $two_factor_message = $BL['be_2fa_disabled_ok'];
+            }
         }
 
     }
@@ -152,3 +162,6 @@ if ($two_factor_user_id) {
 $two_factor_enroll = ($two_factor_state['enabled'] === false && !empty($_SESSION['wcs_2fa_enroll']['secret']))
     ? $_SESSION['wcs_2fa_enroll']
     : null;
+
+// the newest audit entries for this account
+$two_factor_log = PhpwcmsTwoFactorLog::recent($two_factor_user_id, 10);
