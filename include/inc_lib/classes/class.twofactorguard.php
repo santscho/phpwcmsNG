@@ -169,6 +169,107 @@ class PhpwcmsTwoFactorGuard {
 
         if ($failed === self::MAX_PASSWORD_FAILURES) {
             PhpwcmsTwoFactorLog::add(PhpwcmsTwoFactorLog::PASSWORD_LOCKED, $userId, $login, $login);
+            self::notifyPasswordLock($userId);
+        }
+    }
+
+    /**
+     * The warning mail for a locked password check, or an empty array when the
+     * account has no usable address.
+     *
+     * The recipient is read from the account and never from the request: a
+     * wrong password must not be able to send mail anywhere else. The body is
+     * written in the backend language stored on the account.
+     *
+     * @return array{recipient: string, toName: string, subject: string, text: string}
+     */
+    public static function passwordLockMail(int $userId, int $minutes = 0): array
+    {
+        if ($userId <= 0 || !function_exists('is_valid_email')) {
+            return array();
+        }
+
+        $result = _dbQuery(
+            'SELECT usr_login, usr_email, usr_name, usr_lang FROM ' . DB_PREPEND . 'phpwcms_user'
+            . ' WHERE usr_id=' . $userId
+        );
+
+        $account = isset($result[0]) ? $result[0] : array();
+        $email   = trim((string) ($account['usr_email'] ?? ''));
+
+        if ($email === '' || !is_valid_email($email)) {
+            return array();
+        }
+
+        $BL = array();
+        self::loadMailLanguage((string) ($account['usr_lang'] ?? ''), $BL);
+
+        if (empty($BL['be_2fa_mail_locked_subject']) || empty($BL['be_2fa_mail_locked_body'])) {
+            return array();
+        }
+
+        $minutes = $minutes > 0 ? $minutes : (int) (self::WINDOW / 60);
+        $login   = (string) ($account['usr_login'] ?? '');
+        $name    = trim((string) ($account['usr_name'] ?? '')) !== ''
+            ? (string) $account['usr_name']
+            : $login;
+
+        return array(
+            'recipient' => $email,
+            'toName'    => $name,
+            'subject'   => sprintf((string) $BL['be_2fa_mail_locked_subject'], $login),
+            'text'      => sprintf(
+                (string) $BL['be_2fa_mail_locked_body'],
+                $name,
+                $login,
+                $minutes,
+                date('Y-m-d H:i:s'),
+                PHPWCMS_GDPR_MODE ? getAnonymizedIp() : getRemoteIP()
+            ),
+        );
+    }
+
+    /**
+     * Send the warning mail. A mail server that is down or unconfigured must
+     * never break the login or the lock itself, so failures are swallowed.
+     */
+    private static function notifyPasswordLock(int $userId): void
+    {
+        $mail = self::passwordLockMail($userId);
+
+        if (!$mail || !function_exists('sendEmail')) {
+            return;
+        }
+
+        try {
+            sendEmail(array(
+                'recipient' => $mail['recipient'],
+                'toName'    => $mail['toName'],
+                'subject'   => $mail['subject'],
+                'isHTML'    => false,
+                'text'      => $mail['text'],
+            ));
+        } catch (\Throwable $e) {
+            // nothing to do: the lock is already recorded in the audit trail
+        }
+    }
+
+    /**
+     * Load the mail texts in the account's backend language, falling back to
+     * English when that language does not carry them.
+     */
+    private static function loadMailLanguage(string $lang, array &$BL): void
+    {
+        $base = PHPWCMS_ROOT . '/include/inc_lang/backend/';
+        $lang = strtolower($lang);
+
+        if (preg_match('/^[a-z]{2}$/', $lang) && is_file($base . $lang . '/lang.inc.php')) {
+            include $base . $lang . '/lang.inc.php';
+        }
+
+        if (empty($BL['be_2fa_mail_locked_subject']) || empty($BL['be_2fa_mail_locked_body'])) {
+            $BL = array();
+            include $base . 'en/lang.inc.php';
         }
     }
 
