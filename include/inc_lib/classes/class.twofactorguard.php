@@ -46,6 +46,19 @@ class PhpwcmsTwoFactorGuard {
     public const OUTBOX_RETRY = 300;
     /** seconds between two queue checks triggered by ordinary requests */
     public const OUTBOX_INTERVAL = 60;
+    /**
+     * failures one address may cause inside the window before it is refused.
+     * Deliberately below MAX_PASSWORD_FAILURES: a single address must not be
+     * able to push somebody else's account over its lockout counter
+     */
+    public const MAX_ADDRESS_FAILURES = 4;
+    /** seconds an address is refused once it used its failures up */
+    public const ADDRESS_BLOCK = 900;
+    /** failures across the install before everybody is slowed down */
+    public const INSTALL_SOFT_FAILURES = 30;
+    public const INSTALL_HARD_FAILURES = 100;
+    /** longest pause one request may spend on a failure, in seconds */
+    public const MAX_PAUSE = 4;
 
     /** the outbox is drained once per request at most */
     private static bool $drainQueued = false;
@@ -183,6 +196,148 @@ class PhpwcmsTwoFactorGuard {
             PhpwcmsTwoFactorLog::add(PhpwcmsTwoFactorLog::PASSWORD_LOCKED, $userId, $login, $login);
             self::notifyLock($userId, 'password');
         }
+    }
+
+    /**
+     * The state of the address and of the install for the incoming request.
+     *
+     * `blocked` means the address used its failures up: the login then verifies
+     * nothing and moves no counter, so the block cannot be aimed at an account.
+     * `delay` is the pause the request has to take before it answers, grown by
+     * the failures of the address and of the whole install.
+     *
+     * @return array{blocked: bool, wait: int, delay: int, failures: int}
+     */
+    public static function requestState(): array
+    {
+        $now  = time();
+        $row  = self::throttleRow(self::requestKey(), $now);
+        $state = array(
+            'blocked'  => false,
+            'wait'     => 0,
+            'delay'    => 0,
+            'failures' => $row['failures'],
+        );
+
+        if ($row['blocked_until'] > $now) {
+            $state['blocked'] = true;
+            $state['wait']    = max(1, (int) ceil(($row['blocked_until'] - $now) / 60));
+            return $state;
+        }
+
+        $delay = self::escalatingDelay($row['failures']) + self::installDelay();
+        $state['delay'] = min(self::MAX_PAUSE, $delay);
+
+        return $state;
+    }
+
+    /**
+     * Count one rejected password or code against the address and the install.
+     */
+    public static function requestFail(): void
+    {
+        self::throttleFail(self::requestKey(), true);
+        self::throttleFail('install', false);
+    }
+
+    /**
+     * Spend the pause the request state asks for, so guessing gets slower the
+     * more failures an address or the whole install has. Capped, because a
+     * request that sleeps holds a worker.
+     */
+    public static function requestPause(int $delay): void
+    {
+        if ($delay > 0) {
+            usleep(min(self::MAX_PAUSE, $delay) * 1000000);
+        }
+    }
+
+    /**
+     * The key the throttle counts under. The address is only ever used as the
+     * key, never sent anywhere.
+     */
+    private static function requestKey(): string
+    {
+        $ip = function_exists('getRemoteIP') ? (string) getRemoteIP() : '';
+
+        return substr('ip:' . $ip, 0, 64);
+    }
+
+    /**
+     * The pause an address takes after its own failures: none for the first
+     * two, then one, two and four seconds.
+     */
+    private static function escalatingDelay(int $failures): int
+    {
+        return match (true) {
+            $failures >= 4 => 4,
+            $failures === 3 => 2,
+            $failures === 2 => 1,
+            default => 0,
+        };
+    }
+
+    /**
+     * The pause everybody takes while the install sees a wave of failures.
+     */
+    private static function installDelay(): int
+    {
+        $row = self::throttleRow('install', time());
+
+        return match (true) {
+            $row['failures'] >= self::INSTALL_HARD_FAILURES => 2,
+            $row['failures'] >= self::INSTALL_SOFT_FAILURES => 1,
+            default => 0,
+        };
+    }
+
+    /**
+     * Read one throttle row, treating an expired window as empty.
+     *
+     * @return array{failures: int, blocked_until: int}
+     */
+    private static function throttleRow(string $key, int $now): array
+    {
+        $row = array('failures' => 0, 'blocked_until' => 0);
+
+        $result = _dbQuery(
+            'SELECT throttle_failures, throttle_window_start, throttle_blocked_until'
+            . ' FROM ' . DB_PREPEND . 'phpwcms_user_2fa_throttle'
+            . ' WHERE throttle_key=' . _dbEscape($key)
+        );
+
+        if (!isset($result[0]) || $result[0]['throttle_window_start'] <= $now - self::WINDOW) {
+            return $row;
+        }
+
+        $row['failures']      = (int) $result[0]['throttle_failures'];
+        $row['blocked_until'] = (int) $result[0]['throttle_blocked_until'];
+
+        return $row;
+    }
+
+    /**
+     * Count one failure for a key and, for an address, refuse it once it is
+     * over its budget.
+     */
+    private static function throttleFail(string $key, bool $allow_block): void
+    {
+        $now      = time();
+        $row      = self::throttleRow($key, $now);
+        $failures = $row['failures'] + 1;
+        $blocked  = $allow_block && $failures >= self::MAX_ADDRESS_FAILURES
+            ? $now + self::ADDRESS_BLOCK
+            : 0;
+
+        _dbQuery(
+            'INSERT INTO ' . DB_PREPEND . 'phpwcms_user_2fa_throttle'
+            . ' (throttle_key, throttle_failures, throttle_window_start, throttle_blocked_until) VALUES ('
+            . _dbEscape($key) . ', ' . $failures . ', ' . $now . ', ' . $blocked . ')'
+            . ' ON DUPLICATE KEY UPDATE throttle_failures=VALUES(throttle_failures),'
+            . ' throttle_window_start=VALUES(throttle_window_start),'
+            . ' throttle_blocked_until=VALUES(throttle_blocked_until)',
+            'INSERT'
+        );
     }
 
     /**

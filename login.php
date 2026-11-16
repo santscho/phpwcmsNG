@@ -155,7 +155,9 @@ $login_passed      = 0;
 $login_step2       = false;
 $login_step2_err   = false;
 $login_step2_wait  = 0;
+$login_step2_throttled = false;
 $login_password_wait = 0;
+$login_throttled_wait = 0;
 $login_pending   = (isset($_SESSION['wcs_2fa_pending']) && is_array($_SESSION['wcs_2fa_pending'])) ? $_SESSION['wcs_2fa_pending'] : null;
 $form_action     = isset($_POST['form_aktion']) ? (string) $_POST['form_aktion'] : '';
 
@@ -266,7 +268,20 @@ if($form_action === 'login2fa' && $json_check === 1) {
             . " AND usr_aktiv=1 AND usr_2fa_enabled=1 AND usr_2fa_secret != ''"
         );
 
-        if(isset($result[0]['usr_id'])) {
+        $login_request = PhpwcmsTwoFactorGuard::requestState();
+
+        if(!empty($login_request['blocked'])) {
+
+            // the address is refused before anything is checked, so a wrong
+            // code from it neither counts nor locks the account
+            $login_step2           = true;
+            $login_step2_err       = true;
+            $login_step2_throttled = true;
+            $login_step2_wait      = (int) $login_request['wait'];
+
+        } elseif(isset($result[0]['usr_id'])) {
+
+            PhpwcmsTwoFactorGuard::requestPause((int) $login_request['delay']);
 
             $second_step_passed = false;
             $second_step_limit  = PhpwcmsTwoFactorGuard::state((int) $result[0]['usr_id']);
@@ -337,6 +352,7 @@ if($form_action === 'login2fa' && $json_check === 1) {
                 $login_passed  = 1;
             } elseif(!$second_step_limit['locked']) {
                 PhpwcmsTwoFactorGuard::fail((int) $result[0]['usr_id']);
+                PhpwcmsTwoFactorGuard::requestFail();
             }
         }
     }
@@ -353,7 +369,9 @@ if($form_action === 'login2fa' && $json_check === 1) {
         $login_step2     = true;
         $login_step2_err = true;
 
-        if($login_pending !== null) {
+        // a refused address did not check a code, so it must not use up the
+        // pending login either: the owner only has to wait for the block
+        if($login_pending !== null && !$login_step2_throttled) {
             $login_pending['tries'] = (int) ($login_pending['tries'] ?? 0) + 1;
             if($login_pending['tries'] >= 5) {
                 unset($_SESSION['wcs_2fa_pending']);
@@ -379,13 +397,26 @@ if($form_action === 'login2fa' && $json_check === 1) {
             ? PhpwcmsTwoFactorGuard::passwordState((int) $result[0]['usr_id'])
             : array('locked' => false, 'wait' => 0);
 
-        if(!empty($login_password_limit['locked'])) {
+        $login_request = PhpwcmsTwoFactorGuard::requestState();
+
+        if(!empty($login_request['blocked'])) {
+
+            // this address used its failures up: nothing is verified and no
+            // account counter moves, so it cannot drive an account into its
+            // lockout, and only itself is kept out
+            $login_throttled_wait = (int) $login_request['wait'];
+
+        } elseif(!empty($login_password_limit['locked'])) {
 
             // the wrong passwords are counted per account, the same counter the
             // two factor settings use, so even the right one waits for the window
             $login_password_wait = (int) $login_password_limit['wait'];
 
         } elseif(isset($result[0]['usr_id'])) {
+
+            // a growing pause: guessing gets slower with every failure of this
+            // address and of the whole install
+            PhpwcmsTwoFactorGuard::requestPause((int) $login_request['delay']);
 
             $db_pass = $result[0]['usr_pass'];
             if ($plain_pass !== '') {
@@ -427,6 +458,7 @@ if($form_action === 'login2fa' && $json_check === 1) {
                 PhpwcmsTwoFactorGuard::resetPassword((int) $result[0]['usr_id']);
             } elseif($plain_pass !== '' || $wcs_pass !== '') {
                 PhpwcmsTwoFactorGuard::failPassword((int) $result[0]['usr_id'], $wcs_user);
+                PhpwcmsTwoFactorGuard::requestFail();
             }
         }
 
@@ -589,7 +621,13 @@ ob_start();
         echo ' style="display:none"';
     }
     echo ' id="jserr"><div>';
-    echo $login_password_wait > 0 ? sprintf($BL['login_password_locked'], $login_password_wait) : $BL['login_error'];
+    if ($login_throttled_wait > 0) {
+        echo sprintf($BL['login_throttled'], $login_throttled_wait);
+    } elseif ($login_password_wait > 0) {
+        echo sprintf($BL['login_password_locked'], $login_password_wait);
+    } else {
+        echo $BL['login_error'];
+    }
     echo '</div></div>';
 
 ?>
@@ -645,7 +683,7 @@ if($login_step2) {
 <input type="hidden" name="logintoken" value="<?php echo LOGIN_TOKEN; ?>" />
 <input name="form_aktion" type="hidden" id="form_aktion" value="login2fa" />
 <?php if($login_step2_err): ?>
-<div class="alert theme-danger mb-5" role="alert"><div><?php echo $login_step2_wait > 0 ? sprintf($BL['login_2fa_locked'], $login_step2_wait) : $BL['login_2fa_error'] ?></div></div>
+<div class="alert theme-danger mb-5" role="alert"><div><?php echo $login_step2_throttled ? sprintf($BL['login_throttled'], $login_step2_wait) : ($login_step2_wait > 0 ? sprintf($BL['login_2fa_locked'], $login_step2_wait) : $BL['login_2fa_error']) ?></div></div>
 <?php endif; ?>
 <div class="mb-5">
     <label class="form-label" for="form_2fa_code"><?php echo $BL['login_2fa_code'] ?></label>

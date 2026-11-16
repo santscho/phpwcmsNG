@@ -1639,6 +1639,7 @@ $BL['be_2fa_recovery_note']             = 'Jeder dieser Codes gilt einmal und er
 $BL['be_2fa_recovery_left']             = 'nicht verwendete Wiederherstellungscodes';
 $BL['login_2fa_recovery_hint']          = 'Telefon verloren? Geben Sie stattdessen einen Ihrer Wiederherstellungscodes ein.';
 $BL['login_2fa_locked']                 = 'Zu viele ungültige Codes. Bitte in %d Minuten erneut versuchen.';
+$BL['login_throttled']                 = 'Zu viele fehlgeschlagene Versuche von Ihrer Adresse. Versuchen Sie es in %d Minuten erneut.';
 $BL['login_password_locked']            = 'Zu viele falsche Kennwörter. Bitte in %d Minuten erneut versuchen.';
 $BL['be_2fa_password_label']            = 'Ihr aktuelles Passwort';
 $BL['be_2fa_error_password']            = 'Das Passwort ist nicht korrekt.';

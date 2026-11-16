@@ -893,6 +893,14 @@ CREATE TABLE `phpwcms_user_2fa_log` (
   KEY `log_user_id` (`log_user_id`,`log_id`)
 );
 
+CREATE TABLE `phpwcms_user_2fa_throttle` (
+  `throttle_key` varchar(64) NOT NULL DEFAULT '',
+  `throttle_failures` smallint unsigned NOT NULL DEFAULT '0',
+  `throttle_window_start` int unsigned NOT NULL DEFAULT '0',
+  `throttle_blocked_until` int unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`throttle_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `phpwcms_user_2fa_outbox` (
   `outbox_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `outbox_user_id` int unsigned NOT NULL DEFAULT '0',

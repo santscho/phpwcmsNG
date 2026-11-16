@@ -1656,6 +1656,7 @@ $BL['be_2fa_recovery_note']             = 'Each of these codes works once and re
 $BL['be_2fa_recovery_left']             = 'unused recovery codes';
 $BL['login_2fa_recovery_hint']          = 'Lost your phone? Enter one of your recovery codes instead.';
 $BL['login_2fa_locked']                 = 'Too many invalid codes. Please wait %d minutes and try again.';
+$BL['login_throttled']                 = 'Too many failed attempts from your address. Try again in %d minutes.';
 $BL['login_password_locked']            = 'Too many wrong passwords. Please wait %d minutes and try again.';
 $BL['be_2fa_password_label']            = 'your current password';
 $BL['be_2fa_error_password']            = 'That password is not correct.';
