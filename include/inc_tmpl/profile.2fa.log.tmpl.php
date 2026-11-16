@@ -83,6 +83,58 @@ $two_factor_marks = array(
 
         <div class="card mt-5">
 
+            <h2 class="card-header h6 mb-0 d-flex flex-wrap gap-2 justify-content-between align-items-center">
+                <span><?php echo $BL['be_2fa_outbox_title'] ?></span>
+                <span class="badge <?php echo $two_factor_outbox ? 'theme-warning' : 'theme-success' ?>"><?php echo count($two_factor_outbox) ?></span>
+            </h2>
+
+<?php if($two_factor_outbox): ?>
+
+            <div class="overflow-auto">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col"><?php echo $BL['be_2fa_outbox_col_account'] ?></th>
+                            <th scope="col"><?php echo $BL['be_2fa_outbox_col_kind'] ?></th>
+                            <th scope="col"><?php echo $BL['be_2fa_outbox_col_created'] ?></th>
+                            <th scope="col"><?php echo $BL['be_2fa_outbox_col_attempts'] ?></th>
+                            <th scope="col"><?php echo $BL['be_2fa_outbox_col_last'] ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+<?php foreach($two_factor_outbox as $two_factor_pending):
+    $two_factor_attempts = (int) ($two_factor_pending['outbox_attempts'] ?? 0);
+    $two_factor_last     = (int) ($two_factor_pending['outbox_last_attempt'] ?? 0);
+    $two_factor_kind     = ($two_factor_pending['outbox_kind'] ?? '') === 'code' ? 'code' : 'password';
+?>
+                        <tr>
+                            <td><?php echo html((string) ($two_factor_pending['outbox_login'] ?? '')) ?></td>
+                            <td><span class="badge theme-secondary"><?php echo $BL['be_2fa_outbox_kind_' . $two_factor_kind] ?></span></td>
+                            <td class="small fg-secondary"><?php echo html(date(($backend_date_format['php'] ?? 'Y-m-d H:i:s'), (int) ($two_factor_pending['outbox_created'] ?? 0))) ?></td>
+                            <td><span class="badge <?php echo $two_factor_attempts >= 3 ? 'theme-danger' : 'theme-secondary' ?>"><?php echo sprintf($BL['be_2fa_outbox_attempts'], $two_factor_attempts, PhpwcmsTwoFactorGuard::OUTBOX_ATTEMPTS) ?></span></td>
+                            <td class="small fg-secondary"><?php echo $two_factor_last > 0 ? html(date(($backend_date_format['php'] ?? 'Y-m-d H:i:s'), $two_factor_last)) : '&mdash;' ?></td>
+                        </tr>
+<?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card-footer">
+                <small class="fg-secondary"><?php echo $BL['be_2fa_outbox_hint'] ?></small>
+            </div>
+
+<?php else: ?>
+
+            <div class="card-body">
+                <p class="mb-0 fg-secondary"><?php echo $BL['be_2fa_outbox_empty'] ?></p>
+            </div>
+
+<?php endif; ?>
+
+        </div>
+
+        <div class="card mt-5">
+
             <h2 class="card-header h6 mb-0"><?php echo $BL['be_2fa_admins_title'] ?></h2>
 
             <div class="card-body">

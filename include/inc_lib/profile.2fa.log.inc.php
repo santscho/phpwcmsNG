@@ -90,6 +90,16 @@ if (
 
 $two_factor_audit = PhpwcmsTwoFactorLog::recentAll(100);
 
+// lock warnings that are still waiting for the mailer, so a stuck one is
+// visible here instead of only when the fifth attempt gives up
+$two_factor_outbox = _dbQuery(
+    'SELECT outbox_login, outbox_kind, outbox_created, outbox_attempts, outbox_last_attempt'
+    . ' FROM ' . DB_PREPEND . 'phpwcms_user_2fa_outbox ORDER BY outbox_id DESC'
+);
+if (!is_array($two_factor_outbox)) {
+    $two_factor_outbox = array();
+}
+
 // the accounts the reset can apply to
 $two_factor_admins = _dbQuery(
     'SELECT usr_id, usr_login, usr_2fa_enabled, usr_2fa_recovery FROM ' . DB_PREPEND . 'phpwcms_user'
