@@ -401,7 +401,7 @@ class PhpwcmsTwoFactorGuard {
                     'timeout'   => self::WARNING_TIMEOUT,
                 ));
             } catch (\Throwable $e) {
-                $sent = array(false, '');
+                $sent = array(false, $e->getMessage());
             }
         }
 
@@ -427,9 +427,22 @@ class PhpwcmsTwoFactorGuard {
 
         _dbQuery(
             'UPDATE ' . DB_PREPEND . 'phpwcms_user_2fa_outbox SET outbox_attempts=' . $attempts
-            . ', outbox_last_attempt=' . time() . ' WHERE outbox_id=' . $id,
+            . ', outbox_last_attempt=' . time()
+            . ', outbox_error=' . _dbEscape(self::errorText($sent[1] ?? ''))
+            . ' WHERE outbox_id=' . $id,
             'UPDATE'
         );
+    }
+
+    /**
+     * The mailer's report in the form the column and the pending table can take:
+     * one line, no control characters, short enough for the varchar.
+     */
+    private static function errorText(mixed $error): string
+    {
+        $text = trim((string) preg_replace('/[\s\x00-\x1f]+/u', ' ', (string) $error));
+
+        return $text === '' ? '' : mb_substr($text, 0, 250);
     }
 
     /**

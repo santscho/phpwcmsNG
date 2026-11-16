@@ -905,6 +905,7 @@ CREATE TABLE `phpwcms_user_2fa_outbox` (
   `outbox_created` int unsigned NOT NULL DEFAULT '0',
   `outbox_attempts` smallint unsigned NOT NULL DEFAULT '0',
   `outbox_last_attempt` int unsigned NOT NULL DEFAULT '0',
+  `outbox_error` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`outbox_id`),
   KEY `outbox_created` (`outbox_created`)
 );

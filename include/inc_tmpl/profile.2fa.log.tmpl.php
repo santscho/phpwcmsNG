@@ -105,13 +105,18 @@ $two_factor_marks = array(
 <?php foreach($two_factor_outbox as $two_factor_pending):
     $two_factor_attempts = (int) ($two_factor_pending['outbox_attempts'] ?? 0);
     $two_factor_last     = (int) ($two_factor_pending['outbox_last_attempt'] ?? 0);
+    $two_factor_error    = trim((string) ($two_factor_pending['outbox_error'] ?? ''));
     $two_factor_kind     = ($two_factor_pending['outbox_kind'] ?? '') === 'code' ? 'code' : 'password';
 ?>
                         <tr>
                             <td><?php echo html((string) ($two_factor_pending['outbox_login'] ?? '')) ?></td>
                             <td><span class="badge theme-secondary"><?php echo $BL['be_2fa_outbox_kind_' . $two_factor_kind] ?></span></td>
                             <td class="small fg-secondary"><?php echo html(date(($backend_date_format['php'] ?? 'Y-m-d H:i:s'), (int) ($two_factor_pending['outbox_created'] ?? 0))) ?></td>
-                            <td><span class="badge <?php echo $two_factor_attempts >= 3 ? 'theme-danger' : 'theme-secondary' ?>"><?php echo sprintf($BL['be_2fa_outbox_attempts'], $two_factor_attempts, PhpwcmsTwoFactorGuard::OUTBOX_ATTEMPTS) ?></span></td>
+                            <td><span class="badge <?php echo $two_factor_attempts >= 3 ? 'theme-danger' : 'theme-secondary' ?>"><?php echo sprintf($BL['be_2fa_outbox_attempts'], $two_factor_attempts, PhpwcmsTwoFactorGuard::OUTBOX_ATTEMPTS) ?></span>
+<?php if($two_factor_error !== ''): ?>
+                                <div class="small <?php echo $two_factor_attempts >= 3 ? 'fg-danger' : 'fg-secondary' ?>"><?php echo html($BL['be_2fa_outbox_error_label'] . ': ' . $two_factor_error) ?></div>
+<?php endif; ?>
+                            </td>
                             <td class="small fg-secondary"><?php echo $two_factor_last > 0 ? html(date(($backend_date_format['php'] ?? 'Y-m-d H:i:s'), $two_factor_last)) : '&mdash;' ?></td>
                         </tr>
 <?php endforeach; ?>

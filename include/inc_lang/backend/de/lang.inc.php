@@ -1662,6 +1662,7 @@ $BL['be_2fa_outbox_col_last']           = 'letzter Versuch';
 $BL['be_2fa_outbox_kind_password']      = 'Kennwort';
 $BL['be_2fa_outbox_kind_code']          = 'Codes';
 $BL['be_2fa_outbox_attempts']           = '%d von %d';
+$BL['be_2fa_outbox_error_label']        = 'letzter Fehler';
 $BL['be_2fa_outbox_hint']               = 'Ein Hinweis wird nach fünf Minuten erneut versucht und nach fünf Versuchen verworfen; die Aktivitätenliste zeigt dann, dass er nicht versendet werden konnte.';
 $BL['be_2fa_log_empty']                 = 'Für dieses Konto wurde noch nichts aufgezeichnet.';
 $BL['be_2fa_log_enrolled']              = 'Zwei-Faktor-Authentifizierung aktiviert';

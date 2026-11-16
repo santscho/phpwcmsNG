@@ -1679,6 +1679,7 @@ $BL['be_2fa_outbox_col_last']           = 'last attempt';
 $BL['be_2fa_outbox_kind_password']      = 'password';
 $BL['be_2fa_outbox_kind_code']          = 'codes';
 $BL['be_2fa_outbox_attempts']           = '%d of %d';
+$BL['be_2fa_outbox_error_label']        = 'last error';
 $BL['be_2fa_outbox_hint']               = 'A warning is retried after five minutes and dropped after five attempts; the activity list then shows that it could not be sent.';
 $BL['be_2fa_log_empty']                 = 'Nothing has been recorded for this account yet.';
 $BL['be_2fa_log_enrolled']              = 'two factor authentication enabled';
