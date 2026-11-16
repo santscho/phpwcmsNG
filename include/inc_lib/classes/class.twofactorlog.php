@@ -31,8 +31,10 @@ class PhpwcmsTwoFactorLog {
     public const RECOVERY_USED = 'recovery_used';
     public const DISABLED      = 'disabled';
     public const LOCKED        = 'locked';
-    public const REISSUED      = 'reissued';
-    public const RESET         = 'reset';
+    public const REISSUED        = 'reissued';
+    public const RESET           = 'reset';
+    public const PASSWORD_FAILED = 'password_failed';
+    public const PASSWORD_LOCKED = 'password_locked';
 
     /** entries kept per account */
     public const KEEP = 50;
@@ -47,6 +49,8 @@ class PhpwcmsTwoFactorLog {
             self::LOCKED,
             self::REISSUED,
             self::RESET,
+            self::PASSWORD_FAILED,
+            self::PASSWORD_LOCKED,
         );
     }
 

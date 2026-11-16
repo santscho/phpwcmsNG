@@ -38,15 +38,24 @@ if (
     && $_POST['form_aktion'] === 'reset_2fa'
 ) {
 
-    $two_factor_reset_uid = (int) ($_POST['reset_uid'] ?? 0);
-    $two_factor_password  = (string) ($_POST['password_2fa'] ?? '');
+    $two_factor_reset_uid      = (int) ($_POST['reset_uid'] ?? 0);
+    $two_factor_password       = (string) ($_POST['password_2fa'] ?? '');
+    $two_factor_password_state = PhpwcmsTwoFactorGuard::passwordState($two_factor_actor_id);
 
     if ($two_factor_reset_uid === $two_factor_actor_id) {
         // removing the own factor is the two factor screen's job, it asks for a code
         $two_factor_reset_error = $BL['be_2fa_reset_self'];
-    } elseif (!PhpwcmsTwoFactorGuard::passwordMatches($two_factor_actor_id, $two_factor_password)) {
+    } elseif ($two_factor_password_state['locked']) {
+        // the attempts are counted against the account performing the reset
+        $two_factor_reset_error = sprintf($BL['be_2fa_password_locked'], (int) $two_factor_password_state['wait']);
+    } elseif ($two_factor_password === '' || !PhpwcmsTwoFactorGuard::passwordMatches($two_factor_actor_id, $two_factor_password)) {
+        if ($two_factor_password !== '') {
+            PhpwcmsTwoFactorGuard::failPassword($two_factor_actor_id, $two_factor_actor);
+        }
         $two_factor_reset_error = $BL['be_2fa_error_password'];
     } else {
+
+        PhpwcmsTwoFactorGuard::resetPassword($two_factor_actor_id);
 
         $two_factor_reset_target = _dbQuery(
             'SELECT usr_id, usr_login, usr_2fa_enabled FROM ' . DB_PREPEND . 'phpwcms_user'

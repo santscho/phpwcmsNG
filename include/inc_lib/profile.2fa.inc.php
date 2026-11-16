@@ -51,12 +51,26 @@ if (
     $two_factor_limit    = PhpwcmsTwoFactorGuard::state($two_factor_user_id);
 
     // attaching or removing a factor is a security decision, so the session
-    // alone is not enough: the password has to be confirmed first
-    $two_factor_password_ok = PhpwcmsTwoFactorGuard::passwordMatches($two_factor_user_id, $two_factor_password);
+    // alone is not enough: the password has to be confirmed first, and a wrong
+    // one is counted so a stolen session cannot keep guessing it
+    $two_factor_password_state = PhpwcmsTwoFactorGuard::passwordState($two_factor_user_id);
+    $two_factor_password_ok    = false;
+
+    if ($two_factor_password !== '' && !$two_factor_password_state['locked']) {
+        $two_factor_password_ok = PhpwcmsTwoFactorGuard::passwordMatches($two_factor_user_id, $two_factor_password);
+        if ($two_factor_password_ok) {
+            PhpwcmsTwoFactorGuard::resetPassword($two_factor_user_id);
+        } else {
+            PhpwcmsTwoFactorGuard::failPassword($two_factor_user_id, (string) ($_SESSION['wcs_user'] ?? ''));
+            $two_factor_password_state = PhpwcmsTwoFactorGuard::passwordState($two_factor_user_id);
+        }
+    }
 
     if ($two_factor_do === 'begin') {
 
-        if (!$two_factor_password_ok) {
+        if ($two_factor_password_state['locked']) {
+            $two_factor_error = sprintf($BL['be_2fa_password_locked'], (int) $two_factor_password_state['wait']);
+        } elseif (!$two_factor_password_ok) {
             $two_factor_error = $BL['be_2fa_error_password'];
         } elseif ($two_factor_limit['locked']) {
             $two_factor_error = sprintf($BL['be_2fa_locked'], (int) $two_factor_limit['wait']);
@@ -116,7 +130,9 @@ if (
             . ' WHERE usr_id=' . $two_factor_user_id
         );
 
-        if (!$two_factor_password_ok) {
+        if ($two_factor_password_state['locked']) {
+            $two_factor_error = sprintf($BL['be_2fa_password_locked'], (int) $two_factor_password_state['wait']);
+        } elseif (!$two_factor_password_ok) {
             $two_factor_error = $BL['be_2fa_error_password'];
         } elseif ($two_factor_limit['locked']) {
             $two_factor_error = sprintf($BL['be_2fa_locked'], (int) $two_factor_limit['wait']);
@@ -162,7 +178,9 @@ if (
             . ' WHERE usr_id=' . $two_factor_user_id
         );
 
-        if (!$two_factor_password_ok) {
+        if ($two_factor_password_state['locked']) {
+            $two_factor_error = sprintf($BL['be_2fa_password_locked'], (int) $two_factor_password_state['wait']);
+        } elseif (!$two_factor_password_ok) {
             $two_factor_error = $BL['be_2fa_error_password'];
         } elseif ($two_factor_limit['locked']) {
             $two_factor_error = sprintf($BL['be_2fa_locked'], (int) $two_factor_limit['wait']);

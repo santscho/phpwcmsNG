@@ -34,6 +34,8 @@ class PhpwcmsTwoFactorGuard {
 
     /** failures inside the window before the account stops accepting codes */
     public const MAX_FAILURES = 10;
+    /** wrong passwords before the password gated actions stop accepting any */
+    public const MAX_PASSWORD_FAILURES = 5;
     /** minutes until the failures are forgotten */
     public const WINDOW = 900;
 
@@ -101,6 +103,89 @@ class PhpwcmsTwoFactorGuard {
         if ($failed === self::MAX_FAILURES) {
             PhpwcmsTwoFactorLog::add(PhpwcmsTwoFactorLog::LOCKED, $userId, $login);
         }
+    }
+
+    /**
+     * Whether the password gated actions are locked right now.
+     *
+     * A separate counter from the codes: guessing the password must not lock
+     * the account out of its own login, and a wrong code must not stop the
+     * owner from switching the factor off.
+     *
+     * @return array{locked: bool, wait: int}
+     */
+    public static function passwordState(int $userId): array
+    {
+        $state = array('locked' => false, 'wait' => 0);
+
+        if ($userId <= 0) {
+            return $state;
+        }
+
+        $result = _dbQuery(
+            'SELECT usr_2fa_pw_failed, usr_2fa_pw_failed_at FROM ' . DB_PREPEND . 'phpwcms_user'
+            . ' WHERE usr_id=' . $userId
+        );
+
+        $failed = (int) ($result[0]['usr_2fa_pw_failed'] ?? 0);
+        $at     = (int) ($result[0]['usr_2fa_pw_failed_at'] ?? 0);
+
+        if ($failed >= self::MAX_PASSWORD_FAILURES && $at > 0) {
+            $elapsed = time() - $at;
+            if ($elapsed < self::WINDOW) {
+                $state['locked'] = true;
+                $state['wait']   = max(1, (int) ceil((self::WINDOW - $elapsed) / 60));
+            }
+        }
+
+        return $state;
+    }
+
+    /**
+     * Count one rejected password and record it.
+     */
+    public static function failPassword(int $userId, string $login = ''): void
+    {
+        if ($userId <= 0) {
+            return;
+        }
+
+        $now = time();
+        _dbQuery(
+            'UPDATE ' . DB_PREPEND . 'phpwcms_user SET usr_2fa_pw_failed='
+            . 'IF(usr_2fa_pw_failed_at = 0 OR usr_2fa_pw_failed_at <= ' . ($now - self::WINDOW) . ', 1, usr_2fa_pw_failed + 1)'
+            . ', usr_2fa_pw_failed_at=' . $now
+            . ' WHERE usr_id=' . $userId,
+            'UPDATE'
+        );
+
+        $result = _dbQuery(
+            'SELECT usr_2fa_pw_failed FROM ' . DB_PREPEND . 'phpwcms_user WHERE usr_id=' . $userId
+        );
+
+        $failed = (int) ($result[0]['usr_2fa_pw_failed'] ?? 0);
+
+        PhpwcmsTwoFactorLog::add(PhpwcmsTwoFactorLog::PASSWORD_FAILED, $userId, $login, $login);
+
+        if ($failed === self::MAX_PASSWORD_FAILURES) {
+            PhpwcmsTwoFactorLog::add(PhpwcmsTwoFactorLog::PASSWORD_LOCKED, $userId, $login, $login);
+        }
+    }
+
+    /**
+     * A password was accepted, so the wrong attempts are no longer relevant.
+     */
+    public static function resetPassword(int $userId): void
+    {
+        if ($userId <= 0) {
+            return;
+        }
+
+        _dbQuery(
+            'UPDATE ' . DB_PREPEND . 'phpwcms_user SET usr_2fa_pw_failed=0, usr_2fa_pw_failed_at=0'
+            . ' WHERE usr_id=' . $userId,
+            'UPDATE'
+        );
     }
 
     /**

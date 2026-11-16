@@ -22,9 +22,11 @@ foreach (PhpwcmsTwoFactorLog::events() as $two_factor_event) {
 }
 
 $two_factor_marks = array(
-    PhpwcmsTwoFactorLog::CODE_FAILED => 'theme-danger',
-    PhpwcmsTwoFactorLog::LOCKED      => 'theme-danger',
-    PhpwcmsTwoFactorLog::RECOVERY_USED => 'theme-warning',
+    PhpwcmsTwoFactorLog::CODE_FAILED     => 'theme-danger',
+    PhpwcmsTwoFactorLog::LOCKED          => 'theme-danger',
+    PhpwcmsTwoFactorLog::RECOVERY_USED   => 'theme-warning',
+    PhpwcmsTwoFactorLog::PASSWORD_FAILED => 'theme-danger',
+    PhpwcmsTwoFactorLog::PASSWORD_LOCKED => 'theme-danger',
 );
 ?>
 <div class="row g-4">
