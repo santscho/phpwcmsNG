@@ -3,6 +3,33 @@
 Open work that is planned but not started. Newest state first; delete an item
 when it lands.
 
+## Two factor authentication — open policy decisions
+
+Both items come out of the end-to-end security review of the 2FA proof of
+concept (revisions 559 to 565). Neither is started and neither is decided:
+both change how accounts are treated, so they wait for a conversation with the
+maintainer of the original phpwcms repository.
+
+- [ ] **Enforce 2FA.** Today the second factor is optional and is only asked
+      for `usr_admin` accounts, and only while `$phpwcms['backend_2fa']` is on;
+      a fresh install with the flag set still checks nobody until an admin
+      enrolls, and an account can carry `usr_2fa_enabled=1` while the flag is
+      off, where the factor is silently not checked. Needs a decision on:
+      who must enroll (all admins, editors too), what happens to an install
+      with unenrolled admins (block the backend, warn, grace period), whether
+      the login refuses to proceed for them, and the report or notice that
+      shows who is still without a factor. Also whether the settings screen
+      should refuse to enroll while the flag is off.
+- [ ] **Encrypt TOTP seeds.** `phpwcms_user.usr_2fa_secret` holds the raw
+      base32 seed, so read access to the table (SQL injection elsewhere, a
+      backup, a staging copy) is enough to mint valid codes for every
+      enrolled admin. The recovery codes are already keyed with
+      `$phpwcms['backend_2fa_key']`, the seed is not. Needs a decision on the
+      key (same config key or a separate one), the cipher and format, how
+      existing seeds are migrated, what happens when the key is missing or
+      rotated (today that already invalidates every recovery code silently),
+      and whether the key belongs in the config file at all.
+
 ## Backend localization
 
 English is the source language (`include/inc_lang/backend/en/`), every other
