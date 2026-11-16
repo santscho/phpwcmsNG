@@ -112,7 +112,20 @@ if ($two_factor_uri !== '') {
                         <label class="form-label" for="password_2fa_reissue"><?php echo $BL['be_2fa_password_label'] ?></label>
                         <input type="password" class="form-control" name="password_2fa" id="password_2fa_reissue" autocomplete="current-password" required />
                     </div>
-                    <div class="col-12 md:col-8">
+                    <div class="col-12 md:col-4">
+                        <label class="form-label" for="code_2fa_reissue"><?php echo $BL['be_2fa_code_label'] ?></label>
+                        <div class="otp" data-bs-otp data-bs-length="6" data-bs-type="numeric">
+                            <input type="text" class="form-control" name="code_2fa" id="code_2fa_reissue" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required />
+                        </div>
+                        <details class="mt-3">
+                            <summary class="small"><?php echo $BL['be_2fa_recovery_toggle'] ?></summary>
+                            <div class="mt-3">
+                                <label class="form-label" for="code_2fa_recovery_reissue"><?php echo $BL['be_2fa_recovery_field'] ?></label>
+                                <input type="text" class="form-control" name="code_2fa_recovery" id="code_2fa_recovery_reissue" maxlength="11" autocomplete="off" data-2fa-recovery="code_2fa_reissue" />
+                            </div>
+                        </details>
+                    </div>
+                    <div class="col-12 md:col-4">
                         <button type="submit" class="btn btn-outline theme-secondary btn-sm"><?php echo $BL['be_2fa_reissue'] ?></button>
                         <small class="fg-secondary d-block mt-3"><?php echo $BL['be_2fa_reissue_note'] ?></small>
                     </div>

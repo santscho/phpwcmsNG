@@ -124,9 +124,11 @@ if (
 
         // fresh recovery codes for an account that still has its authenticator:
         // exchanging the list keeps the old codes from working, they are not
-        // added to it
+        // added to it. The password alone must not be enough to mint login
+        // codes, so a current authenticator or recovery code is required too
         $result = _dbQuery(
-            'SELECT usr_2fa_enabled, usr_2fa_recovery FROM ' . DB_PREPEND . 'phpwcms_user'
+            'SELECT usr_2fa_enabled, usr_2fa_secret, usr_2fa_last_slice, usr_2fa_recovery'
+            . ' FROM ' . DB_PREPEND . 'phpwcms_user'
             . ' WHERE usr_id=' . $two_factor_user_id
         );
 
@@ -140,31 +142,56 @@ if (
             $two_factor_error = $BL['be_2fa_error_key'];
         } elseif (empty($result[0]['usr_2fa_enabled'])) {
             $two_factor_error = $BL['be_2fa_error_session'];
+        } elseif ($two_factor_code === '') {
+            $two_factor_error = $BL['be_2fa_error_code'];
         } else {
 
             $two_factor_codes_old = (string) ($result[0]['usr_2fa_recovery'] ?? '');
-            $two_factor_codes_new = PhpwcmsRecoveryCode::generate();
-
-            // the list is only exchanged while it is still the one that was read
-            $two_factor_write = _dbQuery(
-                'UPDATE ' . DB_PREPEND . 'phpwcms_user SET usr_2fa_recovery='
-                . _dbEscape(PhpwcmsRecoveryCode::hashList($two_factor_codes_new))
-                . ' WHERE usr_id=' . $two_factor_user_id
-                . ' AND usr_2fa_recovery=' . _dbEscape($two_factor_codes_old),
-                'UPDATE'
+            $two_factor_secret    = (string) ($result[0]['usr_2fa_secret'] ?? '');
+            $two_factor_slice     = PhpwcmsTotp::verify(
+                $two_factor_secret,
+                $two_factor_code,
+                1,
+                (int) $result[0]['usr_2fa_last_slice']
             );
 
-            if (((int) ($two_factor_write['AFFECTED_ROWS'] ?? 0)) === 1) {
-                PhpwcmsTwoFactorLog::add(
-                    PhpwcmsTwoFactorLog::REISSUED,
-                    $two_factor_user_id,
-                    (string) ($_SESSION['wcs_user'] ?? ''),
-                    (string) ($_SESSION['wcs_user'] ?? '')
-                );
-                $two_factor_new_codes = $two_factor_codes_new;
-                $two_factor_message   = $BL['be_2fa_reissued_ok'];
+            // a recovery code works as well, it is replaced together with the list
+            $two_factor_code_ok = $two_factor_slice !== false
+                || PhpwcmsRecoveryCode::consume($two_factor_codes_old, $two_factor_code) !== null;
+
+            if (!$two_factor_code_ok) {
+                PhpwcmsTwoFactorGuard::fail($two_factor_user_id);
+                $two_factor_error = $BL['be_2fa_error_code'];
             } else {
-                $two_factor_error = $BL['be_2fa_error_session'];
+
+                $two_factor_codes_new = PhpwcmsRecoveryCode::generate();
+
+                // the used authenticator code is consumed the way the login does
+                // it, and the list is only exchanged while it is still the one
+                // that was read
+                $two_factor_write = _dbQuery(
+                    'UPDATE ' . DB_PREPEND . 'phpwcms_user SET usr_2fa_recovery='
+                    . _dbEscape(PhpwcmsRecoveryCode::hashList($two_factor_codes_new))
+                    . ($two_factor_slice !== false ? ', usr_2fa_last_slice=' . (int) $two_factor_slice : '')
+                    . ' WHERE usr_id=' . $two_factor_user_id
+                    . ' AND usr_2fa_recovery=' . _dbEscape($two_factor_codes_old)
+                    . ($two_factor_slice !== false ? ' AND usr_2fa_last_slice < ' . (int) $two_factor_slice : ''),
+                    'UPDATE'
+                );
+
+                if (((int) ($two_factor_write['AFFECTED_ROWS'] ?? 0)) === 1) {
+                    PhpwcmsTwoFactorGuard::reset($two_factor_user_id);
+                    PhpwcmsTwoFactorLog::add(
+                        PhpwcmsTwoFactorLog::REISSUED,
+                        $two_factor_user_id,
+                        (string) ($_SESSION['wcs_user'] ?? ''),
+                        (string) ($_SESSION['wcs_user'] ?? '')
+                    );
+                    $two_factor_new_codes = $two_factor_codes_new;
+                    $two_factor_message   = $BL['be_2fa_reissued_ok'];
+                } else {
+                    $two_factor_error = $BL['be_2fa_error_session'];
+                }
             }
         }
 
