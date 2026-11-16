@@ -258,6 +258,29 @@ class PhpwcmsTwoFactorGuard {
      */
     private static function notifyLock(int $userId, string $kind): void
     {
+        // the answer is sent first: a mail server that hangs must not hold up
+        // the login or the two factor screen that tripped the lock
+        register_shutdown_function(static function () use ($userId, $kind): void {
+            self::deliverLockMail($userId, $kind);
+        });
+    }
+
+    /**
+     * Send the warning once the response has been handed to the client, so the
+     * connect timeout of the mail server is paid after the answer, not inside
+     * it. Where the SAPI cannot close the request early (no php-fpm), the send
+     * falls back to the end of the request.
+     */
+    private static function deliverLockMail(int $userId, string $kind): void
+    {
+        if (function_exists('fastcgi_finish_request')) {
+            self::finishResponse();
+            fastcgi_finish_request();
+        } elseif (function_exists('litespeed_finish_request')) {
+            self::finishResponse();
+            litespeed_finish_request();
+        }
+
         $mail = self::lockMail($userId, $kind);
 
         // no address or no text to send: the holder gets no warning at all
@@ -281,6 +304,20 @@ class PhpwcmsTwoFactorGuard {
         } catch (\Throwable $e) {
             self::logNotificationFailure($userId);
         }
+    }
+
+    /**
+     * Release what the request no longer needs while the mail is on the wire:
+     * the session lock, so a second request of the same session is not blocked,
+     * and the connection to the client.
+     */
+    private static function finishResponse(): void
+    {
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_write_close();
+        }
+
+        ignore_user_abort(true);
     }
 
     /**
