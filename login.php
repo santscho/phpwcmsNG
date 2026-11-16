@@ -58,6 +58,13 @@ require_once PHPWCMS_ROOT.'/include/inc_lib/dbcon.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/general.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/backend.functions.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lang/code.lang.inc.php';
+require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.totp.php';
+require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.recoverycode.php';
+require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.twofactorguard.php';
+require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.twofactorlog.php';
+
+// queued lock warnings are retried after the response, at most once a minute
+PhpwcmsTwoFactorGuard::drainQueuePeriodically();
 
 if (isset($_GET['reason']) && str_starts_with($_GET['reason'], 'csrf-')) {
     headerAvoidPageCaching();
@@ -142,21 +149,243 @@ destroyBackendSessionData();
 
 $json_check = isset($_POST['json']) ? (int)$_POST['json'] : 0;
 
-if(isset($_POST['form_aktion']) && $_POST['form_aktion'] === 'login' && $json_check === 1) {
+// two factor authentication proof of concept, off unless $phpwcms['backend_2fa'] is set
+$backend_2fa     = !empty($phpwcms['backend_2fa']);
+$login_passed      = 0;
+$login_step2       = false;
+$login_step2_err   = false;
+$login_step2_wait  = 0;
+$login_password_wait = 0;
+$login_pending   = (isset($_SESSION['wcs_2fa_pending']) && is_array($_SESSION['wcs_2fa_pending'])) ? $_SESSION['wcs_2fa_pending'] : null;
+$form_action     = isset($_POST['form_aktion']) ? (string) $_POST['form_aktion'] : '';
 
-    $login_passed = 0;
+// shared completion: online list entry, welcome message and the redirect
+$login_finish = static function(string $user, string $redirect_url): void {
+
+    if(!($check = _dbQuery('SELECT COUNT(*) FROM ' . DB_PREPEND . 'phpwcms_userlog WHERE logged_user=' . _dbEscape($user) . ' AND logged_in=1', 'COUNT'))) {
+        $sql  = 'INSERT INTO ' . DB_PREPEND . 'phpwcms_userlog (logged_user, logged_username, logged_start, logged_change, logged_in, logged_ip) VALUES (';
+        $sql .= _dbEscape($user) . ', ' . _dbEscape($_SESSION['wcs_user_name']) . ', ' . time() . ', ' . time() . ', 1, ' . _dbEscape(PHPWCMS_GDPR_MODE ? getAnonymizedIp() : getRemoteIP()) . ')';
+        _dbQuery($sql, 'INSERT');
+    }
+
+    $_SESSION['PHPWCMS_ROOT'] = PHPWCMS_ROOT;
+    set_status_message('Welcome ' . $user . '!');
+
+    if($redirect_url) {
+
+        if(($token_position = strpos($redirect_url, 'csrftoken')) !== false) {
+            $redirect_url = substr_replace($redirect_url, '', $token_position, 42);
+            $redirect_url = str_replace(['?&', '&&'], ['?', '&'], $redirect_url);
+        }
+
+        $backend_redirect = $redirect_url . '&';
+
+    } else {
+
+        $backend_redirect = PHPWCMS_URL . 'phpwcms.php?';
+
+    }
+
+    $_SESSION['PHPWCMS_BROWSER_HASH'] = $GLOBALS['phpwcms']['USER_AGENT']['hash'];
+
+    headerRedirect($backend_redirect . get_token_get_string() . '&' . session_name() . '=' . session_id());
+};
+
+// shared session bootstrap: both the password login and the second factor use it
+$login_start_session = static function(array $user, string $login): void {
+
+    // auth boundary: drop any pre-auth session ID to prevent fixation
+    session_regenerate_id(true);
+
+    $_SESSION['wcs_user']             = $login;
+    $_SESSION['wcs_user_name']        = empty($user['usr_name']) ? $login : $user['usr_name'];
+    $_SESSION['wcs_user_id']          = $user['usr_id'];
+    $_SESSION['wcs_user_aktiv']       = $user['usr_aktiv'];
+    $_SESSION['wcs_user_rechte']      = $user['usr_rechte'];
+    $_SESSION['wcs_user_email']       = $user['usr_email'];
+    $_SESSION['wcs_user_avatar']      = $user['usr_avatar'];
+    $_SESSION['wcs_user_logtime']     = time();
+    $_SESSION['wcs_user_admin']       = (int)$user['usr_admin'];
+    $_SESSION['wcs_user_thumb']       = 1;
+    $_SESSION['wcs_user_theme']       = in_array($user['usr_theme'] ?? 'auto', ['light', 'dark'], true) ? $user['usr_theme'] : 'auto';
+    $_SESSION['wcs_user_date_format'] = in_array($user['usr_date_format'] ?? 'iso', ['iso', 'swiss', 'uk', 'us'], true) ? $user['usr_date_format'] : 'iso';
+    $_SESSION['wcs_user_weekstart']   = backend_weekstart($user['usr_weekstart'] ?? '');
+
+    if(empty($_POST['customlang']) && !empty($user['usr_lang'])) {
+        $_SESSION['wcs_user_lang'] = $user['usr_lang'];
+        set_language_cookie($user['usr_lang']);
+    } elseif (!empty($_SESSION['wcs_user_lang'])) {
+        set_language_cookie($_SESSION['wcs_user_lang']);
+    } else {
+        set_language_cookie();
+    }
+
+    $_SESSION['structure'] = @unserialize($user['usr_var_structure'], ['allowed_classes' => false]);
+    $_SESSION['klapp']     = @unserialize($user['usr_var_privatefile'], ['allowed_classes' => false]);
+    $_SESSION['pklapp']    = @unserialize($user['usr_var_publicfile'], ['allowed_classes' => false]);
+    $user['usr_vars']      = @unserialize($user['usr_vars'], ['allowed_classes' => false]);
+
+    if(!is_array($_SESSION['structure'])) {
+        $_SESSION['structure'] = [];
+    }
+    if(!is_array($_SESSION['klapp'])) {
+        $_SESSION['klapp'] = [];
+    }
+    if(!is_array($_SESSION['pklapp'])) {
+        $_SESSION['pklapp'] = [];
+    }
+    if(!is_array($user['usr_vars'])) {
+        $user['usr_vars'] = [];
+    }
+
+    $_SESSION['WYSIWYG_EDITOR'] = (int)$user['usr_wysiwyg'];
+    $_SESSION['wcs_user_cp']    = isset($user['usr_vars']['selected_cp']) && is_array($user['usr_vars']['selected_cp']) ? $user['usr_vars']['selected_cp'] : [];
+    $_SESSION['wcs_allowed_cp'] = isset($user['usr_vars']['allowed_cp']) && is_array($user['usr_vars']['allowed_cp']) ? $user['usr_vars']['allowed_cp'] : [];
+
+    // Remove selected CPs the user is no longer allowed to use
+    if(count($_SESSION['wcs_allowed_cp'])) {
+        if(count($_SESSION['wcs_user_cp'])) {
+            foreach($_SESSION['wcs_user_cp'] as $key => $value) {
+                if(!isset($_SESSION['wcs_allowed_cp'][$key])) {
+                    unset($_SESSION['wcs_user_cp'][$key]);
+                }
+            }
+        } else {
+            $_SESSION['wcs_user_cp'] = $_SESSION['wcs_allowed_cp'];
+        }
+    }
+};
+
+if($form_action === 'login2fa' && $json_check === 1) {
+
+    // second step: the pending login is completed by a valid code only
+    if(!$csrf_error && $login_pending !== null && time() - (int) $login_pending['time'] <= 300) {
+
+        $result = _dbQuery(
+            'SELECT * FROM ' . DB_PREPEND . 'phpwcms_user WHERE usr_id=' . (int) $login_pending['uid']
+            . " AND usr_aktiv=1 AND usr_2fa_enabled=1 AND usr_2fa_secret != ''"
+        );
+
+        if(isset($result[0]['usr_id'])) {
+
+            $second_step_passed = false;
+            $second_step_limit  = PhpwcmsTwoFactorGuard::state((int) $result[0]['usr_id']);
+
+            if($second_step_limit['locked']) {
+
+                // too many codes were wrong, so even a correct one waits for the window
+                $login_step2      = true;
+                $login_step2_err  = true;
+                $login_step2_wait = (int) $second_step_limit['wait'];
+
+            } else {
+
+                // the code field is the labelled OTP control, a recovery code is
+                // the alternative typed into its own field
+                $submitted = isset($_POST['form_2fa_code']) ? trim((string) $_POST['form_2fa_code']) : '';
+                if ($submitted === '' && isset($_POST['form_2fa_recovery'])) {
+                    $submitted = trim((string) $_POST['form_2fa_recovery']);
+                }
+                $slice     = PhpwcmsTotp::verify(
+                    $result[0]['usr_2fa_secret'],
+                    $submitted,
+                    1,
+                    (int) $result[0]['usr_2fa_last_slice']
+                );
+
+                if($slice !== false) {
+
+                    // the slice is consumed by a conditional write: a parallel request
+                    // that read the same slice before cannot claim it again
+                    $second_step_write = _dbQuery(
+                        'UPDATE ' . DB_PREPEND . 'phpwcms_user SET usr_2fa_last_slice=' . (int) $slice
+                        . ' WHERE usr_id=' . (int) $result[0]['usr_id']
+                        . ' AND usr_2fa_last_slice < ' . (int) $slice,
+                        'UPDATE'
+                    );
+                    $second_step_passed = ((int) ($second_step_write['AFFECTED_ROWS'] ?? 0)) === 1;
+
+                } elseif (
+                    ($stored_recovery = (string) ($result[0]['usr_2fa_recovery'] ?? '')) !== ''
+                    && ($recovery_left = PhpwcmsRecoveryCode::consume($stored_recovery, $submitted)) !== null
+                ) {
+                    // a recovery code replaces the authenticator when the phone is gone;
+                    // the list is only rewritten while it is still the one that was read
+                    $second_step_write = _dbQuery(
+                        'UPDATE ' . DB_PREPEND . 'phpwcms_user SET usr_2fa_recovery=' . _dbEscape($recovery_left)
+                        . ' WHERE usr_id=' . (int) $result[0]['usr_id']
+                        . ' AND usr_2fa_recovery=' . _dbEscape($stored_recovery),
+                        'UPDATE'
+                    );
+                    $second_step_passed = ((int) ($second_step_write['AFFECTED_ROWS'] ?? 0)) === 1;
+
+                    if($second_step_passed) {
+                        PhpwcmsTwoFactorLog::add(
+                            PhpwcmsTwoFactorLog::RECOVERY_USED,
+                            (int) $result[0]['usr_id'],
+                            (string) $result[0]['usr_login']
+                        );
+                    }
+                }
+            }
+
+            if($second_step_passed) {
+                PhpwcmsTwoFactorGuard::reset((int) $result[0]['usr_id']);
+                unset($_SESSION['wcs_2fa_pending']);
+                $login_pending = null;
+                $wcs_user      = $result[0]['usr_login'];
+                $login_passed  = 1;
+            } elseif(!$second_step_limit['locked']) {
+                PhpwcmsTwoFactorGuard::fail((int) $result[0]['usr_id']);
+            }
+        }
+    }
+
+    if($login_passed) {
+
+        $login_start_session($result[0], $wcs_user);
+        $login_finish($wcs_user, $ref_url);
+    }
+
+    if(!$login_passed) {
+
+        // stay on the code form and count the attempt
+        $login_step2     = true;
+        $login_step2_err = true;
+
+        if($login_pending !== null) {
+            $login_pending['tries'] = (int) ($login_pending['tries'] ?? 0) + 1;
+            if($login_pending['tries'] >= 5) {
+                unset($_SESSION['wcs_2fa_pending']);
+            } else {
+                $_SESSION['wcs_2fa_pending'] = $login_pending;
+            }
+        }
+    }
+
+} elseif($form_action === 'login' && $json_check === 1) {
 
     if(!$csrf_error) {
 
         $wcs_user = slweg($_POST['form_loginname']);
-        $wcs_pass = slweg($_POST['md5pass']);
+        $wcs_pass = slweg($_POST['md5pass'] ?? '');
         $plain_pass = isset($_POST['form_password']) ? slweg($_POST['form_password']) : '';
 
         $sql_query  = 'SELECT * FROM ' . DB_PREPEND . 'phpwcms_user WHERE usr_login=' . _dbEscape($wcs_user) . ' AND usr_aktiv=1 AND (usr_fe=1 OR usr_fe=2)';
 
         $result = _dbQuery($sql_query);
 
-        if(isset($result[0]['usr_id'])) {
+        $login_password_limit = isset($result[0]['usr_id'])
+            ? PhpwcmsTwoFactorGuard::passwordState((int) $result[0]['usr_id'])
+            : array('locked' => false, 'wait' => 0);
+
+        if(!empty($login_password_limit['locked'])) {
+
+            // the wrong passwords are counted per account, the same counter the
+            // two factor settings use, so even the right one waits for the window
+            $login_password_wait = (int) $login_password_limit['wait'];
+
+        } elseif(isset($result[0]['usr_id'])) {
 
             $db_pass = $result[0]['usr_pass'];
             if ($plain_pass !== '') {
@@ -192,109 +421,43 @@ if(isset($_POST['form_aktion']) && $_POST['form_aktion'] === 'login' && $json_ch
                     }
                 }
             }
+
+            if($login_passed) {
+                // the password was right, so the earlier wrong ones are spent
+                PhpwcmsTwoFactorGuard::resetPassword((int) $result[0]['usr_id']);
+            } elseif($plain_pass !== '' || $wcs_pass !== '') {
+                PhpwcmsTwoFactorGuard::failPassword((int) $result[0]['usr_id'], $wcs_user);
+            }
+        }
+
+        // Second factor for backend administrators: no session before the code is valid
+        if(
+            $login_passed && $backend_2fa && !empty($result[0]['usr_admin'])
+            && !empty($result[0]['usr_2fa_enabled']) && !empty($result[0]['usr_2fa_secret'])
+        ) {
+            session_regenerate_id(true);
+            $_SESSION['wcs_2fa_pending'] = array(
+                'uid'   => (int) $result[0]['usr_id'],
+                'time'  => time(),
+                'tries' => 0,
+            );
+            $login_pending = $_SESSION['wcs_2fa_pending'];
+            $login_step2   = true;
+            $login_passed  = 0;
         }
 
         if($login_passed) {
 
-            // auth boundary: drop any pre-auth session ID to prevent fixation
-            session_regenerate_id(true);
-
-            $_SESSION['wcs_user']           = $wcs_user;
-            $_SESSION['wcs_user_name']      = empty($result[0]['usr_name']) ? $wcs_user : $result[0]['usr_name'];
-            $_SESSION['wcs_user_id']        = $result[0]['usr_id'];
-            $_SESSION['wcs_user_aktiv']     = $result[0]['usr_aktiv'];
-            $_SESSION['wcs_user_rechte']    = $result[0]['usr_rechte'];
-            $_SESSION['wcs_user_email']     = $result[0]['usr_email'];
-            $_SESSION['wcs_user_avatar']    = $result[0]['usr_avatar'];
-            $_SESSION['wcs_user_logtime']   = time();
-            $_SESSION['wcs_user_admin']     = (int)$result[0]['usr_admin'];
-            $_SESSION['wcs_user_thumb']     = 1;
-            $_SESSION['wcs_user_theme']     = in_array($result[0]['usr_theme'] ?? 'auto', ['light', 'dark'], true) ? $result[0]['usr_theme'] : 'auto';
-            $_SESSION['wcs_user_date_format'] = in_array($result[0]['usr_date_format'] ?? 'iso', ['iso', 'swiss', 'uk', 'us'], true) ? $result[0]['usr_date_format'] : 'iso';
-            $_SESSION['wcs_user_weekstart'] = backend_weekstart($result[0]['usr_weekstart'] ?? '');
-            if(empty($_POST['customlang']) && !empty($result[0]['usr_lang'])) {
-                $_SESSION['wcs_user_lang']  = $result[0]['usr_lang'];
-                set_language_cookie($result[0]['usr_lang']);
-            } elseif (!empty($_SESSION['wcs_user_lang'])) {
-                set_language_cookie($_SESSION['wcs_user_lang']);
-            } else {
-                set_language_cookie();
-            }
-
-            $_SESSION['structure'] = @unserialize($result[0]['usr_var_structure'], ['allowed_classes' => false]);
-            $_SESSION['klapp']     = @unserialize($result[0]['usr_var_privatefile'], ['allowed_classes' => false]);
-            $_SESSION['pklapp']    = @unserialize($result[0]['usr_var_publicfile'], ['allowed_classes' => false]);
-            $result[0]['usr_vars'] = @unserialize($result[0]['usr_vars'], ['allowed_classes' => false]);
-
-            if(!is_array($_SESSION['structure'])) {
-                $_SESSION['structure'] = [];
-            }
-            if(!is_array($_SESSION['klapp'])) {
-                $_SESSION['klapp'] = [];
-            }
-            if(!is_array($_SESSION['pklapp'])) {
-                $_SESSION['pklapp'] = [];
-            }
-            if(!is_array($result[0]['usr_vars'])) {
-                $result[0]['usr_vars'] = [];
-            }
-
-            // Fallback to CKeditor?
-            $_SESSION['WYSIWYG_EDITOR'] = (int)$result[0]['usr_wysiwyg'];
-            $_SESSION['wcs_user_cp']    = isset($result[0]['usr_vars']['selected_cp']) && is_array($result[0]['usr_vars']['selected_cp']) ? $result[0]['usr_vars']['selected_cp'] : [];
-            $_SESSION['wcs_allowed_cp'] = isset($result[0]['usr_vars']['allowed_cp']) && is_array($result[0]['usr_vars']['allowed_cp']) ? $result[0]['usr_vars']['allowed_cp'] : [];
-
-            // Test if there are CPs that use had choosen but no longer available for
-            if(count($_SESSION['wcs_allowed_cp'])) {
-                if(count($_SESSION['wcs_user_cp'])) {
-                    // Remove selected CP if not allowed CP
-                    foreach($_SESSION['wcs_user_cp'] as $key => $value) {
-                        if(!isset($_SESSION['wcs_allowed_cp'][$key])) {
-                            unset($_SESSION['wcs_user_cp'][$key]);
-                        }
-                    }
-                } else {
-                    $_SESSION['wcs_user_cp'] = $_SESSION['wcs_allowed_cp'];
-                }
-            }
-
+            $login_start_session($result[0], $wcs_user);
             $login_passed = 1;
         }
     }
 
     if($login_passed) {
 
-        // Store login information in DB
-        if(!($check = _dbQuery('SELECT COUNT(*) FROM ' .DB_PREPEND. 'phpwcms_userlog WHERE logged_user=' ._dbEscape($wcs_user). ' AND logged_in=1', 'COUNT'))) {
-            // User not yet logged in, create new
-            $sql  = 'INSERT INTO ' .DB_PREPEND. 'phpwcms_userlog (logged_user, logged_username, logged_start, logged_change, logged_in, logged_ip) VALUES (';
-            $sql .= _dbEscape($wcs_user). ', ' ._dbEscape($_SESSION['wcs_user_name']). ', ' .time(). ', ' .time(). ', 1, ' ._dbEscape(PHPWCMS_GDPR_MODE ? getAnonymizedIp() : getRemoteIP()). ')';
-            _dbQuery($sql, 'INSERT');
-        }
+        $login_finish($wcs_user, $ref_url);
 
-        $_SESSION['PHPWCMS_ROOT'] = PHPWCMS_ROOT;
-        set_status_message('Welcome '.$wcs_user.'!');
-
-        if($ref_url) {
-
-            if(($token_position = strpos($ref_url, 'csrftoken')) !== false) {
-                $ref_url = substr_replace($ref_url, '', $token_position, 42);
-                $ref_url = str_replace(['?&', '&&'], ['?', '&'], $ref_url);
-            }
-
-            $backend_redirect = $ref_url . '&';
-
-        } else {
-
-            $backend_redirect = PHPWCMS_URL.'phpwcms.php?';
-
-        }
-
-        $_SESSION['PHPWCMS_BROWSER_HASH'] = $phpwcms['USER_AGENT']['hash'];
-
-        headerRedirect($backend_redirect . get_token_get_string() . '&' . session_name().'='.session_id());
-
-    } else {
+    } elseif(!$login_step2) {
 
         $err = 1;
 
@@ -327,6 +490,7 @@ $layout_rtl = (isset($_SESSION['wcs_user_lang']) && ($_SESSION['wcs_user_lang'] 
     <link href="include/inc_ext/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css">
     <script src="include/inc_js/jquery/jquery.min.js"></script>
     <script type="module" src="include/inc_ext/bootstrap/bootstrap.bundle.min.js"></script>
+    <script type="module" src="include/inc_js/backend.otp.js"></script>
     <script src="include/inc_js/phpwcms.min.js"></script>
     <script src="include/inc_js/md5.js"></script>
 </head>
@@ -424,7 +588,9 @@ ob_start();
     if(!$err) {
         echo ' style="display:none"';
     }
-    echo ' id="jserr"><div>' . $BL['login_error'] . '</div></div>';
+    echo ' id="jserr"><div>';
+    echo $login_password_wait > 0 ? sprintf($BL['login_password_locked'], $login_password_wait) : $BL['login_error'];
+    echo '</div></div>';
 
 ?>
 <div class="mb-5">
@@ -467,10 +633,47 @@ echo implode('', $lang_options);
 
 $formAll = str_replace( ["'", "\r", "\n", '<'], ["\'", '', ' ', "<'+'"], ob_get_clean() );
 
+// second step form: the code, the CSRF token and the redirect target only
+if($login_step2) {
+
+    ob_start();
+
+?>
+<form action="<?php echo PHPWCMS_URL.get_login_file() ?>" method="post" id="login_formular_2fa">
+<input type="hidden" name="json" id="json" value="1" />
+<input type="hidden" name="ref_url" value="<?php echo html_specialchars($ref_url); ?>" />
+<input type="hidden" name="logintoken" value="<?php echo LOGIN_TOKEN; ?>" />
+<input name="form_aktion" type="hidden" id="form_aktion" value="login2fa" />
+<?php if($login_step2_err): ?>
+<div class="alert theme-danger mb-5" role="alert"><div><?php echo $login_step2_wait > 0 ? sprintf($BL['login_2fa_locked'], $login_step2_wait) : $BL['login_2fa_error'] ?></div></div>
+<?php endif; ?>
+<div class="mb-5">
+    <label class="form-label" for="form_2fa_code"><?php echo $BL['login_2fa_code'] ?></label>
+    <div class="otp" data-bs-otp data-bs-length="6" data-bs-type="numeric">
+        <input name="form_2fa_code" type="text" class="form-control" id="form_2fa_code" maxlength="6" inputmode="numeric" autocomplete="one-time-code" required />
+    </div>
+</div>
+<details class="mb-5">
+    <summary class="small"><?php echo $BL['be_2fa_recovery_toggle'] ?></summary>
+    <div class="mt-3">
+        <label class="form-label" for="form_2fa_recovery"><?php echo $BL['be_2fa_recovery_field'] ?></label>
+        <input name="form_2fa_recovery" type="text" class="form-control" id="form_2fa_recovery" maxlength="11" autocomplete="off" data-2fa-recovery="form_2fa_code" />
+        <p class="small fg-secondary mt-3 mb-0"><?php echo $BL['login_2fa_recovery_hint'] ?></p>
+    </div>
+</details>
+<button type="submit" class="btn theme-primary btn-solid btn-styled btn-sm w-100"><?php echo $BL['login_2fa_button'] ?></button>
+<p class="small fg-secondary mt-5 mb-0"><a href="<?php echo PHPWCMS_URL.get_login_file() ?>"><?php echo $BL['login_2fa_cancel'] ?></a></p>
+</form>
+<?php
+
+    $formAll = str_replace( ["'", "\r", "\n", '<'], ["\\'", '', ' ', "<'+'"], ob_get_clean() );
+
+}
+
 ?>
 <script>
     getObjectById('loginFormArea').innerHTML = '<?php echo $formAll ?>';
-    getObjectById('form_loginname').focus();
+    getObjectById('<?php echo $login_step2 ? 'form_2fa_code' : 'form_loginname' ?>').focus();
 <?php if(!empty($phpwcms['browser_check']['be'])):
     $buoop = ['insecure' => !isset($phpwcms['browser_check']['insecure']) || (bool)$phpwcms['browser_check']['insecure']];
     if(!empty($phpwcms['browser_check']['vs'])) {

@@ -45,6 +45,11 @@ $backend_theme_attr = $backend_theme === 'auto' ? '' : ' data-bs-theme="' . $bac
 
 require_once PHPWCMS_ROOT.'/include/inc_lib/backend.functions.inc.php';
 
+// pending two factor lock warnings are retried after the answer has gone out,
+// at most once a minute across the whole install
+require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.twofactorguard.php';
+PhpwcmsTwoFactorGuard::drainQueuePeriodically();
+
 // date and time format picked in the profile, used by the backend date pickers
 $backend_date_format = backend_date_format($_SESSION['wcs_user_date_format'] ?? '');
 // first day of the week picked in the profile, used by the backend date pickers
@@ -160,6 +165,16 @@ switch ($do) {
         }
         $subnav .= subnavtext($BL['be_subnav_profile_login'], "phpwcms.php?do=profile", $p, "", 0);
         $subnav .= subnavtext($BL['be_subnav_profile_personal'], "phpwcms.php?do=profile&amp;p=1", $p, "1", 0);
+        if(!empty($_SESSION['wcs_user_admin'])) {
+            $subnav .= subnavtext($BL['be_subnav_profile_2fa'], "phpwcms.php?do=profile&amp;p=2", $p, "2", 0);
+            $subnav .= subnavtext($BL['be_subnav_profile_2fa_log'], "phpwcms.php?do=profile&amp;p=3", $p, "3", 0);
+        }
+        if($p === 2 && !empty($_SESSION['wcs_user_admin'])) {
+            include PHPWCMS_ROOT . '/include/inc_lib/profile.2fa.inc.php';
+        }
+        if($p === 3 && !empty($_SESSION['wcs_user_admin'])) {
+            include PHPWCMS_ROOT . '/include/inc_lib/profile.2fa.log.inc.php';
+        }
         break;
 
     case "logout":      //Logout
@@ -412,6 +427,10 @@ if($BE['LANG'] == 'ar') {
         case "profile": //Profile
             if ($p === 1) {
                 include PHPWCMS_ROOT . '/include/inc_tmpl/profile.data.tmpl.php';
+            } elseif ($p === 2 && !empty($_SESSION['wcs_user_admin'])) {
+                include PHPWCMS_ROOT . '/include/inc_tmpl/profile.2fa.tmpl.php';
+            } elseif ($p === 3 && !empty($_SESSION['wcs_user_admin'])) {
+                include PHPWCMS_ROOT . '/include/inc_tmpl/profile.2fa.log.tmpl.php';
             } else {
                 include PHPWCMS_ROOT . '/include/inc_tmpl/profile.account.tmpl.php';
             }

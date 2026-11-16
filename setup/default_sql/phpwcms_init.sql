@@ -793,6 +793,14 @@ CREATE TABLE `phpwcms_user` (
   `usr_theme` varchar(10) NOT NULL DEFAULT 'auto',
   `usr_date_format` varchar(20) NOT NULL DEFAULT 'iso',
   `usr_weekstart` tinyint(1) NOT NULL DEFAULT '1',
+  `usr_2fa_secret` varchar(64) NOT NULL DEFAULT '',
+  `usr_2fa_enabled` tinyint(1) NOT NULL DEFAULT '0',
+  `usr_2fa_last_slice` bigint unsigned NOT NULL DEFAULT '0',
+  `usr_2fa_recovery` mediumtext NULL,
+  `usr_2fa_failed` smallint unsigned NOT NULL DEFAULT '0',
+  `usr_2fa_failed_at` int unsigned NOT NULL DEFAULT '0',
+  `usr_2fa_pw_failed` smallint unsigned NOT NULL DEFAULT '0',
+  `usr_2fa_pw_failed_at` int unsigned NOT NULL DEFAULT '0',
   `usr_vars` mediumtext NOT NULL,
   PRIMARY KEY (`usr_id`)
 );
@@ -871,6 +879,34 @@ CREATE TABLE `phpwcms_usergroup` (
   `group_syskey` varchar(10) NOT NULL,
   PRIMARY KEY (`group_id`),
   KEY `group_member` (`group_member`(255))
+);
+
+CREATE TABLE `phpwcms_user_2fa_log` (
+  `log_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `log_user_id` int unsigned NOT NULL DEFAULT '0',
+  `log_login` varchar(100) NOT NULL DEFAULT '',
+  `log_event` varchar(40) NOT NULL DEFAULT '',
+  `log_actor` varchar(100) NOT NULL DEFAULT '',
+  `log_ip` varchar(64) NOT NULL DEFAULT '',
+  `log_created` int unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`log_id`),
+  KEY `log_user_id` (`log_user_id`,`log_id`)
+);
+
+CREATE TABLE `phpwcms_user_2fa_outbox` (
+  `outbox_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `outbox_user_id` int unsigned NOT NULL DEFAULT '0',
+  `outbox_login` varchar(100) NOT NULL DEFAULT '',
+  `outbox_kind` varchar(16) NOT NULL DEFAULT 'password',
+  `outbox_recipient` varchar(150) NOT NULL DEFAULT '',
+  `outbox_to_name` varchar(150) NOT NULL DEFAULT '',
+  `outbox_subject` varchar(255) NOT NULL DEFAULT '',
+  `outbox_body` mediumtext NOT NULL,
+  `outbox_created` int unsigned NOT NULL DEFAULT '0',
+  `outbox_attempts` smallint unsigned NOT NULL DEFAULT '0',
+  `outbox_last_attempt` int unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`outbox_id`),
+  KEY `outbox_created` (`outbox_created`)
 );
 
 CREATE TABLE `phpwcms_userlog` (

@@ -837,6 +837,7 @@ function sendEmail($data = array(
     'sender' => '',
     'senderName' => '',
     'stringAttach' => array(),
+    'timeout' => 0,
 )) {
     // used to send a standardized email message
     global $phpwcms;
@@ -874,6 +875,15 @@ function sendEmail($data = array(
     }
     if (count($sendTo)) {
         $mail = new PhpwcmsMailer($phpwcms);
+        if (!empty($data['timeout'])) {
+            // PHPMailer waits 300 seconds by default, which is too long for a
+            // message nobody is waiting for in the request that triggered it.
+            // Timeout is the connect and stream timeout, the SMTP class keeps
+            // its own 300 second limit for waiting on a reply, so both go down
+            $timeout = max(1, (int)$data['timeout']);
+            $mail->Timeout = $timeout;
+            $mail->getSMTPInstance()->Timelimit = $timeout;
+        }
         $mail->isHTML($data['isHTML']);
         $mail->Subject = $data['subject'];
         if ($data['isHTML']) {
