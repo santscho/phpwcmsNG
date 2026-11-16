@@ -139,7 +139,7 @@ CREATE TABLE `phpwcms_article` (
   KEY `article_tstamp` (`article_tstamp`),
   KEY `article_priorize` (`article_priorize`),
   KEY `article_sort` (`article_sort`),
-  KEY `article_alias` (`article_alias`),
+  KEY `article_alias` (`article_alias`(768)),
   KEY `article_archive_status` (`article_archive_status`),
   KEY `article_lang` (`article_lang`),
   KEY `article_lang_type` (`article_lang_type`),
@@ -160,7 +160,7 @@ CREATE TABLE `phpwcms_articlecat` (
   `acat_trash` int(1) NOT NULL DEFAULT '0',
   `acat_struct` int(11) NOT NULL DEFAULT '0',
   `acat_sort` int(11) NOT NULL DEFAULT '0',
-  `acat_alias` varchar(1000) NOT NULL DEFAULT '',
+  `acat_alias` varchar(255) NOT NULL DEFAULT '',
   `acat_hidden` int(1) NOT NULL DEFAULT '0',
   `acat_template` int(11) NOT NULL DEFAULT '0',
   `acat_ssl` int(1) NOT NULL DEFAULT '0',
@@ -295,7 +295,7 @@ CREATE TABLE `phpwcms_calendar` (
   KEY `calendar_start` (`calendar_start`),
   KEY `calendar_end` (`calendar_end`),
   KEY `calendar_tag` (`calendar_tag`),
-  KEY `calendar_refid` (`calendar_refid`),
+  KEY `calendar_refid` (`calendar_refid`(768)),
   KEY `calendar_range` (`calendar_range`),
   KEY `calendar_lang` (`calendar_lang`)
 );
