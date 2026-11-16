@@ -59,6 +59,7 @@ require_once PHPWCMS_ROOT.'/include/inc_lib/general.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/backend.functions.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lang/code.lang.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.totp.php';
+require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.recoverycode.php';
 
 if (isset($_GET['reason']) && str_starts_with($_GET['reason'], 'csrf-')) {
     headerAvoidPageCaching();
@@ -260,12 +261,14 @@ if($form_action === 'login2fa' && $json_check === 1) {
 
         if(isset($result[0]['usr_id'])) {
 
-            $slice = PhpwcmsTotp::verify(
+            $submitted = isset($_POST['form_2fa_code']) ? (string) $_POST['form_2fa_code'] : '';
+            $slice     = PhpwcmsTotp::verify(
                 $result[0]['usr_2fa_secret'],
-                isset($_POST['form_2fa_code']) ? (string) $_POST['form_2fa_code'] : '',
+                $submitted,
                 1,
                 (int) $result[0]['usr_2fa_last_slice']
             );
+            $second_step_passed = false;
 
             if($slice !== false) {
                 _dbQuery(
@@ -273,6 +276,20 @@ if($form_action === 'login2fa' && $json_check === 1) {
                     . ' WHERE usr_id=' . (int) $result[0]['usr_id'],
                     'UPDATE'
                 );
+                $second_step_passed = true;
+            } elseif (
+                ($recovery_left = PhpwcmsRecoveryCode::consume((string) ($result[0]['usr_2fa_recovery'] ?? ''), $submitted)) !== null
+            ) {
+                // a recovery code replaces the authenticator when the phone is gone
+                _dbQuery(
+                    'UPDATE ' . DB_PREPEND . 'phpwcms_user SET usr_2fa_recovery=' . _dbEscape($recovery_left)
+                    . ' WHERE usr_id=' . (int) $result[0]['usr_id'],
+                    'UPDATE'
+                );
+                $second_step_passed = true;
+            }
+
+            if($second_step_passed) {
                 unset($_SESSION['wcs_2fa_pending']);
                 $login_pending = null;
                 $wcs_user      = $result[0]['usr_login'];
@@ -569,7 +586,8 @@ if($login_step2) {
 <?php endif; ?>
 <div class="mb-5">
     <label class="form-label" for="form_2fa_code"><?php echo $BL['login_2fa_code'] ?></label>
-    <input name="form_2fa_code" type="text" class="form-control" id="form_2fa_code" maxlength="6" inputmode="numeric" autocomplete="one-time-code" required />
+    <input name="form_2fa_code" type="text" class="form-control" id="form_2fa_code" maxlength="11" autocomplete="one-time-code" required />
+    <p class="small fg-secondary mt-3 mb-0"><?php echo $BL['login_2fa_recovery_hint'] ?></p>
 </div>
 <button type="submit" class="btn theme-primary btn-solid btn-styled btn-sm w-100"><?php echo $BL['login_2fa_button'] ?></button>
 <p class="small fg-secondary mt-5 mb-0"><a href="<?php echo PHPWCMS_URL.get_login_file() ?>"><?php echo $BL['login_2fa_cancel'] ?></a></p>

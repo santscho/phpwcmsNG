@@ -18,6 +18,7 @@ if (!defined('PHPWCMS_ROOT')) {
 
 require_once PHPWCMS_ROOT . '/include/inc_lib/classes/class.totp.php';
 require_once PHPWCMS_ROOT . '/include/inc_lib/classes/class.qrcode.php';
+require_once PHPWCMS_ROOT . '/include/inc_lib/classes/class.recoverycode.php';
 
 /*
  * Two factor authentication proof of concept: enrollment and switch off.
@@ -28,6 +29,7 @@ require_once PHPWCMS_ROOT . '/include/inc_lib/classes/class.qrcode.php';
 
 $two_factor_message = '';
 $two_factor_error   = '';
+$two_factor_new_codes = array();
 $two_factor_user_id = (int) ($_SESSION['wcs_user_id'] ?? 0);
 
 if (
@@ -61,11 +63,15 @@ if (
         } elseif (($slice = PhpwcmsTotp::verify($enroll['secret'], $two_factor_code, 1, 0)) === false) {
             $two_factor_error = $BL['be_2fa_error_code'];
         } else {
+            // a lost phone must not lock the account out, so the enrollment hands
+            // out recovery codes; only their hashes are stored
+            $two_factor_new_codes = PhpwcmsRecoveryCode::generate();
             _dbQuery(
                 'UPDATE ' . DB_PREPEND . 'phpwcms_user SET '
                 . 'usr_2fa_secret=' . _dbEscape($enroll['secret']) . ', '
                 . 'usr_2fa_enabled=1, '
-                . 'usr_2fa_last_slice=' . (int) $slice
+                . 'usr_2fa_last_slice=' . (int) $slice . ', '
+                . 'usr_2fa_recovery=' . _dbEscape(PhpwcmsRecoveryCode::hashList($two_factor_new_codes))
                 . ' WHERE usr_id=' . $two_factor_user_id,
                 'UPDATE'
             );
@@ -75,21 +81,25 @@ if (
 
     } elseif ($two_factor_do === 'disable') {
 
-        // switching it off needs a valid code too, so a stolen session
-        // cannot simply remove the second factor
+        // switching it off needs a valid code too, either the authenticator or
+        // one of the recovery codes, so a stolen session cannot simply remove
+        // the second factor
         $result = _dbQuery(
-            'SELECT usr_2fa_secret, usr_2fa_last_slice FROM ' . DB_PREPEND . 'phpwcms_user'
+            'SELECT usr_2fa_secret, usr_2fa_last_slice, usr_2fa_recovery FROM ' . DB_PREPEND . 'phpwcms_user'
             . ' WHERE usr_id=' . $two_factor_user_id
         );
 
         if (!isset($result[0]['usr_2fa_secret']) || $result[0]['usr_2fa_secret'] === '') {
             $two_factor_error = $BL['be_2fa_error_session'];
-        } elseif (PhpwcmsTotp::verify($result[0]['usr_2fa_secret'], $two_factor_code, 1, (int) $result[0]['usr_2fa_last_slice']) === false) {
+        } elseif (
+            PhpwcmsTotp::verify($result[0]['usr_2fa_secret'], $two_factor_code, 1, (int) $result[0]['usr_2fa_last_slice']) === false
+            && PhpwcmsRecoveryCode::consume((string) ($result[0]['usr_2fa_recovery'] ?? ''), $two_factor_code) === null
+        ) {
             $two_factor_error = $BL['be_2fa_error_code'];
         } else {
             _dbQuery(
                 'UPDATE ' . DB_PREPEND . 'phpwcms_user SET '
-                . "usr_2fa_secret='', usr_2fa_enabled=0, usr_2fa_last_slice=0"
+                . "usr_2fa_secret='', usr_2fa_enabled=0, usr_2fa_last_slice=0, usr_2fa_recovery=''"
                 . ' WHERE usr_id=' . $two_factor_user_id,
                 'UPDATE'
             );
@@ -101,16 +111,17 @@ if (
 }
 
 // current state of the logged in account
-$two_factor_state = array('enabled' => false, 'secret' => '');
+$two_factor_state = array('enabled' => false, 'secret' => '', 'recovery_left' => 0);
 
 if ($two_factor_user_id) {
     $result = _dbQuery(
-        'SELECT usr_2fa_secret, usr_2fa_enabled FROM ' . DB_PREPEND . 'phpwcms_user'
+        'SELECT usr_2fa_secret, usr_2fa_enabled, usr_2fa_recovery FROM ' . DB_PREPEND . 'phpwcms_user'
         . ' WHERE usr_id=' . $two_factor_user_id
     );
     if (isset($result[0])) {
         $two_factor_state['enabled'] = !empty($result[0]['usr_2fa_enabled']);
         $two_factor_state['secret']  = (string) ($result[0]['usr_2fa_secret'] ?? '');
+        $two_factor_state['recovery_left'] = PhpwcmsRecoveryCode::remaining((string) ($result[0]['usr_2fa_recovery'] ?? ''));
     }
 }
 

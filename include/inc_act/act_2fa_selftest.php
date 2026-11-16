@@ -78,5 +78,20 @@ try {
 }
 $check('qr refuses text that is too long', true, $too_long);
 
+// recovery codes: single use, stored as hashes, tolerant about the dash
+require_once PHPWCMS_ROOT . '/include/inc_lib/classes/class.recoverycode.php';
+$codes = PhpwcmsRecoveryCode::generate();
+$check('eight recovery codes', 8, count($codes));
+$check('recovery codes are unique', 8, count(array_unique($codes)));
+$check('recovery code format', 11, strlen($codes[0]));
+$stored = PhpwcmsRecoveryCode::hashList($codes);
+$check('recovery codes stored as hashes', 8, PhpwcmsRecoveryCode::remaining($stored));
+$check('store holds no plain code', false, str_contains($stored, $codes[0]));
+$after = PhpwcmsRecoveryCode::consume($stored, strtolower(str_replace('-', ' ', $codes[0])));
+$check('recovery code accepted once', 7, $after === null ? -1 : PhpwcmsRecoveryCode::remaining($after));
+$check('used recovery code rejected', null, PhpwcmsRecoveryCode::consume($after, $codes[0]));
+$check('short value rejected', null, PhpwcmsRecoveryCode::consume($stored, '12345'));
+$check('empty store rejects everything', null, PhpwcmsRecoveryCode::consume('', $codes[0]));
+
 printf("\n%s\n", $failures === 0 ? 'all checks passed' : $failures . ' check(s) failed');
 exit($failures === 0 ? 0 : 1);

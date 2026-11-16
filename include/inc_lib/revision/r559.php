@@ -12,7 +12,8 @@
 /**
  * Revision 559:
  * - Add the two factor authentication fields to phpwcms_user: the shared
- *   secret, the switch and the last accepted time slice (replay protection)
+ *   secret, the switch, the last accepted time slice (replay protection) and
+ *   the single use recovery codes
  *
  * The columns are only added, nothing existing is touched.
  *
@@ -26,6 +27,7 @@ function phpwcms_revision_r559() {
         'usr_2fa_secret'     => "ADD `usr_2fa_secret` VARCHAR(64) NOT NULL DEFAULT '' AFTER `usr_weekstart`",
         'usr_2fa_enabled'    => "ADD `usr_2fa_enabled` TINYINT(1) NOT NULL DEFAULT '0' AFTER `usr_2fa_secret`",
         'usr_2fa_last_slice' => "ADD `usr_2fa_last_slice` BIGINT UNSIGNED NOT NULL DEFAULT '0' AFTER `usr_2fa_enabled`",
+        'usr_2fa_recovery'   => "ADD `usr_2fa_recovery` MEDIUMTEXT NULL AFTER `usr_2fa_last_slice`",
     );
 
     foreach ($columns as $column => $alter) {

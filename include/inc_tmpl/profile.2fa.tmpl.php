@@ -56,11 +56,24 @@ if ($two_factor_uri !== '') {
                 <div class="alert theme-danger" role="alert"><div><?php echo html($two_factor_error) ?></div></div>
 <?php endif; ?>
 
+<?php if($two_factor_new_codes): ?>
+                <div class="alert theme-warning" role="alert">
+                    <h3 class="h6 mb-3"><?php echo $BL['be_2fa_recovery_new'] ?></h3>
+                    <p><?php echo $BL['be_2fa_recovery_note'] ?></p>
+                    <ul class="list-unstyled row g-3 mb-0">
+<?php foreach($two_factor_new_codes as $two_factor_code_item): ?>
+                        <li class="col-12 md:col-6"><code><?php echo html($two_factor_code_item) ?></code></li>
+<?php endforeach; ?>
+                    </ul>
+                </div>
+<?php endif; ?>
+
                 <p class="fg-secondary"><?php echo $BL['be_2fa_intro'] ?></p>
 
 <?php if($two_factor_enabled): ?>
 
                 <p class="mb-0"><?php echo $BL['be_2fa_active_note'] ?></p>
+                <p class="small fg-secondary mt-3 mb-0"><?php echo $BL['be_2fa_recovery_left'] ?>: <?php echo (int) $two_factor_state['recovery_left'] ?></p>
 
             </div>
 
@@ -70,7 +83,7 @@ if ($two_factor_uri !== '') {
                     <input type="hidden" name="do_2fa" value="disable" />
                     <div class="col-12 md:col-6">
                         <label class="form-label" for="code_2fa_disable"><?php echo $BL['be_2fa_code_label'] ?></label>
-                        <input type="text" class="form-control" name="code_2fa" id="code_2fa_disable" inputmode="numeric" autocomplete="one-time-code" maxlength="6" />
+                        <input type="text" class="form-control" name="code_2fa" id="code_2fa_disable" autocomplete="one-time-code" maxlength="11" />
                     </div>
                     <div class="col-12 md:col-6">
                         <button type="submit" class="btn btn-outline theme-danger btn-sm"><?php echo $BL['be_2fa_disable'] ?></button>
