@@ -19,6 +19,7 @@ if (!defined('PHPWCMS_ROOT')) {
 require_once PHPWCMS_ROOT . '/include/inc_lib/classes/class.totp.php';
 require_once PHPWCMS_ROOT . '/include/inc_lib/classes/class.qrcode.php';
 require_once PHPWCMS_ROOT . '/include/inc_lib/classes/class.recoverycode.php';
+require_once PHPWCMS_ROOT . '/include/inc_lib/classes/class.twofactorguard.php';
 
 /*
  * Two factor authentication proof of concept: enrollment and switch off.
@@ -39,30 +40,46 @@ if (
     && $_POST['form_aktion'] === 'update_2fa'
 ) {
 
-    $two_factor_do   = isset($_POST['do_2fa']) ? (string) $_POST['do_2fa'] : '';
-    $two_factor_code = isset($_POST['code_2fa']) ? (string) $_POST['code_2fa'] : '';
+    $two_factor_do       = isset($_POST['do_2fa']) ? (string) $_POST['do_2fa'] : '';
+    $two_factor_code     = isset($_POST['code_2fa']) ? (string) $_POST['code_2fa'] : '';
+    $two_factor_password = isset($_POST['password_2fa']) ? (string) $_POST['password_2fa'] : '';
+    $two_factor_limit    = PhpwcmsTwoFactorGuard::state($two_factor_user_id);
+
+    // attaching or removing a factor is a security decision, so the session
+    // alone is not enough: the password has to be confirmed first
+    $two_factor_password_ok = PhpwcmsTwoFactorGuard::passwordMatches($two_factor_user_id, $two_factor_password);
 
     if ($two_factor_do === 'begin') {
 
-        // the secret stays in the session until one code proved that the
-        // authenticator app was set up correctly
-        $_SESSION['wcs_2fa_enroll'] = array(
-            'secret' => PhpwcmsTotp::randomSecret(),
-            'time'   => time(),
-        );
+        if (!$two_factor_password_ok) {
+            $two_factor_error = $BL['be_2fa_error_password'];
+        } elseif ($two_factor_limit['locked']) {
+            $two_factor_error = sprintf($BL['be_2fa_locked'], (int) $two_factor_limit['wait']);
+        } else {
+            // the secret stays in the session until one code proved that the
+            // authenticator app was set up correctly
+            $_SESSION['wcs_2fa_enroll'] = array(
+                'secret' => PhpwcmsTotp::randomSecret(),
+                'time'   => time(),
+            );
+        }
 
     } elseif ($two_factor_do === 'confirm') {
 
         $enroll = $_SESSION['wcs_2fa_enroll'] ?? null;
 
-        if (!is_array($enroll) || empty($enroll['secret'])) {
+        if ($two_factor_limit['locked']) {
+            $two_factor_error = sprintf($BL['be_2fa_locked'], (int) $two_factor_limit['wait']);
+        } elseif (!is_array($enroll) || empty($enroll['secret'])) {
             $two_factor_error = $BL['be_2fa_error_session'];
         } elseif (time() - (int) $enroll['time'] > 600) {
             unset($_SESSION['wcs_2fa_enroll']);
             $two_factor_error = $BL['be_2fa_error_session'];
         } elseif (($slice = PhpwcmsTotp::verify($enroll['secret'], $two_factor_code, 1, 0)) === false) {
+            PhpwcmsTwoFactorGuard::fail($two_factor_user_id);
             $two_factor_error = $BL['be_2fa_error_code'];
         } else {
+            PhpwcmsTwoFactorGuard::reset($two_factor_user_id);
             // a lost phone must not lock the account out, so the enrollment hands
             // out recovery codes; only their hashes are stored
             $two_factor_new_codes = PhpwcmsRecoveryCode::generate();
@@ -81,22 +98,28 @@ if (
 
     } elseif ($two_factor_do === 'disable') {
 
-        // switching it off needs a valid code too, either the authenticator or
-        // one of the recovery codes, so a stolen session cannot simply remove
-        // the second factor
+        // switching it off needs the password and a valid code, either the
+        // authenticator or one of the recovery codes, so a stolen session
+        // cannot simply remove the second factor
         $result = _dbQuery(
             'SELECT usr_2fa_secret, usr_2fa_last_slice, usr_2fa_recovery FROM ' . DB_PREPEND . 'phpwcms_user'
             . ' WHERE usr_id=' . $two_factor_user_id
         );
 
-        if (!isset($result[0]['usr_2fa_secret']) || $result[0]['usr_2fa_secret'] === '') {
+        if (!$two_factor_password_ok) {
+            $two_factor_error = $BL['be_2fa_error_password'];
+        } elseif ($two_factor_limit['locked']) {
+            $two_factor_error = sprintf($BL['be_2fa_locked'], (int) $two_factor_limit['wait']);
+        } elseif (!isset($result[0]['usr_2fa_secret']) || $result[0]['usr_2fa_secret'] === '') {
             $two_factor_error = $BL['be_2fa_error_session'];
         } elseif (
             PhpwcmsTotp::verify($result[0]['usr_2fa_secret'], $two_factor_code, 1, (int) $result[0]['usr_2fa_last_slice']) === false
             && PhpwcmsRecoveryCode::consume((string) ($result[0]['usr_2fa_recovery'] ?? ''), $two_factor_code) === null
         ) {
+            PhpwcmsTwoFactorGuard::fail($two_factor_user_id);
             $two_factor_error = $BL['be_2fa_error_code'];
         } else {
+            PhpwcmsTwoFactorGuard::reset($two_factor_user_id);
             _dbQuery(
                 'UPDATE ' . DB_PREPEND . 'phpwcms_user SET '
                 . "usr_2fa_secret='', usr_2fa_enabled=0, usr_2fa_last_slice=0, usr_2fa_recovery=''"

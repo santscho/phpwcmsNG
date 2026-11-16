@@ -797,6 +797,8 @@ CREATE TABLE `phpwcms_user` (
   `usr_2fa_enabled` tinyint(1) NOT NULL DEFAULT '0',
   `usr_2fa_last_slice` bigint unsigned NOT NULL DEFAULT '0',
   `usr_2fa_recovery` mediumtext NULL,
+  `usr_2fa_failed` smallint unsigned NOT NULL DEFAULT '0',
+  `usr_2fa_failed_at` int unsigned NOT NULL DEFAULT '0',
   `usr_vars` mediumtext NOT NULL,
   PRIMARY KEY (`usr_id`)
 );

@@ -81,11 +81,15 @@ if ($two_factor_uri !== '') {
                 <form action="phpwcms.php?do=profile&amp;p=2" method="post" class="row g-3 align-items-end">
                     <input type="hidden" name="form_aktion" value="update_2fa" />
                     <input type="hidden" name="do_2fa" value="disable" />
-                    <div class="col-12 md:col-6">
-                        <label class="form-label" for="code_2fa_disable"><?php echo $BL['be_2fa_code_label'] ?></label>
-                        <input type="text" class="form-control" name="code_2fa" id="code_2fa_disable" autocomplete="one-time-code" maxlength="11" />
+                    <div class="col-12 md:col-4">
+                        <label class="form-label" for="password_2fa_disable"><?php echo $BL['be_2fa_password_label'] ?></label>
+                        <input type="password" class="form-control" name="password_2fa" id="password_2fa_disable" autocomplete="current-password" required />
                     </div>
-                    <div class="col-12 md:col-6">
+                    <div class="col-12 md:col-4">
+                        <label class="form-label" for="code_2fa_disable"><?php echo $BL['be_2fa_code_label'] ?></label>
+                        <input type="text" class="form-control" name="code_2fa" id="code_2fa_disable" autocomplete="one-time-code" maxlength="11" required />
+                    </div>
+                    <div class="col-12 md:col-4">
                         <button type="submit" class="btn btn-outline theme-danger btn-sm"><?php echo $BL['be_2fa_disable'] ?></button>
                     </div>
                 </form>
@@ -128,10 +132,16 @@ if ($two_factor_uri !== '') {
             </div>
 
             <div class="card-footer">
-                <form action="phpwcms.php?do=profile&amp;p=2" method="post">
+                <form action="phpwcms.php?do=profile&amp;p=2" method="post" class="row g-3 align-items-end">
                     <input type="hidden" name="form_aktion" value="update_2fa" />
                     <input type="hidden" name="do_2fa" value="begin" />
-                    <button type="submit" class="btn theme-primary btn-solid btn-styled btn-sm"><?php echo $BL['be_2fa_begin'] ?></button>
+                    <div class="col-12 md:col-6">
+                        <label class="form-label" for="password_2fa_begin"><?php echo $BL['be_2fa_password_label'] ?></label>
+                        <input type="password" class="form-control" name="password_2fa" id="password_2fa_begin" autocomplete="current-password" required />
+                    </div>
+                    <div class="col-12 md:col-6">
+                        <button type="submit" class="btn theme-primary btn-solid btn-styled btn-sm"><?php echo $BL['be_2fa_begin'] ?></button>
+                    </div>
                 </form>
             </div>
 

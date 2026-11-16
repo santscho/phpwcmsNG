@@ -60,6 +60,7 @@ require_once PHPWCMS_ROOT.'/include/inc_lib/backend.functions.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lang/code.lang.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.totp.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.recoverycode.php';
+require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.twofactorguard.php';
 
 if (isset($_GET['reason']) && str_starts_with($_GET['reason'], 'csrf-')) {
     headerAvoidPageCaching();
@@ -146,9 +147,10 @@ $json_check = isset($_POST['json']) ? (int)$_POST['json'] : 0;
 
 // two factor authentication proof of concept, off unless $phpwcms['backend_2fa'] is set
 $backend_2fa     = !empty($phpwcms['backend_2fa']);
-$login_passed    = 0;
-$login_step2     = false;
-$login_step2_err = false;
+$login_passed      = 0;
+$login_step2       = false;
+$login_step2_err   = false;
+$login_step2_wait  = 0;
 $login_pending   = (isset($_SESSION['wcs_2fa_pending']) && is_array($_SESSION['wcs_2fa_pending'])) ? $_SESSION['wcs_2fa_pending'] : null;
 $form_action     = isset($_POST['form_aktion']) ? (string) $_POST['form_aktion'] : '';
 
@@ -261,39 +263,54 @@ if($form_action === 'login2fa' && $json_check === 1) {
 
         if(isset($result[0]['usr_id'])) {
 
-            $submitted = isset($_POST['form_2fa_code']) ? (string) $_POST['form_2fa_code'] : '';
-            $slice     = PhpwcmsTotp::verify(
-                $result[0]['usr_2fa_secret'],
-                $submitted,
-                1,
-                (int) $result[0]['usr_2fa_last_slice']
-            );
             $second_step_passed = false;
+            $second_step_limit  = PhpwcmsTwoFactorGuard::state((int) $result[0]['usr_id']);
 
-            if($slice !== false) {
-                _dbQuery(
-                    'UPDATE ' . DB_PREPEND . 'phpwcms_user SET usr_2fa_last_slice=' . (int) $slice
-                    . ' WHERE usr_id=' . (int) $result[0]['usr_id'],
-                    'UPDATE'
+            if($second_step_limit['locked']) {
+
+                // too many codes were wrong, so even a correct one waits for the window
+                $login_step2      = true;
+                $login_step2_err  = true;
+                $login_step2_wait = (int) $second_step_limit['wait'];
+
+            } else {
+
+                $submitted = isset($_POST['form_2fa_code']) ? (string) $_POST['form_2fa_code'] : '';
+                $slice     = PhpwcmsTotp::verify(
+                    $result[0]['usr_2fa_secret'],
+                    $submitted,
+                    1,
+                    (int) $result[0]['usr_2fa_last_slice']
                 );
-                $second_step_passed = true;
-            } elseif (
-                ($recovery_left = PhpwcmsRecoveryCode::consume((string) ($result[0]['usr_2fa_recovery'] ?? ''), $submitted)) !== null
-            ) {
-                // a recovery code replaces the authenticator when the phone is gone
-                _dbQuery(
-                    'UPDATE ' . DB_PREPEND . 'phpwcms_user SET usr_2fa_recovery=' . _dbEscape($recovery_left)
-                    . ' WHERE usr_id=' . (int) $result[0]['usr_id'],
-                    'UPDATE'
-                );
-                $second_step_passed = true;
+
+                if($slice !== false) {
+                    _dbQuery(
+                        'UPDATE ' . DB_PREPEND . 'phpwcms_user SET usr_2fa_last_slice=' . (int) $slice
+                        . ' WHERE usr_id=' . (int) $result[0]['usr_id'],
+                        'UPDATE'
+                    );
+                    $second_step_passed = true;
+                } elseif (
+                    ($recovery_left = PhpwcmsRecoveryCode::consume((string) ($result[0]['usr_2fa_recovery'] ?? ''), $submitted)) !== null
+                ) {
+                    // a recovery code replaces the authenticator when the phone is gone
+                    _dbQuery(
+                        'UPDATE ' . DB_PREPEND . 'phpwcms_user SET usr_2fa_recovery=' . _dbEscape($recovery_left)
+                        . ' WHERE usr_id=' . (int) $result[0]['usr_id'],
+                        'UPDATE'
+                    );
+                    $second_step_passed = true;
+                }
             }
 
             if($second_step_passed) {
+                PhpwcmsTwoFactorGuard::reset((int) $result[0]['usr_id']);
                 unset($_SESSION['wcs_2fa_pending']);
                 $login_pending = null;
                 $wcs_user      = $result[0]['usr_login'];
                 $login_passed  = 1;
+            } elseif(!$second_step_limit['locked']) {
+                PhpwcmsTwoFactorGuard::fail((int) $result[0]['usr_id']);
             }
         }
     }
@@ -582,7 +599,7 @@ if($login_step2) {
 <input type="hidden" name="logintoken" value="<?php echo LOGIN_TOKEN; ?>" />
 <input name="form_aktion" type="hidden" id="form_aktion" value="login2fa" />
 <?php if($login_step2_err): ?>
-<div class="alert theme-danger mb-5" role="alert"><div><?php echo $BL['login_2fa_error'] ?></div></div>
+<div class="alert theme-danger mb-5" role="alert"><div><?php echo $login_step2_wait > 0 ? sprintf($BL['login_2fa_locked'], $login_step2_wait) : $BL['login_2fa_error'] ?></div></div>
 <?php endif; ?>
 <div class="mb-5">
     <label class="form-label" for="form_2fa_code"><?php echo $BL['login_2fa_code'] ?></label>
