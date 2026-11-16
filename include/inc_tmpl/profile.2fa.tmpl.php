@@ -32,6 +32,8 @@ if ($two_factor_uri !== '') {
     }
 }
 ?>
+<script type="module" src="include/inc_js/backend.otp.js"></script>
+
 <div class="row g-4">
 
     <div class="col-12 xl:col-8">
@@ -87,7 +89,16 @@ if ($two_factor_uri !== '') {
                     </div>
                     <div class="col-12 md:col-4">
                         <label class="form-label" for="code_2fa_disable"><?php echo $BL['be_2fa_code_label'] ?></label>
-                        <input type="text" class="form-control" name="code_2fa" id="code_2fa_disable" autocomplete="one-time-code" maxlength="11" required />
+                        <div class="otp" data-bs-otp data-bs-length="6" data-bs-type="numeric">
+                            <input type="text" class="form-control" name="code_2fa" id="code_2fa_disable" autocomplete="one-time-code" maxlength="6" required />
+                        </div>
+                        <details class="mt-3">
+                            <summary class="small"><?php echo $BL['be_2fa_recovery_toggle'] ?></summary>
+                            <div class="mt-3">
+                                <label class="form-label" for="code_2fa_recovery"><?php echo $BL['be_2fa_recovery_field'] ?></label>
+                                <input type="text" class="form-control" name="code_2fa_recovery" id="code_2fa_recovery" maxlength="11" autocomplete="off" data-2fa-recovery="code_2fa_disable" />
+                            </div>
+                        </details>
                     </div>
                     <div class="col-12 md:col-4">
                         <button type="submit" class="btn btn-outline theme-danger btn-sm"><?php echo $BL['be_2fa_disable'] ?></button>
@@ -117,7 +128,9 @@ if ($two_factor_uri !== '') {
                     <input type="hidden" name="do_2fa" value="confirm" />
                     <div class="col-12 md:col-6">
                         <label class="form-label" for="code_2fa_confirm"><?php echo $BL['be_2fa_code_label'] ?></label>
-                        <input type="text" class="form-control" name="code_2fa" id="code_2fa_confirm" inputmode="numeric" autocomplete="one-time-code" maxlength="6" autofocus />
+                        <div class="otp" data-bs-otp data-bs-length="6" data-bs-type="numeric">
+                            <input type="text" class="form-control" name="code_2fa" id="code_2fa_confirm" inputmode="numeric" autocomplete="one-time-code" maxlength="6" autofocus />
+                        </div>
                     </div>
                     <div class="col-12 md:col-6">
                         <button type="submit" class="btn theme-primary btn-solid btn-styled btn-sm"><?php echo $BL['be_2fa_confirm'] ?></button>

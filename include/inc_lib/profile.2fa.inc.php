@@ -42,7 +42,11 @@ if (
 ) {
 
     $two_factor_do       = isset($_POST['do_2fa']) ? (string) $_POST['do_2fa'] : '';
-    $two_factor_code     = isset($_POST['code_2fa']) ? (string) $_POST['code_2fa'] : '';
+    $two_factor_code     = isset($_POST['code_2fa']) ? trim((string) $_POST['code_2fa']) : '';
+    if ($two_factor_code === '' && isset($_POST['code_2fa_recovery'])) {
+        // the recovery field next to the code control is the alternative
+        $two_factor_code = trim((string) $_POST['code_2fa_recovery']);
+    }
     $two_factor_password = isset($_POST['password_2fa']) ? (string) $_POST['password_2fa'] : '';
     $two_factor_limit    = PhpwcmsTwoFactorGuard::state($two_factor_user_id);
 

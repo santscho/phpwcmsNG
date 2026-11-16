@@ -276,7 +276,12 @@ if($form_action === 'login2fa' && $json_check === 1) {
 
             } else {
 
-                $submitted = isset($_POST['form_2fa_code']) ? (string) $_POST['form_2fa_code'] : '';
+                // the code field is the labelled OTP control, a recovery code is
+                // the alternative typed into its own field
+                $submitted = isset($_POST['form_2fa_code']) ? trim((string) $_POST['form_2fa_code']) : '';
+                if ($submitted === '' && isset($_POST['form_2fa_recovery'])) {
+                    $submitted = trim((string) $_POST['form_2fa_recovery']);
+                }
                 $slice     = PhpwcmsTotp::verify(
                     $result[0]['usr_2fa_secret'],
                     $submitted,
@@ -464,6 +469,7 @@ $layout_rtl = (isset($_SESSION['wcs_user_lang']) && ($_SESSION['wcs_user_lang'] 
     <link href="include/inc_ext/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css">
     <script src="include/inc_js/jquery/jquery.min.js"></script>
     <script type="module" src="include/inc_ext/bootstrap/bootstrap.bundle.min.js"></script>
+    <script type="module" src="include/inc_js/backend.otp.js"></script>
     <script src="include/inc_js/phpwcms.min.js"></script>
     <script src="include/inc_js/md5.js"></script>
 </head>
@@ -620,9 +626,18 @@ if($login_step2) {
 <?php endif; ?>
 <div class="mb-5">
     <label class="form-label" for="form_2fa_code"><?php echo $BL['login_2fa_code'] ?></label>
-    <input name="form_2fa_code" type="text" class="form-control" id="form_2fa_code" maxlength="11" autocomplete="one-time-code" required />
-    <p class="small fg-secondary mt-3 mb-0"><?php echo $BL['login_2fa_recovery_hint'] ?></p>
+    <div class="otp" data-bs-otp data-bs-length="6" data-bs-type="numeric">
+        <input name="form_2fa_code" type="text" class="form-control" id="form_2fa_code" maxlength="6" inputmode="numeric" autocomplete="one-time-code" required />
+    </div>
 </div>
+<details class="mb-5">
+    <summary class="small"><?php echo $BL['be_2fa_recovery_toggle'] ?></summary>
+    <div class="mt-3">
+        <label class="form-label" for="form_2fa_recovery"><?php echo $BL['be_2fa_recovery_field'] ?></label>
+        <input name="form_2fa_recovery" type="text" class="form-control" id="form_2fa_recovery" maxlength="11" autocomplete="off" data-2fa-recovery="form_2fa_code" />
+        <p class="small fg-secondary mt-3 mb-0"><?php echo $BL['login_2fa_recovery_hint'] ?></p>
+    </div>
+</details>
 <button type="submit" class="btn theme-primary btn-solid btn-styled btn-sm w-100"><?php echo $BL['login_2fa_button'] ?></button>
 <p class="small fg-secondary mt-5 mb-0"><a href="<?php echo PHPWCMS_URL.get_login_file() ?>"><?php echo $BL['login_2fa_cancel'] ?></a></p>
 </form>
