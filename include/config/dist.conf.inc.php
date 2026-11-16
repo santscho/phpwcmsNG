@@ -58,6 +58,10 @@ $phpwcms['max_time']             = 1800; // logout after max_time/60 seconds
 // two factor authentication proof of concept: only backend administrators that
 // enrolled an authenticator are asked for a code, everybody else logs in as before
 $phpwcms['backend_2fa']          = 0;
+// Key the two factor recovery codes are signed with. Set one per install,
+// for example: php -r "echo bin2hex(random_bytes(32));"  Rotating it makes
+// every handed out recovery code invalid.
+$phpwcms['backend_2fa_key']      = '';
 $phpwcms['responsive']           = 1; // 0 max. image width = $phpwcms['content_width'], 1 = as given
 $phpwcms['preserve_image_name']  = 1; // keep file name for resized versions of the image
 

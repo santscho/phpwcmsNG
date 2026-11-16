@@ -23,6 +23,11 @@ if (!defined('PHPWCMS_ROOT')) {
  * list of codes. Only their hashes are stored; a code is removed the moment it
  * was used, which makes every one of them work exactly once.
  *
+ * The hashes are keyed (HMAC-SHA256) with $phpwcms['backend_2fa_key'], which
+ * lives in the config and not in the database: a dump of the table alone is
+ * then not enough to recover a code. Rotating that key invalidates every code
+ * that was handed out before, so the second factor has to be set up again.
+ *
  * The alphabet leaves out the characters that are easy to mix up when a code
  * is copied from paper (0, 1, I, L and O).
  */
@@ -33,6 +38,10 @@ class PhpwcmsRecoveryCode {
 
     private const ALPHABET  = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
     private const SEPARATOR = "\n";
+    /** marks the keyed format, so an unkeyed hash can never be mistaken for one */
+    private const PREFIX    = 'hmac1:';
+    /** a key shorter than this is treated as missing */
+    private const MIN_KEY   = 32;
 
     /**
      * A fresh list of codes, formatted for the screen.
@@ -73,9 +82,26 @@ class PhpwcmsRecoveryCode {
         return strtoupper((string) preg_replace('/[^A-Za-z0-9]/', '', $code));
     }
 
+    /**
+     * The install secret the codes are signed with.
+     */
+    public static function key(): string
+    {
+        return (string) ($GLOBALS['phpwcms']['backend_2fa_key'] ?? '');
+    }
+
+    /**
+     * Whether a usable key is configured. Without one no codes are handed out
+     * and no stored code can match, instead of quietly hashing unkeyed.
+     */
+    public static function configured(): bool
+    {
+        return strlen(self::key()) >= self::MIN_KEY;
+    }
+
     public static function hash(string $code): string
     {
-        return hash('sha256', self::normalize($code));
+        return self::PREFIX . hash_hmac('sha256', self::normalize($code), self::key());
     }
 
     /**
@@ -110,10 +136,16 @@ class PhpwcmsRecoveryCode {
             return null;
         }
 
+        if (!self::configured()) {
+            return null;
+        }
+
         $given = self::hash($code);
         $lines = array_values(array_filter(
             preg_split('/\R/', trim($stored)) ?: [],
-            static fn($line) => trim($line) !== ''
+            // anything without the prefix is a hash from the unkeyed format and
+            // is not accepted any more
+            static fn($line) => str_starts_with(trim($line), self::PREFIX)
         ));
 
         // compare against every hash, so the time taken does not tell which one matched

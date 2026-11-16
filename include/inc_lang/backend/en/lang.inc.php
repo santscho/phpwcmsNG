@@ -1656,6 +1656,7 @@ $BL['login_2fa_locked']                 = 'Too many invalid codes. Please wait %
 $BL['be_2fa_password_label']            = 'your current password';
 $BL['be_2fa_error_password']            = 'That password is not correct.';
 $BL['be_2fa_locked']                    = 'Too many invalid codes. Please wait %d minutes and try again.';
+$BL['be_2fa_error_key']                 = 'Recovery codes need a key. Set $phpwcms[\'backend_2fa_key\'] in the config and start the setup again.';
 $BL['be_2fa_log_title']                 = 'recent activity';
 $BL['be_2fa_log_empty']                 = 'Nothing has been recorded for this account yet.';
 $BL['be_2fa_log_enrolled']              = 'two factor authentication enabled';

@@ -76,6 +76,10 @@ if (
         } elseif (time() - (int) $enroll['time'] > 600) {
             unset($_SESSION['wcs_2fa_enroll']);
             $two_factor_error = $BL['be_2fa_error_session'];
+        } elseif (!PhpwcmsRecoveryCode::configured()) {
+            // without the key no recovery codes can be handed out, and enrolling
+            // without them would be a trap
+            $two_factor_error = $BL['be_2fa_error_key'];
         } elseif (($slice = PhpwcmsTotp::verify($enroll['secret'], $two_factor_code, 1, 0)) === false) {
             PhpwcmsTwoFactorGuard::fail($two_factor_user_id);
             $two_factor_error = $BL['be_2fa_error_code'];

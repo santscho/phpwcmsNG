@@ -78,8 +78,15 @@ try {
 }
 $check('qr refuses text that is too long', true, $too_long);
 
-// recovery codes: single use, stored as hashes, tolerant about the dash
+// recovery codes: single use, keyed hashes, tolerant about the dash
 require_once PHPWCMS_ROOT . '/include/inc_lib/classes/class.recoverycode.php';
+$phpwcms = array('backend_2fa_key' => str_repeat('k', 64));
+$check('recovery key configured', true, PhpwcmsRecoveryCode::configured());
+$check(
+    'recovery hash is a keyed hmac',
+    'hmac1:' . hash_hmac('sha256', 'ABCDE23456', str_repeat('k', 64)),
+    PhpwcmsRecoveryCode::hash('abcde-23456')
+);
 $codes = PhpwcmsRecoveryCode::generate();
 $check('eight recovery codes', 8, count($codes));
 $check('recovery codes are unique', 8, count(array_unique($codes)));
@@ -92,6 +99,12 @@ $check('recovery code accepted once', 7, $after === null ? -1 : PhpwcmsRecoveryC
 $check('used recovery code rejected', null, PhpwcmsRecoveryCode::consume($after, $codes[0]));
 $check('short value rejected', null, PhpwcmsRecoveryCode::consume($stored, '12345'));
 $check('empty store rejects everything', null, PhpwcmsRecoveryCode::consume('', $codes[0]));
+$check('stored value carries the keyed format', true, str_starts_with($stored, 'hmac1:'));
+$phpwcms = array('backend_2fa_key' => '');
+$check('missing key is not configured', false, PhpwcmsRecoveryCode::configured());
+$check('missing key accepts no code', null, PhpwcmsRecoveryCode::consume($stored, $codes[1]));
+$phpwcms = array('backend_2fa_key' => str_repeat('x', 64));
+$check('another key accepts no code', null, PhpwcmsRecoveryCode::consume($stored, $codes[1]));
 
 printf("\n%s\n", $failures === 0 ? 'all checks passed' : $failures . ' check(s) failed');
 exit($failures === 0 ? 0 : 1);

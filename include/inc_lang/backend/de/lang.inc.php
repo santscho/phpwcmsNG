@@ -1639,6 +1639,7 @@ $BL['login_2fa_locked']                 = 'Zu viele ungültige Codes. Bitte in %
 $BL['be_2fa_password_label']            = 'Ihr aktuelles Passwort';
 $BL['be_2fa_error_password']            = 'Das Passwort ist nicht korrekt.';
 $BL['be_2fa_locked']                    = 'Zu viele ungültige Codes. Bitte in %d Minuten erneut versuchen.';
+$BL['be_2fa_error_key']                 = 'Für Wiederherstellungscodes wird ein Schlüssel benötigt. Setzen Sie $phpwcms[\'backend_2fa_key\'] in der Konfiguration und starten Sie die Einrichtung erneut.';
 $BL['be_2fa_log_title']                 = 'Letzte Aktivitäten';
 $BL['be_2fa_log_empty']                 = 'Für dieses Konto wurde noch nichts aufgezeichnet.';
 $BL['be_2fa_log_enrolled']              = 'Zwei-Faktor-Authentifizierung aktiviert';
