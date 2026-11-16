@@ -45,6 +45,10 @@ $backend_theme_attr = $backend_theme === 'auto' ? '' : ' data-bs-theme="' . $bac
 
 require_once PHPWCMS_ROOT.'/include/inc_lib/backend.functions.inc.php';
 
+// pending two factor lock warnings are retried after the answer has gone out
+require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.twofactorguard.php';
+PhpwcmsTwoFactorGuard::drainQueueAfterResponse();
+
 // date and time format picked in the profile, used by the backend date pickers
 $backend_date_format = backend_date_format($_SESSION['wcs_user_date_format'] ?? '');
 // first day of the week picked in the profile, used by the backend date pickers

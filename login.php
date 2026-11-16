@@ -63,6 +63,9 @@ require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.recoverycode.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.twofactorguard.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.twofactorlog.php';
 
+// queued lock warnings are retried after the response, never inside it
+PhpwcmsTwoFactorGuard::drainQueueAfterResponse();
+
 if (isset($_GET['reason']) && str_starts_with($_GET['reason'], 'csrf-')) {
     headerAvoidPageCaching();
 }

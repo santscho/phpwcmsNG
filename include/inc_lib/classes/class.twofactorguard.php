@@ -40,6 +40,13 @@ class PhpwcmsTwoFactorGuard {
     public const WINDOW = 900;
     /** seconds a lock warning may spend on a hanging mail server */
     public const WARNING_TIMEOUT = 5;
+    /** send attempts before a queued warning is given up */
+    public const OUTBOX_ATTEMPTS = 5;
+    /** seconds before a failed warning is tried again */
+    public const OUTBOX_RETRY = 300;
+
+    /** the outbox is drained once per request at most */
+    private static bool $drainQueued = false;
 
     /**
      * Whether the account is locked right now.
@@ -202,7 +209,7 @@ class PhpwcmsTwoFactorGuard {
      * from the request, so a wrong secret cannot be used to send mail anywhere
      * else, and the text follows the backend language stored on the account.
      *
-     * @return array{recipient: string, toName: string, subject: string, text: string}
+     * @return array{recipient: string, toName: string, subject: string, text: string, login: string}
      */
     private static function lockMail(int $userId, string $kind, int $minutes = 0): array
     {
@@ -251,64 +258,145 @@ class PhpwcmsTwoFactorGuard {
                 date('Y-m-d H:i:s'),
                 PHPWCMS_GDPR_MODE ? getAnonymizedIp() : getRemoteIP()
             ),
+            'login'     => $login,
         );
     }
 
     /**
-     * Send a lock warning. A mail server that is down or unconfigured must
-     * never break the login or the lock itself, so failures are swallowed.
+     * Queue a lock warning. The row is written during the request, so a worker
+     * that dies after the answer loses the send, not the message: a later
+     * request picks it up.
      */
     private static function notifyLock(int $userId, string $kind): void
     {
-        // the answer is sent first: a mail server that hangs must not hold up
-        // the login or the two factor screen that tripped the lock
-        register_shutdown_function(static function () use ($userId, $kind): void {
-            self::deliverLockMail($userId, $kind);
-        });
-    }
-
-    /**
-     * Send the warning once the response has been handed to the client, so the
-     * connect timeout of the mail server is paid after the answer, not inside
-     * it. Where the SAPI cannot close the request early (no php-fpm), the send
-     * falls back to the end of the request.
-     */
-    private static function deliverLockMail(int $userId, string $kind): void
-    {
-        if (function_exists('fastcgi_finish_request')) {
-            self::finishResponse();
-            fastcgi_finish_request();
-        } elseif (function_exists('litespeed_finish_request')) {
-            self::finishResponse();
-            litespeed_finish_request();
-        }
-
         $mail = self::lockMail($userId, $kind);
 
-        // no address or no text to send: the holder gets no warning at all
-        if (!$mail || !function_exists('sendEmail')) {
+        // no address or no text to send: nothing can ever be delivered
+        if (!$mail) {
             self::logNotificationFailure($userId);
             return;
         }
 
-        try {
-            $sent = sendEmail(array(
-                'recipient' => $mail['recipient'],
-                'toName'    => $mail['toName'],
-                'subject'   => $mail['subject'],
-                'isHTML'    => false,
-                'text'      => $mail['text'],
-                // nobody waits for this message, so a hanging server costs
-                // seconds instead of tying up the worker for minutes
-                'timeout'   => self::WARNING_TIMEOUT,
-            ));
+        _dbQuery(
+            'INSERT INTO ' . DB_PREPEND . 'phpwcms_user_2fa_outbox'
+            . ' (outbox_user_id, outbox_login, outbox_kind, outbox_recipient, outbox_to_name,'
+            . ' outbox_subject, outbox_body, outbox_created, outbox_attempts, outbox_last_attempt)'
+            . ' VALUES (' . $userId
+            . ', ' . _dbEscape($mail['login'])
+            . ', ' . _dbEscape($kind)
+            . ', ' . _dbEscape($mail['recipient'])
+            . ', ' . _dbEscape($mail['toName'])
+            . ', ' . _dbEscape($mail['subject'])
+            . ', ' . _dbEscape($mail['text'])
+            . ', ' . time() . ', 0, 0)',
+            'INSERT'
+        );
 
-            if (empty($sent[0])) {
-                self::logNotificationFailure($userId);
-            }
-        } catch (\Throwable $e) {
-            self::logNotificationFailure($userId);
+        // the answer goes out before the mail server is contacted
+        self::drainQueueAfterResponse();
+    }
+
+    /**
+     * Deliver the outbox after the response, so a send can neither be lost
+     * (the row stays until it went out) nor hold up the answer.
+     */
+    public static function drainQueueAfterResponse(int $limit = 5): void
+    {
+        if (self::$drainQueued) {
+            return;
         }
+
+        self::$drainQueued = true;
+
+        register_shutdown_function(static function () use ($limit): void {
+            if (function_exists('fastcgi_finish_request')) {
+                self::finishResponse();
+                fastcgi_finish_request();
+            } elseif (function_exists('litespeed_finish_request')) {
+                self::finishResponse();
+                litespeed_finish_request();
+            }
+
+            self::drainQueue($limit);
+        });
+    }
+
+    /**
+     * Send what the outbox still holds. Runs after a response on the login and
+     * backend screens, so a send that failed is retried instead of forgotten.
+     */
+    public static function drainQueue(int $limit = 5): void
+    {
+        $result = _dbQuery(
+            'SELECT * FROM ' . DB_PREPEND . 'phpwcms_user_2fa_outbox'
+            . ' WHERE outbox_attempts < ' . self::OUTBOX_ATTEMPTS
+            . ' AND (outbox_last_attempt = 0 OR outbox_last_attempt <= ' . (time() - self::OUTBOX_RETRY) . ')'
+            . ' ORDER BY outbox_id LIMIT ' . max(1, $limit)
+        );
+
+        if (!is_array($result)) {
+            return;
+        }
+
+        foreach ($result as $row) {
+            if (is_array($row) && !empty($row['outbox_id'])) {
+                self::deliverQueued($row);
+            }
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     */
+    private static function deliverQueued(array $row): void
+    {
+        $id     = (int) $row['outbox_id'];
+        $userId = (int) ($row['outbox_user_id'] ?? 0);
+        $login  = (string) ($row['outbox_login'] ?? '');
+        $sent   = array(false, '');
+
+        if (function_exists('sendEmail')) {
+            try {
+                $sent = sendEmail(array(
+                    'recipient' => (string) ($row['outbox_recipient'] ?? ''),
+                    'toName'    => (string) ($row['outbox_to_name'] ?? ''),
+                    'subject'   => (string) ($row['outbox_subject'] ?? ''),
+                    'isHTML'    => false,
+                    'text'      => (string) ($row['outbox_body'] ?? ''),
+                    // nobody waits for this message, so a hanging server costs
+                    // seconds instead of tying up the worker for minutes
+                    'timeout'   => self::WARNING_TIMEOUT,
+                ));
+            } catch (\Throwable $e) {
+                $sent = array(false, '');
+            }
+        }
+
+        if (!empty($sent[0])) {
+            _dbQuery(
+                'DELETE FROM ' . DB_PREPEND . 'phpwcms_user_2fa_outbox WHERE outbox_id=' . $id,
+                'DELETE'
+            );
+            return;
+        }
+
+        $attempts = (int) ($row['outbox_attempts'] ?? 0) + 1;
+
+        if ($attempts >= self::OUTBOX_ATTEMPTS) {
+            // given up, but the activity list keeps the trail
+            _dbQuery(
+                'DELETE FROM ' . DB_PREPEND . 'phpwcms_user_2fa_outbox WHERE outbox_id=' . $id,
+                'DELETE'
+            );
+            self::logNotificationFailure($userId, $login);
+            return;
+        }
+
+        _dbQuery(
+            'UPDATE ' . DB_PREPEND . 'phpwcms_user_2fa_outbox SET outbox_attempts=' . $attempts
+            . ', outbox_last_attempt=' . time() . ' WHERE outbox_id=' . $id,
+            'UPDATE'
+        );
     }
 
     /**
@@ -329,16 +417,23 @@ class PhpwcmsTwoFactorGuard {
      * Record that a lock warning never reached the mailer, so the audit list
      * can tell a silent mailer from a warning that was handed over.
      */
-    private static function logNotificationFailure(int $userId): void
+    private static function logNotificationFailure(int $userId, string $login = ''): void
     {
-        $result = _dbQuery(
-            'SELECT usr_login FROM ' . DB_PREPEND . 'phpwcms_user WHERE usr_id=' . $userId
-        );
+        if ($userId <= 0) {
+            return;
+        }
+
+        if ($login === '') {
+            $result = _dbQuery(
+                'SELECT usr_login FROM ' . DB_PREPEND . 'phpwcms_user WHERE usr_id=' . $userId
+            );
+            $login  = (string) ($result[0]['usr_login'] ?? '');
+        }
 
         PhpwcmsTwoFactorLog::add(
             PhpwcmsTwoFactorLog::NOTIFICATION_FAILED,
             $userId,
-            (string) ($result[0]['usr_login'] ?? '')
+            $login
         );
     }
 

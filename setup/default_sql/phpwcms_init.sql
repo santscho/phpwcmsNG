@@ -893,6 +893,22 @@ CREATE TABLE `phpwcms_user_2fa_log` (
   KEY `log_user_id` (`log_user_id`,`log_id`)
 );
 
+CREATE TABLE `phpwcms_user_2fa_outbox` (
+  `outbox_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `outbox_user_id` int unsigned NOT NULL DEFAULT '0',
+  `outbox_login` varchar(100) NOT NULL DEFAULT '',
+  `outbox_kind` varchar(16) NOT NULL DEFAULT 'password',
+  `outbox_recipient` varchar(150) NOT NULL DEFAULT '',
+  `outbox_to_name` varchar(150) NOT NULL DEFAULT '',
+  `outbox_subject` varchar(255) NOT NULL DEFAULT '',
+  `outbox_body` mediumtext NOT NULL,
+  `outbox_created` int unsigned NOT NULL DEFAULT '0',
+  `outbox_attempts` smallint unsigned NOT NULL DEFAULT '0',
+  `outbox_last_attempt` int unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`outbox_id`),
+  KEY `outbox_created` (`outbox_created`)
+);
+
 CREATE TABLE `phpwcms_userlog` (
   `userlog_id` int(11) NOT NULL AUTO_INCREMENT,
   `logged_user` varchar(30) NOT NULL DEFAULT '',
