@@ -893,6 +893,16 @@ CREATE TABLE `phpwcms_user_2fa_log` (
   KEY `log_user_id` (`log_user_id`,`log_id`)
 );
 
+CREATE TABLE `phpwcms_user_2fa_reset` (
+  `reset_user_id` int unsigned NOT NULL DEFAULT '0',
+  `reset_actor_id` int unsigned NOT NULL DEFAULT '0',
+  `reset_actor` varchar(100) NOT NULL DEFAULT '',
+  `reset_created` int unsigned NOT NULL DEFAULT '0',
+  `reset_effective` int unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`reset_user_id`),
+  KEY `reset_effective` (`reset_effective`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `phpwcms_user_2fa_throttle` (
   `throttle_key` varchar(64) NOT NULL DEFAULT '',
   `throttle_failures` smallint unsigned NOT NULL DEFAULT '0',

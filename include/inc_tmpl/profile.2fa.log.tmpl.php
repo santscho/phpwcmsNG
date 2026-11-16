@@ -28,6 +28,9 @@ $two_factor_marks = array(
     PhpwcmsTwoFactorLog::PASSWORD_FAILED   => 'theme-danger',
     PhpwcmsTwoFactorLog::PASSWORD_LOCKED   => 'theme-danger',
     PhpwcmsTwoFactorLog::NOTIFICATION_FAILED => 'theme-warning',
+    PhpwcmsTwoFactorLog::RESET           => 'theme-danger',
+    PhpwcmsTwoFactorLog::RESET_SCHEDULED => 'theme-warning',
+    PhpwcmsTwoFactorLog::RESET_CANCELLED => 'theme-success',
 );
 ?>
 <div class="row g-4">
@@ -106,7 +109,9 @@ $two_factor_marks = array(
     $two_factor_attempts = (int) ($two_factor_pending['outbox_attempts'] ?? 0);
     $two_factor_last     = (int) ($two_factor_pending['outbox_last_attempt'] ?? 0);
     $two_factor_error    = trim((string) ($two_factor_pending['outbox_error'] ?? ''));
-    $two_factor_kind     = ($two_factor_pending['outbox_kind'] ?? '') === 'code' ? 'code' : 'password';
+    $two_factor_kind     = in_array($two_factor_pending['outbox_kind'] ?? '', array('code', 'reset'), true)
+        ? (string) $two_factor_pending['outbox_kind']
+        : 'password';
 ?>
                         <tr>
                             <td><?php echo html((string) ($two_factor_pending['outbox_login'] ?? '')) ?></td>

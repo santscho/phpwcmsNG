@@ -66,24 +66,26 @@ if (
             $two_factor_reset_error = $BL['be_2fa_reset_unknown'];
         } elseif (empty($two_factor_reset_target[0]['usr_2fa_enabled'])) {
             $two_factor_reset_done = sprintf($BL['be_2fa_reset_none'], $two_factor_reset_target[0]['usr_login']);
-        } else {
+                } else {
 
-            _dbQuery(
-                'UPDATE ' . DB_PREPEND . 'phpwcms_user SET '
-                . "usr_2fa_secret='', usr_2fa_enabled=0, usr_2fa_last_slice=0,"
-                . " usr_2fa_recovery='', usr_2fa_failed=0, usr_2fa_failed_at=0"
-                . ' WHERE usr_id=' . (int) $two_factor_reset_target[0]['usr_id'],
-                'UPDATE'
-            );
+            // the removal waits out a cooling-off period and the account is told
+            // by mail, so one administrator cannot strip it silently
+            $two_factor_effective = time() + PhpwcmsTwoFactorGuard::RESET_COOLDOWN;
 
-            PhpwcmsTwoFactorLog::add(
-                PhpwcmsTwoFactorLog::RESET,
+            if (!PhpwcmsTwoFactorGuard::scheduleAdminReset(
                 (int) $two_factor_reset_target[0]['usr_id'],
-                (string) $two_factor_reset_target[0]['usr_login'],
-                $two_factor_actor
-            );
-
-            $two_factor_reset_done = sprintf($BL['be_2fa_reset_ok'], $two_factor_reset_target[0]['usr_login']);
+                $two_factor_actor_id,
+                $two_factor_actor,
+                (string) $two_factor_reset_target[0]['usr_login']
+            )) {
+                $two_factor_reset_error = $BL['be_2fa_reset_unknown'];
+            } else {
+                $two_factor_reset_done = sprintf(
+                    $BL['be_2fa_reset_scheduled'],
+                    $two_factor_reset_target[0]['usr_login'],
+                    date(($backend_date_format['php'] ?? 'Y-m-d H:i:s'), $two_factor_effective)
+                );
+            }
         }
     }
 }

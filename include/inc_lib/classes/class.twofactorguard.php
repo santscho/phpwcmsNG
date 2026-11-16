@@ -40,6 +40,8 @@ class PhpwcmsTwoFactorGuard {
     public const WINDOW = 900;
     /** seconds a lock warning may spend on a hanging mail server */
     public const WARNING_TIMEOUT = 5;
+    /** seconds another administrator's reset waits before it takes effect */
+    public const RESET_COOLDOWN = 1800;
     /** send attempts before a queued warning is given up */
     public const OUTBOX_ATTEMPTS = 5;
     /** seconds before a failed warning is tried again */
@@ -434,12 +436,26 @@ class PhpwcmsTwoFactorGuard {
             return;
         }
 
+        self::queueMessage($userId, $kind, $mail);
+    }
+
+    /**
+     * Write one message into the outbox and let a later request deliver it.
+     *
+     * @param array{recipient: string, toName: string, subject: string, text: string, login?: string} $mail
+     */
+    private static function queueMessage(int $userId, string $kind, array $mail): void
+    {
+        if ($userId <= 0 || empty($mail['recipient']) || !is_valid_email($mail['recipient'])) {
+            return;
+        }
+
         _dbQuery(
             'INSERT INTO ' . DB_PREPEND . 'phpwcms_user_2fa_outbox'
             . ' (outbox_user_id, outbox_login, outbox_kind, outbox_recipient, outbox_to_name,'
             . ' outbox_subject, outbox_body, outbox_created, outbox_attempts, outbox_last_attempt)'
             . ' VALUES (' . $userId
-            . ', ' . _dbEscape($mail['login'])
+            . ', ' . _dbEscape((string) ($mail['login'] ?? ''))
             . ', ' . _dbEscape($kind)
             . ', ' . _dbEscape($mail['recipient'])
             . ', ' . _dbEscape($mail['toName'])
@@ -451,6 +467,179 @@ class PhpwcmsTwoFactorGuard {
 
         // the answer goes out before the mail server is contacted
         self::drainQueueAfterResponse();
+    }
+
+    /**
+     * Schedule the removal of another administrator's second factor. The factor
+     * keeps working until the cooling-off period is over, so the owner has time
+     * to notice the mail and cancel it in the two factor settings.
+     */
+    public static function scheduleAdminReset(int $targetId, int $actorId, string $actor, string $targetLogin = ''): bool
+    {
+        if ($targetId <= 0 || $actorId <= 0 || $targetId === $actorId) {
+            return false;
+        }
+
+        if ($targetLogin === '') {
+            $result      = _dbQuery('SELECT usr_login FROM ' . DB_PREPEND . 'phpwcms_user WHERE usr_id=' . $targetId);
+            $targetLogin = (string) ($result[0]['usr_login'] ?? '');
+        }
+
+        $effective = time() + self::RESET_COOLDOWN;
+
+        _dbQuery(
+            'REPLACE INTO ' . DB_PREPEND . 'phpwcms_user_2fa_reset'
+            . ' (reset_user_id, reset_actor_id, reset_actor, reset_created, reset_effective) VALUES ('
+            . $targetId . ', ' . $actorId . ', ' . _dbEscape($actor) . ', ' . time() . ', ' . $effective . ')',
+            'INSERT'
+        );
+
+        PhpwcmsTwoFactorLog::add(PhpwcmsTwoFactorLog::RESET_SCHEDULED, $targetId, $targetLogin, $actor);
+        self::notifyReset($targetId, $actor, $effective);
+
+        return true;
+    }
+
+    /**
+     * The reset that waits for its cooling-off period, if there is one.
+     *
+     * @return array{actor: string, created: int, effective: int}
+     */
+    public static function pendingReset(int $userId): array
+    {
+        if ($userId <= 0) {
+            return array();
+        }
+
+        $result = _dbQuery(
+            'SELECT reset_actor, reset_created, reset_effective FROM ' . DB_PREPEND . 'phpwcms_user_2fa_reset'
+            . ' WHERE reset_user_id=' . $userId
+        );
+
+        if (!isset($result[0])) {
+            return array();
+        }
+
+        return array(
+            'actor'     => (string) $result[0]['reset_actor'],
+            'created'   => (int) $result[0]['reset_created'],
+            'effective' => (int) $result[0]['reset_effective'],
+        );
+    }
+
+    /**
+     * Withdraw a scheduled reset. Only the account it concerns may do this, and
+     * only while its second factor still works.
+     */
+    public static function cancelReset(int $userId, string $login = ''): bool
+    {
+        if ($userId <= 0 || !self::pendingReset($userId)) {
+            return false;
+        }
+
+        _dbQuery(
+            'DELETE FROM ' . DB_PREPEND . 'phpwcms_user_2fa_reset WHERE reset_user_id=' . $userId,
+            'DELETE'
+        );
+
+        PhpwcmsTwoFactorLog::add(PhpwcmsTwoFactorLog::RESET_CANCELLED, $userId, $login);
+
+        return true;
+    }
+
+    /**
+     * Run every scheduled reset whose cooling-off period is over. Called on the
+     * login screen, so a reset lands even when the account cannot sign in.
+     */
+    public static function applyDueResets(int $limit = 5): void
+    {
+        $result = _dbQuery(
+            'SELECT reset_user_id, reset_actor FROM ' . DB_PREPEND . 'phpwcms_user_2fa_reset'
+            . ' WHERE reset_effective <= ' . time() . ' ORDER BY reset_effective LIMIT ' . max(1, $limit)
+        );
+
+        if (!is_array($result)) {
+            return;
+        }
+
+        foreach ($result as $row) {
+            $userId = (int) ($row['reset_user_id'] ?? 0);
+            if ($userId <= 0) {
+                continue;
+            }
+
+            $account = _dbQuery(
+                'SELECT usr_login FROM ' . DB_PREPEND . 'phpwcms_user WHERE usr_id=' . $userId
+            );
+            $login = (string) ($account[0]['usr_login'] ?? '');
+
+            _dbQuery(
+                'UPDATE ' . DB_PREPEND . 'phpwcms_user SET '
+                . "usr_2fa_secret='', usr_2fa_enabled=0, usr_2fa_last_slice=0,"
+                . " usr_2fa_recovery='', usr_2fa_failed=0, usr_2fa_failed_at=0"
+                . ' WHERE usr_id=' . $userId,
+                'UPDATE'
+            );
+
+            _dbQuery(
+                'DELETE FROM ' . DB_PREPEND . 'phpwcms_user_2fa_reset WHERE reset_user_id=' . $userId,
+                'DELETE'
+            );
+
+            PhpwcmsTwoFactorLog::add(
+                PhpwcmsTwoFactorLog::RESET,
+                $userId,
+                $login,
+                (string) ($row['reset_actor'] ?? '')
+            );
+        }
+    }
+
+    /**
+     * Mail the account that its second factor is about to be removed.
+     */
+    private static function notifyReset(int $userId, string $actor, int $effective): void
+    {
+        if ($userId <= 0 || !function_exists('is_valid_email')) {
+            return;
+        }
+
+        $result  = _dbQuery(
+            'SELECT usr_login, usr_email, usr_name, usr_lang FROM ' . DB_PREPEND . 'phpwcms_user WHERE usr_id=' . $userId
+        );
+        $account = isset($result[0]) ? $result[0] : array();
+        $email   = trim((string) ($account['usr_email'] ?? ''));
+
+        if ($email === '' || !is_valid_email($email)) {
+            self::logNotificationFailure($userId);
+            return;
+        }
+
+        $BL = array();
+        self::loadMailLanguage((string) ($account['usr_lang'] ?? ''), $BL);
+
+        if (empty($BL['be_2fa_mail_reset_subject']) || empty($BL['be_2fa_mail_reset_body'])) {
+            self::logNotificationFailure($userId);
+            return;
+        }
+
+        $login = (string) ($account['usr_login'] ?? '');
+        $name  = trim((string) ($account['usr_name'] ?? '')) !== '' ? (string) $account['usr_name'] : $login;
+
+        self::queueMessage($userId, 'reset', array(
+            'recipient' => $email,
+            'toName'    => $name,
+            'subject'   => sprintf((string) $BL['be_2fa_mail_reset_subject'], $login),
+            'text'      => sprintf(
+                (string) $BL['be_2fa_mail_reset_body'],
+                $name,
+                $actor !== '' ? $actor : '?',
+                $login,
+                date('Y-m-d H:i:s', $effective),
+                max(1, (int) ceil(self::RESET_COOLDOWN / 60))
+            ),
+            'login'     => $login,
+        ));
     }
 
     /**

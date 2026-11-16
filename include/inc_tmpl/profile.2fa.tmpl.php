@@ -58,6 +58,21 @@ if ($two_factor_uri !== '') {
                 <div class="alert theme-danger" role="alert"><div><?php echo html($two_factor_error) ?></div></div>
 <?php endif; ?>
 
+<?php if(!empty($two_factor_pending_reset)): ?>
+                <div class="alert theme-warning" role="alert">
+                    <div><?php echo html(sprintf(
+                        $BL['be_2fa_reset_pending'],
+                        (string) $two_factor_pending_reset['actor'],
+                        date(($backend_date_format['php'] ?? 'Y-m-d H:i:s'), (int) $two_factor_pending_reset['effective'])
+                    )) ?></div>
+                    <form action="phpwcms.php?do=profile&amp;p=2" method="post" class="mt-3">
+                        <input type="hidden" name="form_aktion" value="update_2fa" />
+                        <input type="hidden" name="do_2fa" value="cancel_reset" />
+                        <button type="submit" class="btn btn-outline theme-secondary btn-sm"><?php echo $BL['be_2fa_reset_cancel'] ?></button>
+                    </form>
+                </div>
+<?php endif; ?>
+
 <?php if($two_factor_new_codes): ?>
                 <div class="alert theme-warning" role="alert">
                     <h3 class="h6 mb-3"><?php echo $BL['be_2fa_recovery_new'] ?></h3>

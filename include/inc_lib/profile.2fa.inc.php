@@ -239,8 +239,19 @@ if (
             }
         }
 
+    } elseif ($two_factor_do === 'cancel_reset') {
+
+        // the owner keeps the factor, so a scheduled removal can be withdrawn
+        // from here without asking for anything else
+        if (PhpwcmsTwoFactorGuard::cancelReset($two_factor_user_id, (string) ($_SESSION['wcs_user'] ?? ''))) {
+            $two_factor_message = $BL['be_2fa_reset_cancelled'];
+        }
+
     }
 }
+
+// a removal another administrator asked for is shown until it is due or withdrawn
+$two_factor_pending_reset = $two_factor_user_id ? PhpwcmsTwoFactorGuard::pendingReset($two_factor_user_id) : array();
 
 // current state of the logged in account
 $two_factor_state = array('enabled' => false, 'secret' => '', 'recovery_left' => 0);

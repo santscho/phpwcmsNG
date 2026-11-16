@@ -36,6 +36,8 @@ class PhpwcmsTwoFactorLog {
     public const PASSWORD_FAILED = 'password_failed';
     public const PASSWORD_LOCKED = 'password_locked';
     public const NOTIFICATION_FAILED = 'notification_failed';
+    public const RESET_SCHEDULED     = 'reset_scheduled';
+    public const RESET_CANCELLED     = 'reset_cancelled';
 
     /** entries kept per account */
     public const KEEP = 50;
@@ -53,6 +55,8 @@ class PhpwcmsTwoFactorLog {
             self::PASSWORD_FAILED,
             self::PASSWORD_LOCKED,
             self::NOTIFICATION_FAILED,
+            self::RESET_SCHEDULED,
+            self::RESET_CANCELLED,
         );
     }
 

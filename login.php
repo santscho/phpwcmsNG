@@ -66,6 +66,9 @@ require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.twofactorlog.php';
 // queued lock warnings are retried after the response, at most once a minute
 PhpwcmsTwoFactorGuard::drainQueuePeriodically();
 
+// removals another administrator scheduled are due once their cooling-off is over
+PhpwcmsTwoFactorGuard::applyDueResets();
+
 if (isset($_GET['reason']) && str_starts_with($_GET['reason'], 'csrf-')) {
     headerAvoidPageCaching();
 }
