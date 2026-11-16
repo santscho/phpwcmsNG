@@ -260,21 +260,44 @@ class PhpwcmsTwoFactorGuard {
     {
         $mail = self::lockMail($userId, $kind);
 
+        // no address or no text to send: the holder gets no warning at all
         if (!$mail || !function_exists('sendEmail')) {
+            self::logNotificationFailure($userId);
             return;
         }
 
         try {
-            sendEmail(array(
+            $sent = sendEmail(array(
                 'recipient' => $mail['recipient'],
                 'toName'    => $mail['toName'],
                 'subject'   => $mail['subject'],
                 'isHTML'    => false,
                 'text'      => $mail['text'],
             ));
+
+            if (empty($sent[0])) {
+                self::logNotificationFailure($userId);
+            }
         } catch (\Throwable $e) {
-            // nothing to do: the lock is already recorded in the audit trail
+            self::logNotificationFailure($userId);
         }
+    }
+
+    /**
+     * Record that a lock warning never reached the mailer, so the audit list
+     * can tell a silent mailer from a warning that was handed over.
+     */
+    private static function logNotificationFailure(int $userId): void
+    {
+        $result = _dbQuery(
+            'SELECT usr_login FROM ' . DB_PREPEND . 'phpwcms_user WHERE usr_id=' . $userId
+        );
+
+        PhpwcmsTwoFactorLog::add(
+            PhpwcmsTwoFactorLog::NOTIFICATION_FAILED,
+            $userId,
+            (string) ($result[0]['usr_login'] ?? '')
+        );
     }
 
     /**

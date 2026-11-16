@@ -25,8 +25,9 @@ $two_factor_marks = array(
     PhpwcmsTwoFactorLog::CODE_FAILED     => 'theme-danger',
     PhpwcmsTwoFactorLog::LOCKED          => 'theme-danger',
     PhpwcmsTwoFactorLog::RECOVERY_USED   => 'theme-warning',
-    PhpwcmsTwoFactorLog::PASSWORD_FAILED => 'theme-danger',
-    PhpwcmsTwoFactorLog::PASSWORD_LOCKED => 'theme-danger',
+    PhpwcmsTwoFactorLog::PASSWORD_FAILED   => 'theme-danger',
+    PhpwcmsTwoFactorLog::PASSWORD_LOCKED   => 'theme-danger',
+    PhpwcmsTwoFactorLog::NOTIFICATION_FAILED => 'theme-warning',
 );
 ?>
 <div class="row g-4">

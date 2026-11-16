@@ -1661,6 +1661,7 @@ $BL['be_2fa_log_locked']                = 'nach zu vielen ungültigen Codes gesp
 $BL['be_2fa_log_reissued']              = 'neue Wiederherstellungscodes ausgegeben';
 $BL['be_2fa_log_reset']                 = 'zweiter Faktor durch einen Administrator zurückgesetzt';
 $BL['be_2fa_log_by']                    = 'von';
+$BL['be_2fa_log_notification_failed']   = 'Sperr-Hinweis konnte nicht versendet werden';
 $BL['be_2fa_log_password_failed']       = 'falsches Kennwort';
 $BL['be_2fa_log_password_locked']       = 'Kennwortversuche gesperrt';
 $BL['be_2fa_password_locked']           = 'Zu viele falsche Kennwörter. Bitte in %d Minuten erneut versuchen.';

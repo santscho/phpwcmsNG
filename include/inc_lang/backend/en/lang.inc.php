@@ -1678,6 +1678,7 @@ $BL['be_2fa_log_locked']                = 'locked after too many invalid codes';
 $BL['be_2fa_log_reissued']              = 'new recovery codes issued';
 $BL['be_2fa_log_reset']                 = 'second factor reset by an administrator';
 $BL['be_2fa_log_by']                    = 'by';
+$BL['be_2fa_log_notification_failed']   = 'lock warning could not be sent';
 $BL['be_2fa_log_password_failed']       = 'wrong password';
 $BL['be_2fa_log_password_locked']       = 'password attempts locked';
 $BL['be_2fa_password_locked']           = 'Too many wrong passwords. Please wait %d minutes and try again.';
