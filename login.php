@@ -152,6 +152,7 @@ $login_passed      = 0;
 $login_step2       = false;
 $login_step2_err   = false;
 $login_step2_wait  = 0;
+$login_password_wait = 0;
 $login_pending   = (isset($_SESSION['wcs_2fa_pending']) && is_array($_SESSION['wcs_2fa_pending'])) ? $_SESSION['wcs_2fa_pending'] : null;
 $form_action     = isset($_POST['form_aktion']) ? (string) $_POST['form_aktion'] : '';
 
@@ -371,7 +372,17 @@ if($form_action === 'login2fa' && $json_check === 1) {
 
         $result = _dbQuery($sql_query);
 
-        if(isset($result[0]['usr_id'])) {
+        $login_password_limit = isset($result[0]['usr_id'])
+            ? PhpwcmsTwoFactorGuard::passwordState((int) $result[0]['usr_id'])
+            : array('locked' => false, 'wait' => 0);
+
+        if(!empty($login_password_limit['locked'])) {
+
+            // the wrong passwords are counted per account, the same counter the
+            // two factor settings use, so even the right one waits for the window
+            $login_password_wait = (int) $login_password_limit['wait'];
+
+        } elseif(isset($result[0]['usr_id'])) {
 
             $db_pass = $result[0]['usr_pass'];
             if ($plain_pass !== '') {
@@ -406,6 +417,13 @@ if($form_action === 'login2fa' && $json_check === 1) {
                         _dbQuery('UPDATE ' . DB_PREPEND . 'phpwcms_user SET usr_pass=' . _dbEscape($new_hash) . ' WHERE usr_id=' . (int)$result[0]['usr_id'], 'UPDATE');
                     }
                 }
+            }
+
+            if($login_passed) {
+                // the password was right, so the earlier wrong ones are spent
+                PhpwcmsTwoFactorGuard::resetPassword((int) $result[0]['usr_id']);
+            } elseif($plain_pass !== '' || $wcs_pass !== '') {
+                PhpwcmsTwoFactorGuard::failPassword((int) $result[0]['usr_id'], $wcs_user);
             }
         }
 
@@ -567,7 +585,9 @@ ob_start();
     if(!$err) {
         echo ' style="display:none"';
     }
-    echo ' id="jserr"><div>' . $BL['login_error'] . '</div></div>';
+    echo ' id="jserr"><div>';
+    echo $login_password_wait > 0 ? sprintf($BL['login_password_locked'], $login_password_wait) : $BL['login_error'];
+    echo '</div></div>';
 
 ?>
 <div class="mb-5">
