@@ -55,7 +55,7 @@ $is_open            = !empty($_SESSION['structure'][0]);
 
         <div class="list-group-item d-flex align-items-center gap-2">
 <?php
-echo '<span class="fg-secondary flex-shrink-0" data-bs-toggle="tooltip" title="'.html($BL['be_admin_struct_title']).'">'.backend_icon('grid-1x2-fill').'</span>';
+echo '<span class="fg-secondary flex-shrink-0" data-bs-toggle="tooltip" title="'.html($BL['be_admin_struct_title']).'">'.backend_icon('house-fill').'</span>';
 if($child_count) {
     echo '<a href="phpwcms.php?do=admin&amp;p=6&amp;open=0:'.($is_open ? 0 : 1).'" class="link-secondary text-decoration-none flex-shrink-0"';
     echo ' aria-label="'.html($an).'" data-bs-toggle="tooltip" title="'.html($an).'">'.backend_icon($is_open ? 'chevron-down' : 'chevron-right').'</a>';
