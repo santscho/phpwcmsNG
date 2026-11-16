@@ -78,30 +78,27 @@ class PhpwcmsTwoFactorGuard {
             return;
         }
 
-        $result = _dbQuery(
-            'SELECT usr_login, usr_2fa_failed, usr_2fa_failed_at FROM ' . DB_PREPEND . 'phpwcms_user'
-            . ' WHERE usr_id=' . $userId
-        );
-
-        $login  = (string) ($result[0]['usr_login'] ?? '');
-        $failed = (int) ($result[0]['usr_2fa_failed'] ?? 0);
-        $at     = (int) ($result[0]['usr_2fa_failed_at'] ?? 0);
-
-        // a failure older than the window starts a new count
-        if ($at === 0 || time() - $at >= self::WINDOW) {
-            $failed = 0;
-        }
-
+        // one statement counts the failure, so parallel requests cannot lose
+        // increments; a count older than the window starts at one again
+        $now = time();
         _dbQuery(
-            'UPDATE ' . DB_PREPEND . 'phpwcms_user SET usr_2fa_failed=' . ($failed + 1)
-            . ', usr_2fa_failed_at=' . time()
+            'UPDATE ' . DB_PREPEND . 'phpwcms_user SET usr_2fa_failed='
+            . 'IF(usr_2fa_failed_at = 0 OR usr_2fa_failed_at <= ' . ($now - self::WINDOW) . ', 1, usr_2fa_failed + 1)'
+            . ', usr_2fa_failed_at=' . $now
             . ' WHERE usr_id=' . $userId,
             'UPDATE'
         );
 
+        $result = _dbQuery(
+            'SELECT usr_login, usr_2fa_failed FROM ' . DB_PREPEND . 'phpwcms_user WHERE usr_id=' . $userId
+        );
+
+        $login  = (string) ($result[0]['usr_login'] ?? '');
+        $failed = (int) ($result[0]['usr_2fa_failed'] ?? 0);
+
         PhpwcmsTwoFactorLog::add(PhpwcmsTwoFactorLog::CODE_FAILED, $userId, $login);
 
-        if ($failed + 1 === self::MAX_FAILURES) {
+        if ($failed === self::MAX_FAILURES) {
             PhpwcmsTwoFactorLog::add(PhpwcmsTwoFactorLog::LOCKED, $userId, $login);
         }
     }

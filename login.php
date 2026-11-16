@@ -285,27 +285,38 @@ if($form_action === 'login2fa' && $json_check === 1) {
                 );
 
                 if($slice !== false) {
-                    _dbQuery(
+
+                    // the slice is consumed by a conditional write: a parallel request
+                    // that read the same slice before cannot claim it again
+                    $second_step_write = _dbQuery(
                         'UPDATE ' . DB_PREPEND . 'phpwcms_user SET usr_2fa_last_slice=' . (int) $slice
-                        . ' WHERE usr_id=' . (int) $result[0]['usr_id'],
+                        . ' WHERE usr_id=' . (int) $result[0]['usr_id']
+                        . ' AND usr_2fa_last_slice < ' . (int) $slice,
                         'UPDATE'
                     );
-                    $second_step_passed = true;
+                    $second_step_passed = ((int) ($second_step_write['AFFECTED_ROWS'] ?? 0)) === 1;
+
                 } elseif (
-                    ($recovery_left = PhpwcmsRecoveryCode::consume((string) ($result[0]['usr_2fa_recovery'] ?? ''), $submitted)) !== null
+                    ($stored_recovery = (string) ($result[0]['usr_2fa_recovery'] ?? '')) !== ''
+                    && ($recovery_left = PhpwcmsRecoveryCode::consume($stored_recovery, $submitted)) !== null
                 ) {
-                    // a recovery code replaces the authenticator when the phone is gone
-                    _dbQuery(
+                    // a recovery code replaces the authenticator when the phone is gone;
+                    // the list is only rewritten while it is still the one that was read
+                    $second_step_write = _dbQuery(
                         'UPDATE ' . DB_PREPEND . 'phpwcms_user SET usr_2fa_recovery=' . _dbEscape($recovery_left)
-                        . ' WHERE usr_id=' . (int) $result[0]['usr_id'],
+                        . ' WHERE usr_id=' . (int) $result[0]['usr_id']
+                        . ' AND usr_2fa_recovery=' . _dbEscape($stored_recovery),
                         'UPDATE'
                     );
-                    PhpwcmsTwoFactorLog::add(
-                        PhpwcmsTwoFactorLog::RECOVERY_USED,
-                        (int) $result[0]['usr_id'],
-                        (string) $result[0]['usr_login']
-                    );
-                    $second_step_passed = true;
+                    $second_step_passed = ((int) ($second_step_write['AFFECTED_ROWS'] ?? 0)) === 1;
+
+                    if($second_step_passed) {
+                        PhpwcmsTwoFactorLog::add(
+                            PhpwcmsTwoFactorLog::RECOVERY_USED,
+                            (int) $result[0]['usr_id'],
+                            (string) $result[0]['usr_login']
+                        );
+                    }
                 }
             }
 
