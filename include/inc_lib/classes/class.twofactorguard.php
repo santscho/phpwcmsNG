@@ -38,6 +38,8 @@ class PhpwcmsTwoFactorGuard {
     public const MAX_PASSWORD_FAILURES = 5;
     /** minutes until the failures are forgotten */
     public const WINDOW = 900;
+    /** seconds a lock warning may spend on a hanging mail server */
+    public const WARNING_TIMEOUT = 5;
 
     /**
      * Whether the account is locked right now.
@@ -296,6 +298,9 @@ class PhpwcmsTwoFactorGuard {
                 'subject'   => $mail['subject'],
                 'isHTML'    => false,
                 'text'      => $mail['text'],
+                // nobody waits for this message, so a hanging server costs
+                // seconds instead of tying up the worker for minutes
+                'timeout'   => self::WARNING_TIMEOUT,
             ));
 
             if (empty($sent[0])) {
