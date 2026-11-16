@@ -151,7 +151,10 @@ if ($two_factor_uri !== '') {
 
         <div class="card mt-5">
 
-            <h2 class="card-header h6 mb-0"><?php echo $BL['be_2fa_log_title'] ?></h2>
+            <h2 class="card-header h6 mb-0 d-flex flex-wrap gap-2 justify-content-between align-items-center">
+                <span><?php echo $BL['be_2fa_log_title'] ?></span>
+                <a class="btn btn-outline theme-secondary btn-sm" href="phpwcms.php?do=profile&amp;p=3"><?php echo $BL['be_2fa_log_all_link'] ?></a>
+            </h2>
 
 <?php if($two_factor_log): ?>
             <ul class="list-group list-group-flush">

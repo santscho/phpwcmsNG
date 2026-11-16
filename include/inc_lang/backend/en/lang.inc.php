@@ -1630,6 +1630,7 @@ $BL['be_sort_drag_error']               = 'Reordering failed, please reload the 
 
 // two factor authentication (proof of concept, backend administrators)
 $BL['be_subnav_profile_2fa']            = 'two factor';
+$BL['be_subnav_profile_2fa_log']        = 'all activity';
 $BL['be_2fa_title']                     = 'Two factor authentication';
 $BL['be_2fa_intro']                     = 'A second factor protects the backend login: after the password phpwcms asks for a six digit code from an authenticator app.';
 $BL['be_2fa_status_on']                 = 'active';
@@ -1658,6 +1659,13 @@ $BL['be_2fa_error_password']            = 'That password is not correct.';
 $BL['be_2fa_locked']                    = 'Too many invalid codes. Please wait %d minutes and try again.';
 $BL['be_2fa_error_key']                 = 'Recovery codes need a key. Set $phpwcms[\'backend_2fa_key\'] in the config and start the setup again.';
 $BL['be_2fa_log_title']                 = 'recent activity';
+$BL['be_2fa_log_all_title']             = 'two factor activity of all administrators';
+$BL['be_2fa_log_all_link']              = 'all administrators';
+$BL['be_2fa_log_all_empty']             = 'No two factor events have been recorded yet.';
+$BL['be_2fa_log_col_time']              = 'time';
+$BL['be_2fa_log_col_user']              = 'account';
+$BL['be_2fa_log_col_event']             = 'event';
+$BL['be_2fa_log_back']                  = 'my settings';
 $BL['be_2fa_log_empty']                 = 'Nothing has been recorded for this account yet.';
 $BL['be_2fa_log_enrolled']              = 'two factor authentication enabled';
 $BL['be_2fa_log_code_failed']           = 'invalid code';

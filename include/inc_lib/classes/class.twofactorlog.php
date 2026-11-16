@@ -82,6 +82,21 @@ class PhpwcmsTwoFactorLog {
     }
 
     /**
+     * The newest entries of every account, newest first.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public static function recentAll(int $limit = 100): array
+    {
+        $result = _dbQuery(
+            'SELECT log_event, log_login, log_created FROM ' . DB_PREPEND . 'phpwcms_user_2fa_log'
+            . ' ORDER BY log_id DESC LIMIT ' . max(1, min(500, $limit))
+        );
+
+        return is_array($result) ? $result : array();
+    }
+
+    /**
      * The newest entries of one account, newest first.
      *
      * @return array<int, array<string, mixed>>

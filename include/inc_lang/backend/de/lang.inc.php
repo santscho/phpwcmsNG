@@ -1613,6 +1613,7 @@ $BL['be_sort_drag_error'] = 'Sortieren fehlgeschlagen, bitte die Seite neu laden
 
 // two factor authentication (proof of concept, backend administrators)
 $BL['be_subnav_profile_2fa']            = 'Zwei Faktoren';
+$BL['be_subnav_profile_2fa_log']        = 'alle Aktivitäten';
 $BL['be_2fa_title']                     = 'Zwei-Faktor-Authentifizierung';
 $BL['be_2fa_intro']                     = 'Ein zweiter Faktor schützt die Backend-Anmeldung: nach dem Kennwort fragt phpwcms einen sechsstelligen Code aus einer Authenticator-App ab.';
 $BL['be_2fa_status_on']                 = 'aktiv';
@@ -1641,6 +1642,13 @@ $BL['be_2fa_error_password']            = 'Das Passwort ist nicht korrekt.';
 $BL['be_2fa_locked']                    = 'Zu viele ungültige Codes. Bitte in %d Minuten erneut versuchen.';
 $BL['be_2fa_error_key']                 = 'Für Wiederherstellungscodes wird ein Schlüssel benötigt. Setzen Sie $phpwcms[\'backend_2fa_key\'] in der Konfiguration und starten Sie die Einrichtung erneut.';
 $BL['be_2fa_log_title']                 = 'Letzte Aktivitäten';
+$BL['be_2fa_log_all_title']             = 'Zwei-Faktor-Aktivitäten aller Administratoren';
+$BL['be_2fa_log_all_link']              = 'alle Administratoren';
+$BL['be_2fa_log_all_empty']             = 'Es wurden noch keine Zwei-Faktor-Ereignisse aufgezeichnet.';
+$BL['be_2fa_log_col_time']              = 'Zeit';
+$BL['be_2fa_log_col_user']              = 'Konto';
+$BL['be_2fa_log_col_event']             = 'Ereignis';
+$BL['be_2fa_log_back']                  = 'meine Einstellungen';
 $BL['be_2fa_log_empty']                 = 'Für dieses Konto wurde noch nichts aufgezeichnet.';
 $BL['be_2fa_log_enrolled']              = 'Zwei-Faktor-Authentifizierung aktiviert';
 $BL['be_2fa_log_code_failed']           = 'ungültiger Code';
